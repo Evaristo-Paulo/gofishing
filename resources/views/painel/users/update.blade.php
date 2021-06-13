@@ -9,20 +9,28 @@
                     <h4 class="text-blue h4">Actualização de Usuários</h4>
                 </div>
             </div>
-            <form>
+            <form action="{{ route('painel.users.update.save', encrypt($people->id) ) }}" method="POST">
+                {{ csrf_field() }}
+                @method('PUT')
+
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Nome</label>
-                            <input type="text" class="form-control">
+                            <input type="text" name="name"  value="{{ $people->name }}" class="form-control">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Gênero</label>
-                            <select class="custom-select form-control">
-                                <option value="Berlin">Masculino</option>
-                                <option value="Frankfurt">Feminino</option>
+                            <select class="custom-select form-control" name='gender'>
+                                @foreach ( $genders as $gender )
+                                    @if($gender->id == $people->gender_id)
+                                        <option selected value="{{ $gender->id }}">{{ $gender->type }}</option>                  
+                                    @else
+                                        <option value="{{ $gender->id }}">{{ $gender->type }}</option>                  
+                                    @endif
+                                @endforeach                                
                             </select>
                         </div>
                     </div>
@@ -31,23 +39,27 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Email</label>
-                            <input type="email" class="form-control">
+                            <input type="email" name="email" value="{{ $users->where('people_id', $people->id )->first()->email }}" class="form-control">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Role</label>
-                            <select class="custom-select form-control">
-                                <option value="Berlin">Admin</option>
-                                <option value="Frankfurt">Manager</option>
-                                <option value="Frankfurt" selected>User</option>
+                            <select class="custom-select form-control" name="role">
+                                @foreach ( $roles as $role )
+                                    @if( $role->id == $roles_users->where('user_id', $users->where('people_id', $people->id )->first()->id)->first()->role_id)
+                                        <option selected value="{{ $role->id }}">{{ $role->type }}</option>                  
+                                    @else
+                                        <option value="{{ $role->id }}">{{ $role->type }}</option>                  
+                                    @endif
+                                @endforeach
                             </select>
                         </div>
                     </div>
                 </div>
 
                 <div class="group-btn d-flex my-2 justify-content-end">
-                    <button type="button" class="btn bg-primary-2 text-white">Actualizar</button>
+                    <button type="submit" class="btn bg-primary-2 text-white">Actualizar</button>
                 </div>
             </form>
         </div>

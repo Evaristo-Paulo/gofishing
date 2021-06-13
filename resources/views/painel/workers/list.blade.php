@@ -23,33 +23,33 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @for($i = 0; $i < 9; $i++)
-                        <tr>
-                            <td class="table-plus">
-                                <div class="name-avatar d-flex align-items-center">
-									<div class="avatar mr-2 flex-shrink-0">
-										<img src="vendors/images/photo8.jpg" class="border-radius-100 shadow" width="40" height="40" alt="">
-									</div>
-									<div class="txt">
-										<div class="weight-600">Evaristo D. Paulo</div>
-									</div>
-								</div>
-                            </td>
-                            <td>22/11/1996</td>
-                            <td>2663555737LA63656</td>
-                            <td>Masculino</td>
-                            <td>940570688</td>
-                            <td>evaripaulo@gmail.com</td>
-                            <td>2829 Trainer Avenue Peoria, IL 61602 </td>
-                            <td>Comercial</td>
-                            <td>
-                                <div class="table-actions">
-                                    <a href="{{ route('painel.workers.update', $i ) }}" data-color="#265ed7" ><i class="icon-copy dw dw-edit2"></i></a>
-                                    <a href="#" data-color="#e95959"><i class="icon-copy dw dw-delete-3"></i></a>
-                                </div>
-                            </td>
-                        </tr>
-                        @endfor
+                        @foreach ( $workers as $worker )
+                            <tr>
+                                <td class="table-plus">
+                                    <div class="name-avatar d-flex align-items-center">
+						    			<div class="avatar mr-2 flex-shrink-0">
+						    				<img src="{{ url("storage/people/". $worker->photo. "") }}" class="border-radius-100 shadow" width="40" height="40" alt="">
+						    			</div>
+						    			<div class="txt">
+						    				<div class="weight-600">{{ $worker->name }}</div>
+						    			</div>
+						    		</div>
+                                </td>
+                                <td>{{ $worker->birthday }}</td>
+                                <td>{{ $worker->bi }}</td>
+                                <td>{{ $worker->gender }}</td>
+                                <td>{{ $worker->phone }}</td>
+                                <td>{{ $worker->email }}</td>
+                                <td>{{ $worker->adress }}</td>
+                                <td>{{ $worker->ocupation }}</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a href="{{ route('painel.workers.update', encrypt($worker->id) ) }}" data-color="#265ed7" ><i class="icon-copy dw dw-edit2"></i></a>
+                                        <a href="{{ route('painel.users.remove', encrypt($worker->id) ) }}" data-color="#e95959"><i class="icon-copy dw dw-delete-3"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>

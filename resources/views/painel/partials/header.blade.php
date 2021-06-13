@@ -16,7 +16,7 @@
                             <ul>
                                 <li>
                                     <a href="#">
-                                        <img src="vendors/images/img.jpg" alt="">
+                                        <img src="{{ url("storage/people/". $people->where('id', Auth::user()->people_id)->first()->photo. "") }}" alt="">
                                         <h3>John Doe</h3>
                                         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed...</p>
                                     </a>
@@ -37,14 +37,14 @@
                 <div class="dropdown">
                     <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown">
                         <span class="user-icon">
-                            <img src="{{ asset('painel/vendors/images/photo1.jpg') }}" alt="">
+                            <img src="{{ url("storage/people/". $people->where('id', Auth::user()->people_id)->first()->photo. "") }}" alt="">
                         </span>
-                        <span class="user-name">Evaristo Paulo</span>
+                        <span class="user-name">{{ $people->where('id', Auth::user()->people_id)->first()->name }}</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-                        <a class="dropdown-item" href="{{ route('painel.workers.profile', 2021 ) }}"><i class="dw dw-user1"></i> Meu Perfil</a>
+                        <a class="dropdown-item" href="{{ route('painel.workers.profile', encrypt($people->where('id', Auth::user()->people_id)->first()->id)  ) }}"><i class="dw dw-user1"></i> Meu Perfil</a>
                         <a class="dropdown-item" href="faq.html"><i class="dw dw-help"></i> Ajuda</a>
-                        <a class="dropdown-item" href="{{ route('painel.login') }}"><i class="dw dw-logout"></i> Sair</a>
+                        <a class="dropdown-item" href="{{ route('painel.logout') }}"><i class="dw dw-logout"></i> Sair</a>
                     </div>
                 </div>
             </div>

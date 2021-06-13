@@ -5,7 +5,7 @@
 <h1 class="page-title">Detalhes Do Produto</h1>
 @endsection
 @section('breadcrumb-subtitle')
-    <li>Detalhes do produto</li>
+<li>Detalhes do produto</li>
 @endsection
 <!-- End Breadcrumbs -->
 
@@ -18,46 +18,46 @@
                     <div class="product-images">
                         <main id="gallery">
                             <div class="main-img">
-                                <img src="{{  asset('store/assets/images/product-details/01.jpg') }}" id="current" alt="#">
+                                <img src="{{ url("storage/products/". $product[0]->photo. "") }}"
+                                    id="current" alt="#">
                             </div>
                             <div class="images">
-                                <img src="{{ asset('store/assets/images/product-details/01.jpg') }}" class="img" alt="#">
-                                <img src="{{ asset('store/assets/images/product-details/02.jpg') }}" class="img" alt="#">
-                                <img src="{{ asset('store/assets/images/product-details/03.jpg') }}" class="img" alt="#">
-                                <img src="{{ asset('store/assets/images/product-details/04.jpg') }}" class="img" alt="#">
-                                <img src="{{ asset('store/assets/images/product-details/05.jpg') }}" class="img" alt="#">
+                                @foreach( $product as $item )
+                                    <img src="{{ url("storage/products/". $item->photo. "") }}"
+                                        class="img" alt="#">
+                                @endforeach
                             </div>
                         </main>
                     </div>
                 </div>
                 <div class="col-lg-6 col-md-12 col-12">
                     <div class="product-info">
-                        <h2 class="title">GoPro Karma Camera Drone</h2>
-                        <p class="category"><i class="lni lni-tag"></i> Drones:<a href="javascript:void(0)">Action
-                                cameras</a></p>
-                        <p class="info-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                            tempor incididunt
-                            ut labore et dolore magna aliqua.</p>
-                        <h3 class="price"><span class="old-price">945,00 kz</span> 850,00 kz</h3>
+                        <h2 class="title">{{ $product[0]->name }}</h2>
+                        <p class="category"><i class="lni lni-tag"></i> Categoria:<a
+                                href="javascript:void(0)">{{ $categories->where('id',$product[0]->category_id)->first()->name }}</a>
+                        </p>
+                        <p class="info-text">{{ $product[0]->specification }}</p>
+                        @if ($product[0]->sale_id == 1 && $product[0]->descount > 0)
+                            <h3 class="price">Desconto de {{ $product[0]->descount }}%</h3>
+                        @endif
+                        <h3 class="price">
+                            @if ($product[0]->sale_id == 1 && $product[0]->descount > 0)
+                                <span class="old-price">{{ $product[0]->price }}kz</span>
+                            @endif
+                            {{ $product[0]->price - (($product[0]->price * $product[0]->descount )/100)}} kz
+                        </h3>
+                        <p>Stock: {{ $qtd_stock }} unidade(s)</p>
                         <div class="button-group">
-                            <div>
-                                <div class="form-group quantity">
-                                    <label for="color">Quantity</label>
-                                    <select class="form-control">
-                                        <option>1</option>
-                                        <option>2</option>
-                                        <option>3</option>
-                                        <option>4</option>
-                                        <option>5</option>
-                                    </select>
-                                </div>
-                            </div>
                             <div class="bottom-content">
-                                <div class="button cart-button">
-                                    <button class="btn" style="width: 100%;"><i class="lni lni-cart"></i>
+                                <form
+                                    action="{{ route('store.cart.add', encrypt($product[0]->id) ) }}"
+                                    method="GET">
+                                    {{ csrf_field() }}
+
+                                    <button class="btn btn-primary" style="width: 100%;"><i class="lni lni-cart"></i>
                                         Adicionar
                                     </button>
-                                </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -71,20 +71,25 @@
                         <div class="info-body">
                             <h4>Especificações</h4>
                             <ul class="normal-list">
-                                <li><span>Marca:</span> Nike Jordan</li>
-                                <li><span>Gênero:</span> Unisex</li>
-                                <li><span>Tamanho:</span> 42 EUR</li>
-                                <li><span>Fabricante:</span> USA</li>
+                                <li><span>Categoria:</span>
+                                    {{ $categories->where('id', $product[0]->category_id )->first()->name }}
+                                </li>
+                                <li><span>Marca:</span>
+                                    {{ $brades->where('id', $product[0]->brade_id )->first()->name }}
+                                </li>
+                                <li><span>Estilo:</span>
+                                    {{ $styles->where('id', $product[0]->style_id )->first()->type }}
+                                </li>
+                                <li><span>Tamanho:</span> {{ $product[0]->size }}</li>
+                                <li><span>Stock:</span> {{ $qtd_stock }} unidade(s)</li>
+                                <li><span></span></li>
                             </ul>
                         </div>
                     </div>
                     <div class="col-lg-6 col-12">
                         <div class="info-body custom-responsive-margin">
-                            <h4>Detalhes</h4>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                                exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                                irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat.</p>
+                            <h4>Descrição</h4>
+                            <p>{{ $product[0]->description }}</p>
                         </div>
                     </div>
                 </div>
@@ -105,8 +110,8 @@
                         <p class="wow fadeInUp" data-wow-delay=".6s">Please, purchase full version of the template
                             to get all pages,<br> features and commercial license.</p>
                         <div class="button wow fadeInUp" data-wow-delay=".8s">
-                            <a href="#" data-bs-toggle="modal"
-                            data-bs-target="#contactUsModal"  class="btn">Contanta-Nos</a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#contactUsModal"
+                                class="btn">Contanta-Nos</a>
                         </div>
                     </div>
                 </div>
@@ -127,90 +132,96 @@
                     </div>
                 </div>
             </div>
-            <div class="shop-products">
-                <!-- Start Single Product -->
-                <div class="single-product">
-                    <div class="product-image">
-                        <img src="{{  asset('store/assets/images/products/product-5.jpg') }}" alt="#">
-                        <div class="button">
-                            <a href="product-details.html" class="btn"><i class="lni lni-cart"></i> Adicionar</a>
+            @if( count($youMayLike) < 3 )
+                <div class="shop-products" style="grid-template-columns: repeat(auto-fit, minmax(200px, 400px))">
+                    @forelse( $youMayLike as $product )
+                        <div class="single-product">
+                            <div class="product-image">
+                                <img src="{{ url("storage/products/". $photos->where('product_id', $product['id'])->first()->photo. "") }}"
+                                    alt="#">
+                                @if( $product['sale_id'] == 1 && $product['descount'] > 0 )
+                                    <span class="new-tag">Promoção</span>
+                                @endif
+                                <div class="button">
+                                    <a href="{{ route('store.product.details', encrypt($product['id'])) }}"
+                                        class="btn"><i class="lni lni-cart"></i>
+                                        Visualizar</a>
+                                </div>
+                            </div>
+                            <div class="product-info">
+                                <i class="lni lni-tag"></i>
+                                <span style="display: inline"
+                                    class="category">{{ $categories->where('id', $product['category_id'])->first()->name }}</span>
+                                <h4 class="title">
+                                    <a
+                                        href="{{ route('store.product.details', encrypt($product['id'])) }}">{{ $product['name'] }}</a>
+                                </h4>
+                                <div class="price">
+                                    @if ($product['sale_id'] == 1 && $product['descount'] > 0)
+                                    <span
+                                    class="old-price">{{ $product['price'] }} kz</span>
+                                    <span>{{ $product['price'] - (($product['price'] * $product['descount'])/100) }} kz</span>
+                                    @else
+                                    <span>{{ $product['price'] }} kz</span>
+                                    @endif
+                                </div>
+                                <a href="{{ route('store.cart.add', encrypt($product['id'])) }}"
+                                    class="btn add-cart-btn">
+                                    <i class="lni lni-cart"></i>
+                                    Adicionar
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="product-info">
-                        <span class="category">Headphones</span>
-                        <h4 class="title">
-                            <a href="product-grids.html">Wireless Headphones</a>
-                        </h4>
-                        <div class="price">
-                            <span class="old-price">350.00 kz</span>
-                            <span>350.00 kz</span>
+                    @empty
+                        <div class="youMayLike">
+                            <h5>Nenhum produto relacionado</h5>
                         </div>
-                    </div>
+                    @endforelse
                 </div>
-                <!-- End Single Product -->
-                <!-- Start Single Product -->
-                <div class="single-product">
-                    <div class="product-image">
-                        <img src="{{  asset('store/assets/images/products/product-4.jpg') }}" alt="#">
-                        <span class="new-tag">Novo</span>
-                        <div class="button">
-                            <a href="product-details.html" class="btn"><i class="lni lni-cart"></i> Adicionar</a>
+            @else
+                <div class="shop-products">
+                    @forelse( $youMayLike as $product )
+                        <div class="single-product">
+                            <div class="product-image">
+                                <img src="{{ url("storage/products/". $photos->where('product_id', $product['id'])->first()->photo. "") }}"
+                                    alt="#">
+                                @if( $product['sale_id'] == 1 )
+                                    <span class="new-tag">Promoção</span>
+                                @endif
+                                <div class="button">
+                                    <a href="{{ route('store.product.details', encrypt($product['id'])) }}"
+                                        class="btn"><i class="lni lni-cart"></i>
+                                        Visualizar</a>
+                                </div>
+                            </div>
+                            <div class="product-info">
+                                <i class="lni lni-tag"></i>
+                                <span style="display: inline"
+                                    class="category">{{ $categories->where('id', $product['category_id'])->first()->name }}</span>
+                                <h4 class="title">
+                                    <a
+                                        href="{{ route('store.product.details', encrypt($product['id'])) }}">{{ $product['name'] }}</a>
+                                </h4>
+                                <div class="price">
+                                    <span
+                                        class="old-price">{{ $product['price'] + (($product['price'] * 25)/100) }}
+                                        kz</span>
+                                    <span>{{ $product['price'] }} kz</span>
+                                </div>
+                                <a href="{{ route('store.cart.add', encrypt($product['id'])) }}"
+                                    class="btn add-cart-btn">
+                                    <i class="lni lni-cart"></i>
+                                    Adicionar
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="product-info">
-                        <span class="category">Phones</span>
-                        <h4 class="title">
-                            <a href="product-grids.html">iphone 6x plus</a>
-                        </h4>
-                        <div class="price">
-                            <span class="old-price">400.00 kz</span>
-                            <span>400.00 kz</span>
+                    @empty
+                        <div class="youMayLike">
+                            <h5>Nenhum produto relacionado</h5>
                         </div>
-                    </div>
+                    @endforelse
                 </div>
-                <!-- End Single Product -->
-                <!-- Start Single Product -->
-                <div class="single-product">
-                    <div class="product-image">
-                        <img src="{{  asset('store/assets/images/products/product-5.jpg') }}" alt="#">
-                        <div class="button">
-                            <a href="product-details.html" class="btn"><i class="lni lni-cart"></i> Adicionar</a>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <span class="category">Headphones</span>
-                        <h4 class="title">
-                            <a href="product-grids.html">Wireless Headphones</a>
-                        </h4>
-                        <div class="price">
-                            <span class="old-price">350.00 kz</span>
-                            <span>350.00 kz</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- End Single Product -->
-                <!-- Start Single Product -->
-                <div class="single-product">
-                    <div class="product-image">
-                        <img src="{{  asset('store/assets/images/products/product-4.jpg') }}" alt="#">
-                        <span class="new-tag">Novo</span>
-                        <div class="button">
-                            <a href="product-details.html" class="btn"><i class="lni lni-cart"></i> Adicionar</a>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <span class="category">Phones</span>
-                        <h4 class="title">
-                            <a href="product-grids.html">iphone 6x plus</a>
-                        </h4>
-                        <div class="price">
-                            <span class="old-price">400.00 kz</span>
-                            <span>400.00 kz</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- End Single Product -->
-            </div>
+            @endif
         </div>
     </div>
 </section>
@@ -274,3 +285,24 @@
 </div>
 <!-- End Review Modal -->
 @endsection
+@push('js')
+    <script type="text/javascript">
+        const current = document.getElementById("current");
+        const opacity = 0.6;
+        const imgs = document.querySelectorAll(".img");
+        imgs.forEach(img => {
+            img.addEventListener("click", (e) => {
+                //reset opacity
+                imgs.forEach(img => {
+                    img.style.opacity = 1;
+                });
+                current.src = e.target.src;
+                //adding class 
+                //current.classList.add("fade-in");
+                //opacity
+                e.target.style.opacity = opacity;
+            });
+        });
+
+    </script>
+@endpush

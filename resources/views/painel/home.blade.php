@@ -10,8 +10,10 @@
                 <div class="card-box height-100-p widget-style3">
                     <div class="d-flex flex-wrap">
                         <div class="widget-data">
-                            <div class="weight-700 font-24 text-dark">75</div>
-                            <div class="font-14 text-secondary weight-500">Produtos</div>
+                            <div class="weight-700 font-24 text-dark">{{ $qtd_products }}</div>
+                            <div class="font-14 text-secondary weight-500">
+                                <a href="{{ route('painel.products') }}" class="text-secondary">Produtos</a>
+                            </div>
                         </div>
                         <div class="widget-icon">
                             <div class="icon" data-color="#7064e0"><i class="icon-copy dw dw-ticket-2"></i></div>
@@ -23,8 +25,10 @@
                 <div class="card-box height-100-p widget-style3">
                     <div class="d-flex flex-wrap">
                         <div class="widget-data">
-                            <div class="weight-700 font-24 text-dark">400</div>
-                            <div class="font-14 text-secondary weight-500">Clientes Felizes</div>
+                            <div class="weight-700 font-24 text-dark">{{ $qtd_clients }}</div>
+                            <div class="font-14 text-secondary weight-500">
+                                <a href="{{ route('painel.clients') }}" class="text-secondary">Clientes Felizes</a>
+                            </div>
                         </div>
                         <div class="widget-icon">
                             <div class="icon" data-color="#FFD96A"><i class="icon-copy ion-happy-outline"
@@ -37,8 +41,10 @@
                 <div class="card-box height-100-p widget-style3">
                     <div class="d-flex flex-wrap">
                         <div class="widget-data">
-                            <div class="weight-700 font-24 text-dark">12</div>
-                            <div class="font-14 text-secondary weight-500">Fornecedores</div>
+                            <div class="weight-700 font-24 text-dark">{{ $qtd_collabs }}</div>
+                            <div class="font-14 text-secondary weight-500">
+                                <a href="{{ route('painel.collaborators') }}" class="text-secondary">Fornecedores</a>
+                            </div>
                         </div>
                         <div class="widget-icon">
                             <div class="icon" data-color="#7064e0"><span class="icon-copy dw dw-trolley"></span></div>

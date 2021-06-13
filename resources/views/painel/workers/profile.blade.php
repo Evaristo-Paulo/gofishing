@@ -1,5 +1,4 @@
 @extends('painel.template')
-
 @section('main-content')
 <div class="main-container">
     <div class="pd-ltr-20 xs-pd-20-10">
@@ -13,30 +12,30 @@
                     </div>
                 </div>
             </div>
+            @include('painel.partials.alert')
             <div class="row">
                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-30">
                     <div class="pd-20 card-box height-100-p">
                         <div class="profile-photo">
-                            <img src="{{ asset('painel/vendors/images/photo1.jpg') }}" alt=""
+                            <img src="{{ url("storage/people/". $person->photo . "") }}" alt=""
                                 class="avatar-photo">
                         </div>
-                        <h5 class="text-center h5 mb-0">Evaristo D. Paulo</h5>
-                        <p class="text-center text-muted font-14">Técnico</p>
+                        <h5 class="text-center h5 mb-0">{{ $person->name }}</h5>
+                        <p class="text-center text-muted font-14">Área {{ $ocupations->where('id', $person->ocupation_id )->first()->type }}</p>
                         <div class="profile-info">
                             <h5 class="mb-20 h5 text-blue">Minhas Informações</h5>
                             <ul>
                                 <li>
                                     <span>Telefone:</span>
-                                    619-229-0054
+                                    {{ $person->phone }}
                                 </li>
                                 <li>
                                     <span>Email:</span>
-                                    FerdinandMChilds@test.com
+                                    {{ $users->where('people_id', $person->id )->first()->email }}
                                 </li>
                                 <li>
                                     <span>Endereço:</span>
-                                    1807 Holden Street<br>
-                                    San Diego, CA 92115
+                                    {{ $person->adress }}
                                 </li>
                             </ul>
                         </div>
@@ -61,48 +60,56 @@
                                                     data-target="#single-worker-update-password"
                                                     style="list-style: underline">Deseja alterar apenas a senha?</a>
                                             </div>
-                                            <form>
+                                            <form action="{{ route('painel.workers.profile.update.save', encrypt($person->id )) }}" method="POST" enctype="multipart/form-data">
+                                                {{ csrf_field() }}
+                                                @method('PUT')
+
                                                 <ul class="profile-edit-list row">
                                                     <li class="weight-500 col-md-6">
                                                         <div class="form-group">
                                                             <label>Nome</label>
-                                                            <input type="text" class="form-control">
+                                                            <input type="text" name="name" value="{{ $person->name }}" class="form-control">
                                                         </div>
                                                         <div class="form-group">
                                                             <label>Gênero</label>
-                                                            <select class="custom-select form-control">
-                                                                <option value="Berlin">Masculino</option>
-                                                                <option value="Frankfurt">Feminino</option>
+                                                            <select class="custom-select form-control" name="gender">
+                                                                @foreach ( $genders as $gender )
+                                                                    @if($gender->id == $person->gender_id)
+                                                                        <option selected value="{{ $gender->id }}">{{ $gender->type }}</option>                  
+                                                                    @else
+                                                                        <option value="{{ $gender->id }}">{{ $gender->type }}</option>                  
+                                                                    @endif
+                                                                @endforeach 
                                                             </select>
                                                         </div>
                                                         <div class="form-group">
                                                             <label>Data de Nascimento</label>
-                                                            <input type="text" class="form-control date-picker">
+                                                            <input type="text" name="birthday" value="{{ $person->birthday }}" class="form-control date-picker">
                                                         </div>
                                                         <div class="form-group">
                                                             <label>Bilhete de Identidade</label>
-                                                            <input type="text" class="form-control">
+                                                            <input type="text" name="bi" value="{{ $person->bi }}" class="form-control">
                                                         </div>
                                                     </li>
                                                     <li class="weight-500 col-md-6">
                                                         <div class="form-group">
                                                             <label>Telefone</label>
-                                                            <input type="tel" class="form-control">
+                                                            <input type="tel" name="phone" value="{{ $person->phone }}" class="form-control">
                                                         </div>
                                                         <div class="form-group">
                                                             <label>Email</label>
-                                                            <input type="email" class="form-control">
+                                                            <input type="email" name="email" value="{{ $users->where('people_id', $person->id )->first()->email }}" class="form-control">
                                                         </div>
                                                         <div class="form-group">
                                                             <label>Endereço</label>
-                                                            <input type="text" class="form-control">
+                                                            <input type="text" name="adress" value="{{ $person->adress }}" class="form-control">
                                                         </div>
                                                         <div class="form-group">
                                                             <label>Fotografia</label>
-                                                            <input type="file" class="form-control">
+                                                            <input type="file" name="photo" class="form-control">
                                                         </div>
                                                         <div class="group-btn d-flex my-2 justify-content-end">
-                                                            <button type="button" class="btn bg-primary-2">Actualizar</button>
+                                                            <button type="submit" class="btn bg-primary-2">Actualizar</button>
                                                         </div>
                                                     </li>
                                                 </ul>

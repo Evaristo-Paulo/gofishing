@@ -12,34 +12,34 @@
                     <thead>
                         <tr>
                             <th class="table-plus datatable-nosort">Nome</th>
-                            <th>Qtd.</th>
+                            <th>Qty. Fornecida(s)</th>
                             <th>Descrição</th>
                             <th>Acção</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @for($i = 0; $i < 9; $i++)
-                        <tr>
-                            <td class="table-plus">
-                                <div class="name-avatar d-flex align-items-center">
-									<div class="avatar mr-2 flex-shrink-0">
-										<img src="vendors/images/photo8.jpg" class="border-radius-100 shadow" width="40" height="40" alt="">
-									</div>
-									<div class="txt">
-										<div class="weight-600">Evaristo D. Paulo</div>
-									</div>
-								</div>
-                            </td>
-                            <td>14</td>
-                            <td>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</td>
-                            <td>
-                                <div class="table-actions">
-                                    <a href="#" data-color="#265ed7"><i class="icon-copy dw dw-edit2"></i></a>
-                                    <a href="#" data-color="#e95959"><i class="icon-copy dw dw-delete-3"></i></a>
-                                </div>
-                            </td>
-                        </tr>
-                        @endfor
+                        @foreach ( $all_collaborators as $collaborator )
+                            <tr>
+                                <td class="table-plus">
+                                    <div class="name-avatar d-flex align-items-center">
+                                        <div class="avatar mr-2 flex-shrink-0">
+                                            <img src="{{ url("storage/people/default.png") }}" class="border-radius-100 shadow" width="40" height="40" alt="">
+                                        </div>
+                                        <div class="txt">
+                                            <div class="weight-600">{{  $collaborator['name'] }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{  $collaborator['qty'] }}</td>
+                                <td>{{  $collaborator['description'] }}</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a data-toggle="modal" data-target="#collaborator{{ $collaborator['id'] }}-edit" href="{{ route('painel.collaborators.update.save', encrypt($collaborator['id'])) }}" data-color="#265ed7"><i class="icon-copy dw dw-edit2"></i></a>
+                                        <a href="{{ route('painel.collaborators.remove', encrypt($collaborator['id'])) }}" data-color="#e95959"><i class="icon-copy dw dw-delete-3"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>

@@ -103,3 +103,14 @@ textarea {
   margin-right: 15px !important;
 }
 
+
+.custom-loader {
+    height: 90px;
+    width: 90px;
+    margin: 0 auto;
+    display: none;
+}
+
+.alert-success, .alert-danger {
+    display: none;
+}

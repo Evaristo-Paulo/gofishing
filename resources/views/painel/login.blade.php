@@ -59,16 +59,18 @@
                         <img src="{{ asset('store/assets/images/logo/logo.svg') }}">
                         <h2>Seja bem-vindo</h2>
                     </div>
-                    <form action="">
+                    <form action="{{ route('painel.login.store') }}" method="POST">
+                    {{ csrf_field() }}
+
                     <div class="form-group">
                         <i class="fa fa-user" aria-hidden="true"></i>
-                        <input type="text" class="form-control">
+                        <input type="text" value="{{ old('email') }}" class="form-control" name="email" id="email">
                     </div>
                     <div class="form-group">
-                        <input type="text" class="form-control">
+                        <input type="password" class="form-control" name="password" id="password">
                         <i class="fa fa-lock" aria-hidden="true"></i>
                     </div>
-                    <button class="btn btn-primary  w-100">Entrar</button>
+                    <button type="submit" class="btn btn-primary  w-100">Entrar</button>
                 </form>
                 </div>
             </div>

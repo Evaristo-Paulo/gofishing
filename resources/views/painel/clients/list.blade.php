@@ -12,34 +12,34 @@
                     <thead>
                         <tr>
                             <th class="table-plus datatable-nosort">Nome</th>
-                            <th>Telefone</th>
+                            <th>Gênero</th>
                             <th>Email</th>
                             <th>Acção</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @for($i = 0; $i < 9; $i++)
-                            <tr>
-                                <td class="table-plus">
-                                    <div class="name-avatar d-flex align-items-center">
-                                        <div class="avatar mr-2 flex-shrink-0">
-                                            <img src="vendors/images/photo8.jpg" class="border-radius-100 shadow"
-                                                width="40" height="40" alt="">
-                                        </div>
-                                        <div class="txt">
-                                            <div class="weight-600">Evaristo D. Paulo</div>
-                                        </div>
+                        @foreach ( $clients as $client )
+                        <tr>
+                            <td class="table-plus">
+                                <div class="name-avatar d-flex align-items-center">
+                                    <div class="avatar mr-2 flex-shrink-0">
+                                        <img src="{{ url("storage/people/". $client->photo. "") }}" class="border-radius-100 shadow"
+                                            width="40" height="40" alt="">
                                     </div>
-                                </td>
-                                <td>938709693</td>
-                                <td>ivarilson@gmail.com</td>
-                                <td>
-                                    <div class="table-actions">
-                                        <a href="#" data-color="#e95959"><i class="icon-copy dw dw-delete-3"></i></a>
+                                    <div class="txt">
+                                        <div class="weight-600">{{  $client->name }}</div>
                                     </div>
-                                </td>
-                            </tr>
-                        @endfor
+                                </div>
+                            </td>
+                            <td>{{  $client->gender }}</td>
+                            <td>{{  $client->email }}</td>
+                            <td>
+                                <div class="table-actions">
+                                    <a href="{{ route('painel.clients.remove', encrypt($client->people_id)) }}" data-color="#e95959"><i class="icon-copy dw dw-delete-3"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>

@@ -19,30 +19,31 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @for($i = 0; $i < 4; $i++)
+                        @foreach( $users as  $user)
                             <tr>
                                 <td class="table-plus">
                                     <div class="name-avatar d-flex align-items-center">
                                         <div class="avatar mr-2 flex-shrink-0">
-                                            <img src="vendors/images/photo8.jpg" class="border-radius-100 shadow"
+                                            <img src="{{ url("storage/people/". $user->photo. "") }}" class="border-radius-100 shadow"
                                                 width="40" height="40" alt="">
                                         </div>
                                         <div class="txt">
-                                            <div class="weight-600">Evaristo D. Paulo</div>
+                                            <div class="weight-600">{{ $user->name }}</div>
                                         </div>
                                     </div>
                                 </td>
-                                <td>Masculino</td>
-                                <td>ivarilson@gmail.com</td>
-                                <td>Admin</td>
+                                <td>{{ $user->gender }}</td>
+                                <td>{{ $user->email }}</td>
+                                <td>{{ $user->role }}</td>
                                 <td>
                                     <div class="table-actions">
-                                        <a href="{{ route('painel.users.update', $i ) }}" data-color="#265ed7" ><i class="icon-copy dw dw-edit2"></i></a>
-                                        <a href="#" data-color="#e95959"><i class="icon-copy dw dw-delete-3"></i></a>
+                                        <a href="{{ route('painel.users.update', encrypt($user->id) ) }}"
+                                            data-color="#265ed7"><i class="icon-copy dw dw-edit2"></i></a>
+                                        <a href="{{ route('painel.users.remove', encrypt($user->id) ) }}" data-color="#e95959"><i class="icon-copy dw dw-delete-3"></i></a>
                                     </div>
                                 </td>
                             </tr>
-                        @endfor
+                        @endforeach
                     </tbody>
                 </table>
             </div>

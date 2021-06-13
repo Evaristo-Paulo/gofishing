@@ -20,7 +20,9 @@
                         <span class="micon dw dw-flow"></span><span class="mtext">Categorias</span>
                     </a>
                     <ul class="submenu">
+                        @can('only-admin')
                         <li><a href="#" data-toggle="modal" data-target="#category-register">Registo</a></li>
+                        @endcan
                         <li><a href="{{ route('painel.categories') }}">Listagem</a></li>
                     </ul>
                 </li>
@@ -29,8 +31,18 @@
                         <span class="micon dw dw-ticket-2"></span><span class="mtext">Produtos</span>
                     </a>
                     <ul class="submenu">
+                        @can('only-admin')
                         <li><a href="{{  route('painel.products.register') }}">Registo</a></li>
+                        @endcan
                         <li><a href="{{ route('painel.products') }}">Listagem</a></li>
+                        <li class="dropdown">
+                            <a href="javascript:;" class="dropdown-toggle">
+                                <span class="micon dw dw-balance"></span><span class="mtext">Stock</span>
+                            </a>
+                            <ul class="submenu child">
+                                <li><a href="{{ route('painel.stock') }}">Listagem</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -46,7 +58,9 @@
                         <span class="micon dw dw-trolley"></span><span class="mtext">Fornecedores</span>
                     </a>
                     <ul class="submenu">
+                        @can('only-admin')
                         <li><a href="#" data-toggle="modal" data-target="#colaborator-register">Registo</a></li>
+                        @endcan
                         <li><a href="{{ route('painel.collaborators') }}">Listagem</a></li>
 
                     </ul>
@@ -56,18 +70,10 @@
                         <span class="micon dw dw-group"></span><span class="mtext">Funcionários</span>
                     </a>
                     <ul class="submenu">
+                        @can('only-admin')
                         <li><a href="{{ route('painel.workers.register') }}">Registo</a></li>
+                        @endcan
                         <li><a href="{{ route('painel.workers') }}">Listagem</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="javascript:;" class="dropdown-toggle">
-                        <span class="micon dw dw-balance"></span><span class="mtext">Stock</span>
-                    </a>
-                    <ul class="submenu">
-                        <li><a href="#" data-toggle="modal" data-target="#stock-register">Actualização</a></li>
-                        <li><a href="#">Agendamento (Brevemente)</a></li>
-                        <li><a href="{{ route('painel.stock') }}">Listagem</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -89,6 +95,7 @@
                         <li><a href="javascript:;">Level 1</a></li>
                     </ul>
                 </li>
+                @can('just-admin-and-manager')
                 <li>
                     <div class="dropdown-divider"></div>
                 </li>
@@ -102,7 +109,8 @@
                     <ul class="submenu">
                         <li><a href="{{ route('painel.users') }}">Listagem</a></li>
                     </ul>
-                </li>
+                </li> 
+                @endcan
             </ul>
         </div>
     </div>

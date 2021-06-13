@@ -17,37 +17,15 @@
                         <h3>Categorias</h3>
                     </div>
                     <form action="">
-                        <div class="form-group">
-                            <label class="custom-control custom-checkbox">
-                                <input checked type="checkbox" name="category1" id="category1" value="checkedValue"
-                                    class="custom-control-input">
-                                <span class="custom-control-indicator">Calçado</span>
-                            </label>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="custom-control custom-checkbox">
-                                <input type="checkbox" name="category1" id="category1" value="checkedValue"
-                                    class="custom-control-input">
-                                <span class="custom-control-indicator">Roupa</span>
-                            </label>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="custom-control custom-checkbox">
-                                <input checked type="checkbox" name="category1" id="category1" value="checkedValue"
-                                    class="custom-control-input">
-                                <span class="custom-control-indicator">Masculino</span>
-                            </label>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="custom-control custom-checkbox">
-                                <input type="checkbox" name="category1" id="category1" value="checkedValue"
-                                    class="custom-control-input">
-                                <span class="custom-control-indicator">Feminino</span>
-                            </label>
-                        </div>
+                        @foreach($categories as $category )
+                            <div class="form-group">
+                                <label class="custom-control custom-checkbox">
+                                    <input checked type="checkbox" name="category" value="{{ $category->name }}"
+                                        class="custom-control-input">
+                                    <span class="custom-control-indicator">{{ $category->name }}</span>
+                                </label>
+                            </div>
+                        @endforeach
                     </form>
                 </div>
 
@@ -56,45 +34,15 @@
                         <h3>Marcas</h3>
                     </div>
                     <form action="">
-                        <div class="form-group">
-                            <label class="custom-control custom-checkbox">
-                                <input checked type="checkbox" name="category1" id="category1" value="checkedValue"
-                                    class="custom-control-input">
-                                <span class="custom-control-indicator">Nike</span>
-                            </label>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="custom-control custom-checkbox">
-                                <input checked type="checkbox" name="category1" id="category1" value="checkedValue"
-                                    class="custom-control-input">
-                                <span class="custom-control-indicator">Reebook</span>
-                            </label>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="custom-control custom-checkbox">
-                                <input type="checkbox" name="category1" id="category1" value="checkedValue"
-                                    class="custom-control-input">
-                                <span class="custom-control-indicator">Converce</span>
-                            </label>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="custom-control custom-checkbox">
-                                <input type="checkbox" name="category1" id="category1" value="checkedValue"
-                                    class="custom-control-input">
-                                <span class="custom-control-indicator">Jordan</span>
-                            </label>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="custom-control custom-checkbox">
-                                <input checked type="checkbox" name="category1" id="category1" value="checkedValue"
-                                    class="custom-control-input">
-                                <span class="custom-control-indicator">Puma</span>
-                            </label>
-                        </div>
+                        @foreach($brades as $brade )
+                            <div class="form-group">
+                                <label class="custom-control custom-checkbox">
+                                    <input checked type="checkbox" name="category" value="{{ $brade->name }}"
+                                        class="custom-control-input">
+                                    <span class="custom-control-indicator">{{ $brade->name }}</span>
+                                </label>
+                            </div>
+                        @endforeach
                     </form>
                 </div>
             </div>
@@ -109,57 +57,98 @@
                     </div>
                 </div>
             </div>
-            <div class="shop-products">
-                @for($i = 0; $i < 4; $i++)
-                    <!-- Start Single Product -->
-                    <div class="single-product">
-                        <div class="product-image">
-                            <img src="{{ asset('store/assets/images/products/product-4.jpg') }}"
-                                alt="#">
-                            <span class="new-tag">Novo</span>
-                            <div class="button">
-                                <a href="{{ route('store.product.details', $i) }}" class="btn"><i class="lni lni-cart"></i>
-                                    Adicionar</a>
+
+            @if(count($products) < 3 )
+                <div class="shop-products" style="grid-template-columns: repeat(auto-fit, minmax(200px, 300px))">
+                    @foreach( $products as $product )
+                        <div class="single-product">
+                            <div class="product-image">
+                                <img src="{{ url("storage/products/". $photos->where('product_id', $product->id)->first()->photo. "") }}"
+                                    alt="#">
+                                @if( $product->sale_id == 1 && $product->descount > 0 )
+                                    <span class="new-tag">Promoção</span>
+                                @endif
+                                <div class="button">
+                                    <a href="{{ route('store.product.details', encrypt($product->id)) }}"
+                                        class="btn"><i class="lni lni-cart"></i>
+                                        Visualizar</a>
+                                </div>
+                            </div>
+                            <div class="product-info">
+                                <i class="lni lni-tag"></i>
+                                <span style="display: inline"
+                                    class="category">{{ $categories->where('id', $product->category_id)->first()->name }}</span>
+                                <h4 class="title">
+                                    <a
+                                        href="{{ route('store.product.details', encrypt($product->id)) }}">{{ $product->name }}</a>
+                                </h4>
+                                <div class="price">
+                                    @if($product->sale_id == 1 && $product->descount > 0 )
+                                        <span
+                                            class="old-price">{{ $product->price }}
+                                            kz</span>
+                                    <span>{{ $product->price -  (($product->price * $product->descount)/100) }} kz</span>
+                                    @else
+                                    <span>{{ $product->price }} kz</span>
+                                    @endif
+                                </div>
+                                <a href="{{ route('store.cart.add', encrypt($product->id)) }}"
+                                    class="btn add-cart-btn">
+                                    <i class="lni lni-cart"></i>
+                                    Adicionar
+                                </a>
                             </div>
                         </div>
-                        <div class="product-info">
-                            <span class="category">Phones</span>
-                            <h4 class="title">
-                                <a href="product-grids.html">iphone 6x plus</a>
-                            </h4>
-                            <div class="price">
-                                <span class="old-price">400.00 kz</span>
-                                <span>400.00 kz</span>
+                        <!-- End Single Product -->
+                    @endforeach
+                </div>
+            @else
+                <div class="shop-products">
+                    @foreach( $products as $product )
+                        <div class="single-product">
+                            <div class="product-image">
+                                <img src="{{ url("storage/products/". $photos->where('product_id', $product->id)->first()->photo. "") }}"
+                                    alt="#">
+                                @if( $product->sale_id == 1 && $product->descount > 0 )
+                                    <span class="new-tag">Promoção</span>
+                                @endif
+                                <div class="button">
+                                    <a href="{{ route('store.product.details', encrypt($product->id)) }}"
+                                        class="btn"><i class="lni lni-cart"></i>
+                                        Visualizar</a>
+                                </div>
+                            </div>
+                            <div class="product-info">
+                                <i class="lni lni-tag"></i>
+                                <span style="display: inline"
+                                    class="category">{{ $categories->where('id', $product->category_id)->first()->name }}</span>
+                                <h4 class="title">
+                                    <a
+                                        href="{{ route('store.product.details', encrypt($product->id)) }}">{{ $product->name }}</a>
+                                </h4>
+                                <div class="price">
+                                    @if($product->sale_id == 1 && $product->descount > 0 )
+                                        <span
+                                            class="old-price">{{ $product->price }}
+                                            kz</span>
+                                    <span>{{ $product->price -  (($product->price * $product->descount)/100) }} kz</span>
+                                    @else
+                                    <span>{{ $product->price }} kz</span>
+                                    @endif
+                                </div>
+                                <a href="{{ route('store.cart.add', encrypt($product->id)) }}"
+                                    class="btn add-cart-btn">
+                                    <i class="lni lni-cart"></i>
+                                    Adicionar
+                                </a>
                             </div>
                         </div>
-                    </div>
-                    <!-- End Single Product -->
-                    <!-- Start Single Product -->
-                    <div class="single-product">
-                        <div class="product-image">
-                            <img src="{{ asset('store/assets/images/products/product-5.jpg') }}"
-                                alt="#">
-                            <div class="button">
-                                <a href="{{ route('store.product.details', $i) }}" class="btn"><i class="lni lni-cart"></i>
-                                    Adicionar</a>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <span class="category">Headphones</span>
-                            <h4 class="title">
-                                <a href="product-grids.html">Wireless Headphones</a>
-                            </h4>
-                            <div class="price">
-                                <span class="old-price">350.00 kz</span>
-                                <span>350.00 kz</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End Single Product -->
-                @endfor
-            </div>
+                        <!-- End Single Product -->
+                    @endforeach
+                </div>
+            @endif
+            {{ $products->links() }}
         </div>
-    </div>
     </div>
 </section>
 <!-- End Trending Product Area -->
@@ -175,8 +164,8 @@
                         <p class="wow fadeInUp" data-wow-delay=".6s">Please, purchase full version of the template
                             to get all pages,<br> features and commercial license.</p>
                         <div class="button wow fadeInUp" data-wow-delay=".8s">
-                            <a href="#" data-bs-toggle="modal"
-                            data-bs-target="#contactUsModal" class="btn">Contanta-Nos</a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#contactUsModal"
+                                class="btn">Contanta-Nos</a>
                         </div>
                     </div>
                 </div>
@@ -195,9 +184,10 @@
                     style="background-image:url('{{ asset('store/assets/images/banner/banner-1-bg.jpg') }}')">
                     <div class="content">
                         <h2>Smart Watch 2.0</h2>
-                        <p>Space Gray Aluminum Case with <br>Black/Volt Real Sport Band </p>
+                        <p>Conecta-te ao mundo das tecnologias<br>com a GoShopping</p>
                         <div class="button">
-                            <a href="{{ route('store.product.details', 2021 ) }}" class="btn">View Details</a>
+                            <a href="#"
+                                class="btn" data-bs-toggle="modal" data-bs-target="#soon1Item">Saber Mais</a>
                         </div>
                     </div>
                 </div>
@@ -207,10 +197,10 @@
                     style="background-image:url('{{ asset('store/assets/images/banner/banner-2-bg.jpg') }}')">
                     <div class="content">
                         <h2>Smart Headphone</h2>
-                        <p>Lorem ipsum dolor sit amet, <br>eiusmod tempor
-                            incididunt ut labore.</p>
+                        <p>Conecta-te ao mundo das tecnologias<br>com a GoShopping</p>
                         <div class="button">
-                            <a href="{{ route('store.product.details', 2021 ) }}" class="btn">Shop Now</a>
+                            <a href="#"
+                                class="btn" data-bs-toggle="modal" data-bs-target="#soon2Item">Saber Mais</a>
                         </div>
                     </div>
                 </div>

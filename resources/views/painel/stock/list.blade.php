@@ -12,57 +12,43 @@
                     <thead>
                         <tr>
                             <th class="table-plus datatable-nosort">Produto</th>
-                            <th>Fornecedor</th>
+                            <th>Fornecedores</th>
                             <th>Qtd.</th>
                             <th>Variação</th>
                             <th>Acção</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @for($i = 0; $i < 2; $i++)
+                        @foreach ( $stocks as $stock )
                         <tr>
                             <td class="table-plus">
                                 <div class="name-avatar d-flex align-items-center">
 									<div class="avatar mr-2 flex-shrink-0">
-										<img src="vendors/images/photo8.jpg" class="border-radius-100 shadow" width="40" height="40" alt="">
+                                        <img src="{{ url("storage/products/". $photos->where('product_id', $stock['product_id'] )->first()->photo. "") }}"
+                                                class="border-radius-100 shadow" width="40" height="40" alt="">
 									</div>
 									<div class="txt">
-										<div class="weight-600">Nike Jordan</div>
+										<div class="weight-600">{{  $stock['product'] }}</div>
 									</div>
 								</div>
                             </td>
-                            <td>Nike</td>
-                            <td>7</td>
-                            <td class="text-danger">Negativa</td>
+                            <td>{{  implode(', ', $stock['collaborators']) }}</td>
+                            <td>{{  $stock['qty'] }}</td>
+                            <td>
+                                @if ( $stock['qty'] < 10 )
+                                    <span class="text-danger">Negativa</span>
+                                @else
+                                    <span class="text-success">Positiva</span>
+                                @endif
+                            </td>
                             <td>
                                 <div class="table-actions">
-                                    <a href="#" data-color="#265ed7"><i class="icon-copy dw dw-edit2"></i></a>
-                                    <a href="#" data-color="#e95959"><i class="icon-copy dw dw-delete-3"></i></a>
+                                    <a href="#" data-toggle="modal" data-target="#stock{{ $stock['id'] }}-update" data-color="#265ed7"><i class="icon-copy dw dw-edit2"></i></a>
+                                    <a href="{{ route('painel.products.remove', encrypt($stock['product_id'])) }}" data-color="#e95959"><i class="icon-copy dw dw-delete-3"></i></a>
                                 </div>
                             </td>
                         </tr>
-                        <tr>
-                            <td class="table-plus">
-                                <div class="name-avatar d-flex align-items-center">
-									<div class="avatar mr-2 flex-shrink-0">
-										<img src="vendors/images/photo8.jpg" class="border-radius-100 shadow" width="40" height="40" alt="">
-									</div>
-									<div class="txt">
-										<div class="weight-600">Manjuco</div>
-									</div>
-								</div>
-                            </td>
-                            <td>Conquistador</td>
-                            <td>50</td>
-                            <td class="text-success">Positiva</td>
-                            <td>
-                                <div class="table-actions">
-                                    <a href="#" data-color="#265ed7"><i class="icon-copy dw dw-edit2"></i></a>
-                                    <a href="#" data-color="#e95959"><i class="icon-copy dw dw-delete-3"></i></a>
-                                </div>
-                            </td>
-                        </tr>
-                        @endfor
+                        @endforeach
                     </tbody>
                 </table>
             </div>

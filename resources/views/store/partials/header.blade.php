@@ -13,18 +13,25 @@
                 </div>
                 <div class="col-lg-6 col-md-6 col-12">
                     <div class="top-end">
+                        @auth
                         <div class="user">
                             <i class="lni lni-user"></i>
-                            Evaristo Paulo
-                        </div>
+                            {{ $people->where('id', Auth::user()->people_id)->first()->name }}
+                        </div> 
+                        @endauth
                         <ul class="user-login">
-                            <li>
-                                <a href="login.html" data-bs-toggle="modal" data-bs-target="#loginModal">Entrar</a>
-                            </li>
-                            <li>
-                                <a href="register.html" data-bs-toggle="modal"
-                                    data-bs-target="#registerModal">Registar</a>
-                            </li>
+                            @auth
+                                <li>
+                                    <a href="{{ route('store.logout') }}">Sair</a>
+                                </li>
+                            @else
+                                <li>
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Entrar</a>
+                                </li>
+                                <li>
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Registar</a>
+                                </li>
+                            @endauth
                         </ul>
                     </div>
                 </div>
@@ -68,43 +75,71 @@
                             <div class="cart-items">
                                 <a href="javascript:void(0)" class="main-btn">
                                     <i class="lni lni-cart"></i>
-                                    <span class="total-items">2</span>
+                                    <span
+                                        class="total-items">{{ Session::has('cart') ? Session::get('cart')->totalQty : 0 }}</span>
                                 </a>
                                 <!-- Shopping Item -->
                                 <div class="shopping-item">
                                     <div class="dropdown-cart-header">
                                         <span>Carrinho</span>
-                                        <span>2 Items</span>
+                                        <span>{{ Session::has('cart') ? Session::get('cart')->totalQty : 0 }}
+                                            Item(s)</span>
                                     </div>
-                                    <ul class="shopping-list">
-                                        @for($i = 0; $i < 2; $i++)
-                                        <li>
-                                            <a href="javascript:void(0)" class="remove" title="Remover este item"><i
-                                                    class="lni lni-close text-danger"></i></a>
-                                            <div class="cart-img-head">
-                                                <a class="cart-img" href="{{ route('store.product.details', $i)  }}"><img
-                                                        src="{{ asset('store/assets/images/header/cart-items/item1.jpg') }}"
-                                                        alt="#"></a>
+                                    @if(Session::has('cart'))
+                                        <ul class="shopping-list">
+                                            @foreach ( $hproducts as $product )
+                                            <li>
+                                                <a href="{{ route('store.cart.remove.item', encrypt($product['item']['id'])) }}"
+                                                    class="remove" title="Remover este item"><i
+                                                        class="lni lni-close text-danger"></i></a>
+                                                <div class="cart-img-head">
+                                                    <a class="cart-img"
+                                                        href="{{ route('store.product.details', encrypt($product['item']['id'])) }}"><img
+                                                            src="{{ url("storage/products/". $photos->where('product_id', $product['item']['id'])->first()->photo. "") }}"
+                                                            alt="#"></a>
+                                                </div>
+                                                <div class="content">
+                                                    <h4><a
+                                                            href="{{ route('store.product.details', encrypt($product['item']['id'])) }}">
+                                                            {{ $product['item']['name'] }}</a>
+                                                    </h4>
+                                                    <p class="quantity">{{ $product['qty'] }}x -
+                                                        <span
+                                                            class="amount">{{ $product['item']['price'] }}
+                                                            kz</span></p>
+                                                </div>
+                                            </li>
+                                            @endforeach
+                                        </ul>
+                                        <div class="bottom">
+                                            <div class="total">
+                                                <span>Total Pedido</span>
+                                                <span class="total-amount">{{ $totalPrice }} kz</span>
                                             </div>
-
-                                            <div class="content">
-                                                <h4><a href="{{ route('store.product.details', $i) }}">
-                                                        Apple Watch Series 6</a></h4>
-                                                <p class="quantity">1x - <span class="amount">$99.00</span></p>
+                                            <div class="button">
+                                                <a href="{{ route('store.cart') }}"
+                                                    class="btn my-2 animate">Carrinho</a>
+                                                <a href="#" class="btn animate"
+                                                    style="background-color: #218838">Checkout</a>
                                             </div>
-                                        </li>
-                                        @endfor
-                                    </ul>
-                                    <div class="bottom">
-                                        <div class="total">
-                                            <span>Total</span>
-                                            <span class="total-amount">$134.00</span>
                                         </div>
-                                        <div class="button">
-                                            <a href="{{ route('store.cart') }}" class="btn my-2 animate">Carrinho</a>
-                                            <a href="#" class="btn animate" style="background-color: #218838">Checkout</a>
+                                    @else
+                                        <ul class="shopping-list">
+                                            <li>
+                                                Nenhum item no carrinho
+                                            </li>
+                                        </ul>
+                                        <div class="bottom">
+                                            <div class="total">
+                                                <span>Total Pedido</span>
+                                                <span class="total-amount">0 kz</span>
+                                            </div>
+                                            <div class="button">
+                                                <a href="{{ route('store.cart') }}"
+                                                    class="btn my-2 animate"><i class="lni lni-cart"></i> Carrinho</a>
+                                            </div>
                                         </div>
-                                    </div>
+                                    @endif
                                 </div>
                                 <!--/ End Shopping Item -->
                             </div>
@@ -132,7 +167,8 @@
                         <div class="collapse navbar-collapse sub-menu-bar" id="navbarSupportedContent">
                             <ul id="nav" class="navbar-nav ms-auto">
                                 <li class="nav-item">
-                                    <a href="{{ route('store.home') }}" aria-label="Toggle navigation">Home</a>
+                                    <a href="{{ route('store.home') }}"
+                                        aria-label="Toggle navigation">Home</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="dd-menu collapsed active" href="javascript:void(0)"
@@ -140,13 +176,16 @@
                                         aria-controls="navbarSupportedContent" aria-expanded="false"
                                         aria-label="Toggle navigation">Loja</a>
                                     <ul class="sub-menu collapse" id="submenu-1-2">
-                                        <li class="nav-item"><a href="{{ route('store.cart') }}">Carrinho</a></li>
-                                        <li class="nav-item"><a href="{{ route('store.products') }}">Nossos Produtos</a></li>
+                                        <li class="nav-item"><a
+                                                href="{{ route('store.cart') }}">Carrinho</a></li>
+                                        <li class="nav-item"><a
+                                                href="{{ route('store.products') }}">Nossos
+                                                Produtos</a></li>
                                     </ul>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="#" data-bs-toggle="modal"
-                                    data-bs-target="#contactUsModal"  aria-label="Toggle navigation">Contacta-nos</a>
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#contactUsModal"
+                                        aria-label="Toggle navigation">Contacta-nos</a>
                                 </li>
                             </ul>
                         </div> <!-- navbar collapse -->
@@ -168,19 +207,21 @@
                         <li>
                             <a href="javascript:void(0)"><i class="lni lni-instagram"></i></a>
                         </li>
-                        <li>
-                            <a href="javascript:void(0)"><i class="lni lni-skype"></i></a>
-                        </li>
                     </ul>
                 </div>
                 <!-- End Nav Social -->
 
                 <!-- Start Login and Register -->
                 <ul class="user-login-mobile">
-                    <li><i class="lni lni-user"></i>
-                        Evaristo Paulo</li>
-                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
-                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Registar</a></li>
+                    @auth
+                        <li><a
+                                href="#">{{ $people->where('id', Auth::user()->people_id)->first()->name }}</a>
+                        </li>
+                        <li><a href="#">Sair</a></li>
+                    @else
+                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
+                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Registar</a></li>
+                    @endauth
                 </ul>
                 <!-- End Login and Register -->
             </div>

@@ -16,52 +16,63 @@
                             <th>Marca</th>
                             <th>Estilo</th>
                             <th>Tamanho</th>
-                            <th>Fornecedor</th>
-                            <th>Preço Unit</th>
-                            <th>Stock</th>
+                            <th>Fornecedores</th>
+                            <th>Preço Unit.</th>
+                            <th>Desconto</th>
                             <th>Promoção</th>
                             <th>Condição</th>
+                            <th>Introdução</th>
                             <th>Detalhes</th>
                             <th>Acção</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @for($i = 0; $i < 9; $i++)
-                        <tr>
-                            <td class="table-plus">
-                                <div class="name-avatar d-flex align-items-center">
-									<div class="avatar mr-2 flex-shrink-0">
-										<img src="vendors/images/photo8.jpg" class="border-radius-100 shadow" width="40" height="40" alt="">
-									</div>
-									<div class="txt">
-										<div class="weight-600">Nike Jordan</div>
-									</div>
-								</div>
-                            </td>
-                            <td>Calça</td>
-                            <td>Nike</td>
-                            <td>Unisex</td>
-                            <td>M</td>
-                            <td>Nike</td>
-                            <td>45.000</td>
-                            <td>30</td>
-                            <td>Desactiva</td>
-                            <td>Disponível</td>
-                            <td>Lorem ipsum dolor sit amet consectetur, adipisicing elit.</td>
-                            <td>
-                                <div class="table-actions">
-                                    <a href="{{ route('painel.products.update', $i) }}" data-color="#265ed7"><i class="icon-copy dw dw-edit2"></i></a>
-                                    <a href="#" data-color="#e95959"><i class="icon-copy dw dw-delete-3"></i></a>
-                                </div>
-                            </td>
-                        </tr>
-                        @endfor
+                        @foreach( $products as $product )
+                            <tr>
+                                <td class="table-plus">
+                                    <div class="name-avatar d-flex align-items-center">
+                                        <div class="avatar mr-2 flex-shrink-0">
+                                            <img src="{{ url("storage/products/". $product['photo'][0]. "") }}"
+                                                class="border-radius-100 shadow" width="40" height="40" alt="">
+                                        </div>
+                                        <div class="txt">
+                                            <div class="weight-600">{{ $product['name'] }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ $categories->where('id', $product['category_id'])->first()->name }}
+                                </td>
+                                <td>{{ $brades->where('id', $product['brade_id'])->first()->name }}
+                                </td>
+                                <td>{{ $styles->where('id', $product['style_id'])->first()->type }}
+                                </td>
+                                <td>{{ $product['size'] }}</td>
+                                <td>{{ implode(', ', $product['collaborators']) }}
+                                </td>
+                                <td>{{ $product['price'] }}</td>
+                                <td>{{ $product['descount'] }}</td>
+                                <td>{{ $sales->where('id', $product['sale_id'])->first()->type }}
+                                </td>
+                                <td>{{ $conditions->where('id', $product['condition_id'])->first()->type }}
+                                </td>
+                                <td>{{ $product['specification'] }}</td>
+                                <td>{{ $product['description'] }}</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a href="{{ route('painel.products.update', encrypt($product['id'])) }}"
+                                            data-color="#265ed7"><i class="icon-copy dw dw-edit2"></i></a>
+                                        <a href="{{ route('painel.products.remove', encrypt($product['id'])) }}"
+                                            data-color="#e95959"><i class="icon-copy dw dw-delete-3"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
         </div>
         <!-- multiple select row Datatable End -->
-    
+
     </div>
 </div>
 
@@ -69,15 +80,24 @@
 
 @push('css')
 
-<link rel="stylesheet" type="text/css" href="{{  asset('painel/src/plugins/datatables/css/dataTables.bootstrap4.min.css') }}">
-<link rel="stylesheet" type="text/css" href="{{  asset('painel/src/plugins/datatables/css/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" type="text/css"
+        href="{{ asset('painel/src/plugins/datatables/css/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" type="text/css"
+        href="{{ asset('painel/src/plugins/datatables/css/responsive.bootstrap4.min.css') }}">
 @endpush
 
 @push('js')
-<script src="{{ asset('painel/src/plugins/datatables/js/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('painel/src/plugins/datatables/js/dataTables.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('painel/src/plugins/datatables/js/dataTables.responsive.min.js') }}"></script>
-<script src="{{ asset('painel/src/plugins/datatables/js/responsive.bootstrap4.min.js') }}"></script>
-<!-- Datatable Setting js -->
-<script src="{{ asset('painel/vendors/scripts/datatable-setting.js') }}"></script>
+    <script src="{{ asset('painel/src/plugins/datatables/js/jquery.dataTables.min.js') }}">
+    </script>
+    <script
+        src="{{ asset('painel/src/plugins/datatables/js/dataTables.bootstrap4.min.js') }}">
+    </script>
+    <script
+        src="{{ asset('painel/src/plugins/datatables/js/dataTables.responsive.min.js') }}">
+    </script>
+    <script
+        src="{{ asset('painel/src/plugins/datatables/js/responsive.bootstrap4.min.js') }}">
+    </script>
+    <!-- Datatable Setting js -->
+    <script src="{{ asset('painel/vendors/scripts/datatable-setting.js') }}"></script>
 @endpush
