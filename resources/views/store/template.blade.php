@@ -29,6 +29,7 @@
         </div>
     </div>
     <!-- /End Preloader -->
+    @include('sweetalert::alert')
 
     @include('store.partials.modal')
     

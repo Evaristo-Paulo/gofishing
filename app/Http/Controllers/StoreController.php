@@ -16,6 +16,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use RealRashid\SweetAlert\Facades\Alert;
+
 
 class StoreController extends Controller
 {
@@ -39,7 +41,7 @@ class StoreController extends Controller
             $user = [
                 'email' => $request->input('email'),
                 'people_id' => $aux_person->id,
-                'password' => Hash::make($request->input('password')) ,
+                'password' => Hash::make($request->input('password')),
             ];
 
             $aux_user = User::create($user);
@@ -53,7 +55,14 @@ class StoreController extends Controller
             $roleUser->user_id = $aux_user->id;
             $roleUser->role_id = $role_id;
             $roleUser->save();
-            return redirect()->back()->with('success', 'Dados registado com sucesso');
+
+            $request->session()->flash('success', 'Cliente registado com sucesso');
+
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
+
+            return redirect()->back();
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -96,12 +105,12 @@ class StoreController extends Controller
     public function products()
     {
         $products = \DB::table('products')
-                ->join('categories', function ($join) {
-                    $join->on('categories.id', '=', 'products.category_id')
-                        ->where([['categories.active', '=', 1], ['products.active', '=', 1], ['products.condition_id', '=', 1]]);
-                })
-                ->select('products.*')
-                ->SimplePaginate(9);
+            ->join('categories', function ($join) {
+                $join->on('categories.id', '=', 'products.category_id')
+                    ->where([['categories.active', '=', 1], ['products.active', '=', 1], ['products.condition_id', '=', 1]]);
+            })
+            ->select('products.*')
+            ->SimplePaginate(9);
 
         if (!Session::has('cart')) {
         }
@@ -151,21 +160,21 @@ class StoreController extends Controller
                 }
             }
 
-            $aux_category = Category::where('id', $product[0]->category_id )->first();
-            
+            $aux_category = Category::where('id', $product[0]->category_id)->first();
+
             /* Products you may like */
             $youMayLike = \DB::table('products')
-            ->join('photos', function ($join) use($id){
-                $join->on('products.id', '=', 'photos.product_id')
-                    ->where([['products.active', '=', 1], ['products.id', '!=', $id], ['products.condition_id', '=', 1]]);
-            })
-            ->join('categories', function ($join) use ($aux_category){
-                $join->on('categories.id', '=', 'products.category_id')
-                    ->where([['categories.active', '=', 1],  ['category_id','=', $aux_category->id]]);
-            })
-            ->select('products.*', 'photos.photo')
-            ->limit(4)
-            ->get();
+                ->join('photos', function ($join) use ($id) {
+                    $join->on('products.id', '=', 'photos.product_id')
+                        ->where([['products.active', '=', 1], ['products.id', '!=', $id], ['products.condition_id', '=', 1]]);
+                })
+                ->join('categories', function ($join) use ($aux_category) {
+                    $join->on('categories.id', '=', 'products.category_id')
+                        ->where([['categories.active', '=', 1],  ['category_id', '=', $aux_category->id]]);
+                })
+                ->select('products.*', 'photos.photo')
+                ->limit(4)
+                ->get();
 
             $function = new Product();
             $youMayLike = $function->productsGroupByID($youMayLike);
@@ -178,7 +187,7 @@ class StoreController extends Controller
             $hproducts = $cart->items;
             $totalPrice = $cart->totalPrice;
 
-            return view('store.product-details', compact('product','youMayLike', 'qtd_stock', 'hproducts', 'totalPrice'));
+            return view('store.product-details', compact('product', 'youMayLike', 'qtd_stock', 'hproducts', 'totalPrice'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -215,6 +224,13 @@ class StoreController extends Controller
             } else {
                 Session::forget('cart');
             }
+
+            session()->flash('warning', 'Produto removido do carrinho');
+
+            if (session('warning')) {
+                Alert::toast(session('warning'), 'warning');
+            }
+
             return redirect()->back()->with('success', 'Dados removido com sucesso');
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -231,6 +247,13 @@ class StoreController extends Controller
             $cart = new Cart($oldCart);
             $cart->add($product, $product->id);
             $request->session()->put('cart', $cart);
+
+            $request->session()->flash('success', 'Produto adicionado no carrinho');
+
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
+
             return redirect()->route('store.products');
         } catch (\Exception $e) {
             return $e->getMessage();

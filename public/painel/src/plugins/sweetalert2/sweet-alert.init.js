@@ -61,12 +61,12 @@
             });
 
             //Custom Position Message
-            $('#success-toast-message').click(function () {
+            $().ready(function () {
                 setTimeout(function () {
                     swal({
                         position: 'top-end',
                         type: 'success',
-                        title: 'Dados registado com sucesso',
+                        title: 'Hey, Iam here, bruh!',
                         toast: true,
                         showConfirmButton: false,
                         timer: 5000,

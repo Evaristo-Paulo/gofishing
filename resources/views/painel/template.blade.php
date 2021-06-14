@@ -26,7 +26,6 @@
         href="{{ asset('painel/src/plugins/datatables/css/responsive.bootstrap4.min.css') }}">
     <link rel="stylesheet" type="text/css"
         href="{{ asset('painel/vendors/styles/style.css') }}">
-        <link rel="stylesheet" type="text/css" href="{{ asset('painel/src/plugins/sweetalert2/sweetalert2.css') }}">
     <link rel="stylesheet" type="text/css"
         href="{{ asset('painel/vendors/styles/zpreloader.css') }}">
         @stack('css')
@@ -66,6 +65,8 @@
     
     @yield('main-content')
 
+    @include('sweetalert::alert')
+
     @include('painel.partials.modal')
     <!-- js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -88,9 +89,6 @@
     <script src="{{ asset('painel/src/scripts/modal.register.js') }}">
     </script>
 
-    <!-- add sweet alert js & css in footer -->
-	<script src="{{ asset('painel/src/plugins/sweetalert2/sweetalert2.all.js') }}"></script>
-	<script src="{{ asset('painel/src/plugins/sweetalert2/sweet-alert.init.js') }}"></script>
     @stack('js')
 </body>
 

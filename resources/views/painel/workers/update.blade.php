@@ -9,6 +9,10 @@
                     <h4 class="text-blue h4">Actualização de Funcionários</h4>
                 </div>
             </div>
+            <div class="custom-loader">
+                <img src="{{ asset('painel/src/images/loader.gif') }}" alt="">
+            </div>
+            
             <div class="wizard-content">
                 <form class="tab-wizard wizard-circle wizard" method="POST" data-method="POST" enctype="multipart/form-data"
                 id="sendForm" novalidate="" data-token="{{ csrf_token() }}"

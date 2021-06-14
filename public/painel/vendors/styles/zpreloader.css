@@ -112,5 +112,12 @@ textarea {
 }
 
 .alert-success, .alert-danger {
+    Font-weight: bold;
+    text-align: center;
     display: none;
+}
+
+.request-error-message {
+    font-weight: 500;
+    color: #dc3545;
 }

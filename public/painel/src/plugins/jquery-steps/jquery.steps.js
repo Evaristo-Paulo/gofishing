@@ -1821,6 +1821,8 @@
                 },
                 error: function (data) {
                     console.log('Error: ', data)
+                    document.querySelector('.custom-loader').style.display = 'none'
+                    location.assign(urlback)
                 }
             });
             return true;

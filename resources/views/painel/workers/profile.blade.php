@@ -69,6 +69,11 @@
                                                         <div class="form-group">
                                                             <label>Nome</label>
                                                             <input type="text" name="name" value="{{ $person->name }}" class="form-control">
+                                                            @if($errors->has('name'))
+                                                                <span class="request-error-message">
+                                                                    {{ $errors->first('name') }}
+                                                                </span>
+                                                            @endif
                                                         </div>
                                                         <div class="form-group">
                                                             <label>Gênero</label>
@@ -81,10 +86,20 @@
                                                                     @endif
                                                                 @endforeach 
                                                             </select>
+                                                            @if($errors->has('gender'))
+                                                                <span class="request-error-message">
+                                                                    {{ $errors->first('gender') }}
+                                                                </span>
+                                                            @endif
                                                         </div>
                                                         <div class="form-group">
                                                             <label>Data de Nascimento</label>
                                                             <input type="text" name="birthday" value="{{ $person->birthday }}" class="form-control date-picker">
+                                                            @if($errors->has('birthday'))
+                                                                <span class="request-error-message">
+                                                                    {{ $errors->first('birthday') }}
+                                                                </span>
+                                                            @endif
                                                         </div>
                                                         <div class="form-group">
                                                             <label>Bilhete de Identidade</label>

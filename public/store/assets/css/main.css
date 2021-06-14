@@ -1435,8 +1435,9 @@ ol {
 }
 
 .header .topbar {
-    background-color: #081828;
-    padding: 18px 0;
+    background-color: #000;
+    padding: 20px 0;
+
 }
 
 @media (max-width: 767px) {
@@ -1494,7 +1495,7 @@ ol {
     display: inline-block;
     margin-right: 20px;
     color: #fff;
-    font-size: .8rem;
+    font-size: .9rem;
 }
 
 .header .topbar .top-left .menu-top-link li:last-child {
@@ -1585,7 +1586,7 @@ ol {
 .header .topbar .top-end .user-login li a {
     color: #fff;
     font-weight: 500;
-    font-size: 14px;
+    font-size: 1rem;
     white-space: nowrap;
 }
 
@@ -2501,6 +2502,7 @@ ol {
 
 .modal-header {
     background: #11263b;
+    padding: 20px;
 }
 
 .modal-title {
@@ -2512,7 +2514,7 @@ ol {
 }
 
 .modal-footer-custom {
-    margin: 10px 0;
+    margin: 10px;
     display: flex;
     justify-content: flex-end;
 }
@@ -5175,6 +5177,14 @@ ol {
     background-color: #fff;
     font-size: .9rem;
     border: 1px solid rgba(0, 0, 0, 0.109)
+}
+
+form .form-group{
+    margin: 10px
+}
+
+form .form-group input{
+    font-size: 1rem;
 }
 
 #datatable-responsive a {

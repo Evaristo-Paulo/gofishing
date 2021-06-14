@@ -59,16 +59,29 @@
                         <img src="{{ asset('store/assets/images/logo/logo.svg') }}">
                         <h2>Seja bem-vindo</h2>
                     </div>
+                    
                     <form action="{{ route('painel.login.store') }}" method="POST">
                     {{ csrf_field() }}
-
+                    @if (session('error'))
+                        <p class="request-error-message text-center">{{ session('error') }}</p>
+                    @endif
                     <div class="form-group">
                         <i class="fa fa-user" aria-hidden="true"></i>
-                        <input type="text" value="{{ old('email') }}" class="form-control" name="email" id="email">
+                        <input type="email" required value="{{ old('email') }}" class="form-control" name="email" id="email">
+                        @if($errors->has('email'))
+                            <span class="request-error-message">
+                                {{ $errors->first('email') }}
+                            </span>
+                        @endif
                     </div>
                     <div class="form-group">
-                        <input type="password" class="form-control" name="password" id="password">
                         <i class="fa fa-lock" aria-hidden="true"></i>
+                        <input type="password" required class="form-control" name="password" id="password">
+                        @if($errors->has('password'))
+                            <span class="request-error-message">
+                                {{ $errors->first('password') }}
+                            </span>
+                        @endif
                     </div>
                     <button type="submit" class="btn btn-primary  w-100">Entrar</button>
                 </form>

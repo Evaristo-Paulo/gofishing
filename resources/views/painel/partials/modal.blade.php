@@ -52,12 +52,7 @@
                     <div class="custom-loader">
                         <img src="{{ asset('painel/src/images/loader.gif') }}" alt="">
                     </div>
-                    <div class="alert alert-success" role="alert">
-                        Dados adicionado com sucesso
-                    </div>
-                    <div class="alert alert-danger" role="alert">
-                        Dados não adicionado
-                    </div>
+                    @include('painel.partials.alert')
                     <div class="form-group">
                         <label>Nome</label>
                         <input name="name" class="form-control" required type="text">
@@ -138,12 +133,7 @@
                         <img src="{{ asset('painel/src/images/loader.gif') }}" alt="">
                     </div>
 
-                    <div class="alert alert-success" role="alert">
-                        Dados adicionado com sucesso
-                    </div>
-                    <div class="alert alert-danger" role="alert">
-                        Dados não adicionado
-                    </div>
+                    @include('painel.partials.alert')
                     <div class="form-group">
                         <label>Nome</label>
                         <input name="name" class="form-control" required type="text">
@@ -214,12 +204,7 @@
                         <img src="{{ asset('painel/src/images/loader.gif') }}" alt="">
                     </div>
 
-                    <div class="alert alert-success" role="alert">
-                        Dados adicionado com sucesso
-                    </div>
-                    <div class="alert alert-danger" role="alert">
-                        Dados não adicionado
-                    </div>
+                    @include('painel.partials.alert')
                     <div class="form-group">
                         <label>Nome</label>
                         <input name="name" class="form-control" required type="text">
@@ -269,7 +254,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Qty. <span style="font-size: .7rem">(* quantidade a ser acrestada)</span></label>
+                            <label>Qty. <span style="font-size: .7rem">(* quantidade a ser acrescentada)</span></label>
                             <input class="form-control" name="stock" min="1" value="1" required type="number">
                         </div>
 

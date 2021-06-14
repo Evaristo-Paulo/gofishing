@@ -1,1 +1,6 @@
-<button type="button" class="btn mb-20 btn-primary btn-block" id="success-toast-message">Success</button>
+<div class="alert alert-success" role="alert">
+    Dados registado com sucesso
+</div>
+<div class="alert alert-danger" role="alert">
+    Ops! Verifique os dados e tenta novamente
+</div>

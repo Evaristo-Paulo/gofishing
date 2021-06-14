@@ -80,7 +80,12 @@ body {
     position: absolute;
     top: 10px;
     right: 10px;
-    color: rgb(221, 218, 218);
+    color: rgb(119, 119, 119);
+}
+.request-error-message {
+    font-weight: 500;
+    color: #dc3545;
+    font-size: .9rem
 }
 
 .login .title {
@@ -95,6 +100,13 @@ body {
 }
 
 .login .title h2{
-    color: #000;
-    font-size: .9rem
+    color: rgba(0, 0, 0, 0.712);
+    font-size: .9rem;
+    font-weight: bold;
+}
+
+input:focus{
+    border: none;
+    box-shadow: 0;
+    outline: none;
 }

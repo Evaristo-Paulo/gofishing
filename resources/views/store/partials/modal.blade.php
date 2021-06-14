@@ -3,10 +3,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Formulário | Fale Connosco</h5>
+                <h5 class="modal-title">Entrar em contacto</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <form class="modal-body">
                 <div class="form-group">
                     <label for="name">Nome</label>
                     <input type="text" id="name" class="form-control" name="name">
@@ -26,7 +26,7 @@
                 <div class="modal-footer-custom">
                     <button type="button" class="btn btn-success">Enviar</button>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </div>
@@ -37,7 +37,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Formulário | Login</h5>
+                <h5 class="modal-title">Formulário de login</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form class="modal-body" action="{{ route('store.login.store') }}" method="POST">
@@ -90,7 +90,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Formulário | Registo</h5>
+                <h5 class="modal-title">Formulário de registo</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form class="modal-body" action="{{ route('store.register.store.save') }}" method="POST">

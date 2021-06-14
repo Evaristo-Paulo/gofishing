@@ -19,13 +19,20 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use App\Http\Requests\LoginStoreRequest;
+use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Facades\Validator;
 
 class PainelController extends Controller
 {
 
     public function home()
     {
-        //Session::forget('cart');
+        $function = new User();
+        if ($function->isClient()) {
+            return redirect()->back();
+        }
+
         $qtd_products = \DB::table('products')
             ->join('categories', function ($join) {
                 $join->on('categories.id', '=', 'products.category_id')
@@ -57,7 +64,7 @@ class PainelController extends Controller
         return view('painel.login');
     }
 
-    public function loginStore(Request $request)
+    public function loginStore(LoginStoreRequest $request)
     {
 
         try {
@@ -80,9 +87,9 @@ class PainelController extends Controller
                     return redirect()->route('painel.home');
                 }
             }
-            return redirect()->back()->with('errorMessage', 'Email ou senha não encontrada')->withInput($request->all());
+            return redirect()->back()->with('error', 'Email ou senha não encontrada')->withInput($request->all());
         } catch (\Exception $e) {
-            return redirect()->back()->with('errorMessage', $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
@@ -118,47 +125,86 @@ class PainelController extends Controller
                 return redirect()->back();
             }
 
-            $id = decrypt($id);
-            $nameFile = 'default.png';
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|String|min:3',
+                'gender' => 'required',
+                'bi' => 'required',
+                'adress' => 'required',
+                'phone' => 'required|numeric',
+                'birthday' => 'required',
+                'email' => 'required|email',
+            ], [
+                'name.required' => 'Preenche o campo nome',
+                'name.min' => 'Informe um nome válido',
+                'gender.required' => 'Preenche o campo gênero',
+                'bi.required' => 'Preenche o campo BI',
+                'adress.required' => 'Preenche o campo endereço',
+                'phone.required' => 'Preenche o campo telefone',
+                'birthday.required' => 'Preenche o campo data de nascimento',
+                'email.required' => 'Preenche o campo email',
+                'email.email' => 'Informe um email valido',
+            ]);
 
-            if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
-                $name = uniqid(date('HisYmd'));
-                $extension = $request->photo->extension();
-                $nameFile = "{$name}.{$extension}";
-                $upload = $request->photo->storeAs('people', $nameFile);
-
-                if (!$upload) {
+            if ($validator->fails()) {
+                session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
                 }
+                return redirect()->back()->withErrors($validator->errors())->withInput();
+            } else {
+                $id = decrypt($id);
+                $nameFile = People::find($id)->photo;
+
+                if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+                    $name = uniqid(date('HisYmd'));
+                    $extension = $request->photo->extension();
+                    $nameFile = "{$name}.{$extension}";
+                    $upload = $request->photo->storeAs('people', $nameFile);
+
+                    if (!$upload) {
+                    }
+                }
+
+                $person = [
+                    'name' => $request->input('name'),
+                    'gender_id' => $request->input('gender'),
+                    'birthday' => $request->input('birthday'),
+                    'bi' => $request->input('bi'),
+                    'photo' => $nameFile,
+                    'phone' => $request->input('phone'),
+                    'adress' => $request->input('adress'),
+                ];
+
+                \DB::table('people')
+                    ->where('id', $id)
+                    ->update($person);
+
+                $user = [
+                    'email' => $request->input('email'),
+                    'people_id' => $id,
+                ];
+
+                $aux_user = User::where('people_id', $id)->first();
+
+                \DB::table('users')
+                    ->where('id', $aux_user->id)
+                    ->update($user);
+
+                $request->session()->flash('success', 'Dados actualizado com sucesso');
+
+                if (session('success')) {
+                    Alert::toast(session('success'), 'success');
+                }
+
+                return redirect()->back();
             }
-
-            $person = [
-                'name' => $request->input('name'),
-                'gender_id' => $request->input('gender'),
-                'birthday' => $request->input('birthday'),
-                'bi' => $request->input('bi'),
-                'photo' => $nameFile,
-                'phone' => $request->input('phone'),
-                'adress' => $request->input('adress'),
-            ];
-
-            \DB::table('people')
-                ->where('id', $id)
-                ->update($person);
-
-            $user = [
-                'email' => $request->input('email'),
-                'people_id' => $id,
-            ];
-
-            $aux_user = User::where('people_id', $id)->first();
-
-            \DB::table('users')
-                ->where('id', $aux_user->id)
-                ->update($user);
-
-            return redirect()->back()->with('success', 'Dados actualizado com sucesso');
         } catch (\Exception $e) {
-            return $e->getMessage();
+            $request->session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -188,8 +234,16 @@ class PainelController extends Controller
                 ->where('id', $aux_user->id)
                 ->update($user);
 
-            return redirect()->back()->with('success', 'Senha actualizada com sucesso');
+            $request->session()->flash('success', 'Senha actualizada com sucesso');
+
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
+
+            return redirect()->back();
         } catch (\Exception $e) {
+
+            dd('Estoou aqui');
             return $e->getMessage();
         }
     }
@@ -198,8 +252,13 @@ class PainelController extends Controller
     public function workerRegister()
     {
         if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+            session()->flash('error', 'Não tem permissão para acessar');
+
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
             }
+            return redirect()->back();
+        }
         return view('painel.workers.register');
     }
 
@@ -207,43 +266,76 @@ class PainelController extends Controller
     {
         try {
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             $function = new User();
             if ($function->isClient()) {
                 return redirect()->back();
             }
 
-            if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|String|min:3',
+                'gender' => 'required',
+                'bi' => 'required',
+                'adress' => 'required',
+                'ocupation' => 'required',
+                'phone' => 'required|numeric',
+                'birthday' => 'required',
+                'email' => 'required|email|unique:users,email',
+            ], [
+                'name.required' => 'Preenche o campo nome',
+                'name.min' => 'Informe um nome válido',
+                'gender.required' => 'Preenche o campo gênero',
+                'bi.required' => 'Preenche o campo BI',
+                'adress.required' => 'Preenche o campo endereço',
+                'ocupation.required' => 'Preenche o campo área funcional',
+                'phone.required' => 'Preenche o campo telefone',
+                'birthday.required' => 'Preenche o campo data de nascimento',
+                'email.required' => 'Preenche o campo email',
+                'email.email' => 'Informe um email valido',
+                'email.unique' => 'Este email já foi registado no sistema',
+            ]);
+
+            if ($validator->fails()) {
+                session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return response()->json($validator->errors(), 422);
+            } {
+                $person = [
+                    'name' => $request->input('name'),
+                    'gender_id' => $request->input('gender'),
+                    'birthday' => $request->input('birthday'),
+                    'bi' => $request->input('bi'),
+                    'phone' => $request->input('phone'),
+                    'adress' => $request->input('adress'),
+                    'ocupation_id' => $request->input('ocupation'),
+                ];
+                $aux_person = People::create($person);
+                $user = [
+                    'email' => $request->input('email'),
+                    'password' => Hash::make('goshoping'),
+                    'people_id' => $aux_person->id,
+                ];
+                $aux_user = User::create($user);
+                $roleUser = new RoleUser();
+                $role_id = Role::where('type', 'user')->first()->id;
+                $roleUser->user_id = $aux_user->id;
+                $roleUser->role_id = $role_id;
+                $roleUser->save();
+
+                session()->flash('success', 'Dados registado com sucesso');
+                if (session('success')) {
+                    Alert::toast(session('success'), 'success');
+                }
+                return response()->json($request);
             }
-            $person = [
-                'name' => $request->input('name'),
-                'gender_id' => $request->input('gender'),
-                'birthday' => $request->input('birthday'),
-                'bi' => $request->input('bi'),
-                'phone' => $request->input('phone'),
-                'adress' => $request->input('adress'),
-                'ocupation_id' => $request->input('ocupation'),
-            ];
-
-            $aux_person = People::create($person);
-
-            $user = [
-                'email' => $request->input('email'),
-                'password' => Hash::make('goshoping'),
-                'people_id' => $aux_person->id,
-            ];
-
-            $aux_user = User::create($user);
-
-            $roleUser = new RoleUser();
-            $role_id = Role::where('type', 'user')->first()->id;
-            $roleUser->user_id = $aux_user->id;
-            $roleUser->role_id = $role_id;
-            $roleUser->save();
-
-            return response()->json($request);
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -284,7 +376,12 @@ class PainelController extends Controller
     public function productRegister()
     {
         if (Gate::denies('only-admin')) {
-            return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+            session()->flash('error', 'Não tem permissão para acessar');
+
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
         return view('painel.products.register');
     }
@@ -294,62 +391,111 @@ class PainelController extends Controller
     {
         try {
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             $function = new User();
             if ($function->isClient()) {
                 return redirect()->back();
             }
 
-            if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
-            }
 
-            if ($request->hasFile('photo')) {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|String',
+                'category' => 'required',
+                'brade' => 'required',
+                'style' => 'required',
+                'price' => 'required|numeric',
+                'collaborator' => 'required',
+                'size' => 'required',
+                'specification' => 'required|min:15|max:255',
+                'description' => 'required|min:15|max:255',
+                'photos[]' => 'mimes:jpeg,png,jpg',
+                'onsale' => 'required',
+                'condition' => 'required',
+                'stock' => 'required|numeric',
+            ], [
+                'name.required' => 'Preenche o campo nome',
+                'category.required' => 'Preenche o campo categoria',
+                'brade.required' => 'Preenche o campo marca',
+                'style.required' => 'Preenche o campo estilo',
+                'price.numeric' => 'Informe um preço unitário válido',
+                'stock.numeric' => 'Informe uma qty. fornecida válida',
+                'price.required' => 'Preenche o campo preço unitário',
+                'collaborator.required' => 'Preenche o campo fornecedor',
+                'size.required' => 'Preenche o campo tamanho',
+                'specification.required' => 'Preenche o campo introdução',
+                'specification.min' => 'Especificação deve ter no mínimo 15 caracteres',
+                'specification.max' => 'Especificação deve ter no máximo 255 caracteres',
+                'description.min' => 'Descrição deve ter no mínimo 15 caracteres',
+                'description.max' => 'Descrição deve ter no máximo 255 caracteres',
+                'description.required' => 'Preenche o campo descrição',
+                'photos[].mimes' => 'Informe um fotografias válidas (.jpeg, .jpg, .png)',
+                'onsale.required' => 'Preenche o campo promoção',
+                'condition.required' => 'Preenche o campo condição',
+                'stock.required' => 'Preenche o campo qty. fornecida',
+            ]);
 
-                $product = [
-                    'name' => $request->input('name'),
-                    'category_id' => $request->input('category'),
-                    'brade_id' => $request->input('brade'),
-                    'style_id' => $request->input('style'),
-                    'size' => $request->input('size'),
-                    'price' => $request->input('price'),
-                    'descount' => ($request->input('descount') == null) ? 0 : $request->input('descount'),
-                    'collaborator_id' => $request->input('collaborator'),
-                    'sale_id' => $request->input('onsale'),
-                    'condition_id' => $request->input('condition'),
-                    'description' => $request->input('description'),
-                    'specification' => $request->input('specification'),
-                ];
-
-                $aux_product = Product::create($product);
-
-                /* Store stock */
-                $stock = new Stock();
-                $stock->product_id = $aux_product->id;
-                $stock->collaborator_id = $request->input('collaborator');
-                $stock->qty = $request->input('stock');
-                $stock->save();
-
-
-                foreach ($request->file('photo') as $file) {
-                    if ($file->isValid()) {
-                        $nameFile = null;
-                        $name = uniqid(date('HisYmd'));
-                        $extension = $file->extension();
-                        $nameFile = "{$name}.{$extension}";
-                        $upload = $file->storeAs('products', $nameFile);
-
-                        if (!$upload) {
-                        }
-
-                        $foto = new Photo();
-                        $foto->product_id = $aux_product->id;
-                        $foto->photo = $nameFile;
-                        $foto->save();
-                    }
+            if ($validator->fails()) {
+                session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
                 }
-                return response()->json($request);
+                return response()->json($validator->errors(), 422);
+            } else {
+                if ($request->hasFile('photo')) {
+
+                    $product = [
+                        'name' => $request->input('name'),
+                        'category_id' => $request->input('category'),
+                        'brade_id' => $request->input('brade'),
+                        'style_id' => $request->input('style'),
+                        'size' => $request->input('size'),
+                        'price' => $request->input('price'),
+                        'descount' => ($request->input('descount') == null) ? 0 : $request->input('descount'),
+                        'collaborator_id' => $request->input('collaborator'),
+                        'sale_id' => $request->input('onsale'),
+                        'condition_id' => $request->input('condition'),
+                        'description' => $request->input('description'),
+                        'specification' => $request->input('specification'),
+                    ];
+                    $aux_product = Product::create($product);
+
+                    /* Store stock */
+                    $stock = new Stock();
+                    $stock->product_id = $aux_product->id;
+                    $stock->collaborator_id = $request->input('collaborator');
+                    $stock->qty = $request->input('stock');
+                    $stock->save();
+
+                    foreach ($request->file('photo') as $file) {
+                        if ($file->isValid()) {
+                            $nameFile = null;
+                            $name = uniqid(date('HisYmd'));
+                            $extension = $file->extension();
+                            $nameFile = "{$name}.{$extension}";
+                            $upload = $file->storeAs('products', $nameFile);
+
+                            if (!$upload) {
+                            }
+
+                            $foto = new Photo();
+                            $foto->product_id = $aux_product->id;
+                            $foto->photo = $nameFile;
+                            $foto->save();
+                        }
+                    }
+
+                    session()->flash('success', 'Dados registado com sucesso');
+                    if (session('success')) {
+                        Alert::toast(session('success'), 'success');
+                    }
+                    return response()->json($request);
+                }
             }
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -360,7 +506,12 @@ class PainelController extends Controller
     {
         try {
             if (Gate::denies('just-admin-and-manager')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
 
             Session::forget('cart');
@@ -371,7 +522,12 @@ class PainelController extends Controller
             }
 
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
 
             $id = decrypt($id);
@@ -386,7 +542,12 @@ class PainelController extends Controller
     {
         try {
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
 
             Session::forget('cart');
@@ -396,7 +557,12 @@ class PainelController extends Controller
             }
 
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             $id = decrypt($id);
 
@@ -404,7 +570,13 @@ class PainelController extends Controller
             $product->active = 0;
             $product->save();
 
-            return redirect()->back()->with('success', 'Dados removido com sucesso');
+            session()->flash('warning', 'Dados removido com sucesso');
+
+            if (session('warning')) {
+                Alert::toast(session('warning'), 'warning');
+            }
+
+            return redirect()->back();
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -413,9 +585,14 @@ class PainelController extends Controller
     public function productUpdateSave(Request $request)
     {
         try {
-            
+
             if (Gate::denies('just-admin-and-manager')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             Session::forget('cart');
 
@@ -426,63 +603,102 @@ class PainelController extends Controller
 
             $id = $request->input('id');
 
-            if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
-            }
 
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|String',
+                'category' => 'required',
+                'brade' => 'required',
+                'style' => 'required',
+                'price' => 'required|numeric',
+                'size' => 'required',
+                'specification' => 'required|min:15|max:255',
+                'description' => 'required|min:15|max:255',
+                'photo[]' => 'mimes:jpeg,png,jpg',
+                'onsale' => 'required',
+                'condition' => 'required',
+            ], [
+                'name.required' => 'Preenche o campo nome',
+                'category.required' => 'Preenche o campo categoria',
+                'brade.required' => 'Preenche o campo marca',
+                'style.required' => 'Preenche o campo estilo',
+                'price.numeric' => 'Informe um preço unitário válido',
+                'stock.numeric' => 'Informe uma qty. fornecida válida',
+                'price.required' => 'Preenche o campo preço unitário',
+                'size.required' => 'Preenche o campo tamanho',
+                'specification.required' => 'Preenche o campo introdução',
+                'specification.min' => 'Especificação deve ter no mínimo 15 caracteres',
+                'specification.max' => 'Especificação deve ter no máximo 255 caracteres',
+                'description.min' => 'Descrição deve ter no mínimo 15 caracteres',
+                'description.max' => 'Descrição deve ter no máximo 255 caracteres',
+                'description.required' => 'Preenche o campo descrição',
+                'photo[].mimes' => 'Informe um fotografias válidas (.jpeg, .jpg, .png)',
+                'onsale.required' => 'Preenche o campo promoção',
+                'condition.required' => 'Preenche o campo condição',
+            ]);
 
-            $product = [
-                'name' => $request->input('name'),
-                'category_id' => $request->input('category'),
-                'brade_id' => $request->input('brade'),
-                'style_id' => $request->input('style'),
-                'size' => $request->input('size'),
-                'price' => $request->input('price'),
-                'descount' => $request->input('descount'),
-                'sale_id' => $request->input('onsale'),
-                'condition_id' => $request->input('condition'),
-                'description' => $request->input('description'),
-                'specification' => $request->input('specification'),
-            ];
+            if ($validator->fails()) {
+                session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return response()->json($validator->errors(), 422);
+            } else {
+                $product = [
+                    'name' => $request->input('name'),
+                    'category_id' => $request->input('category'),
+                    'brade_id' => $request->input('brade'),
+                    'style_id' => $request->input('style'),
+                    'size' => $request->input('size'),
+                    'price' => $request->input('price'),
+                    'descount' => $request->input('descount'),
+                    'sale_id' => $request->input('onsale'),
+                    'condition_id' => $request->input('condition'),
+                    'description' => $request->input('description'),
+                    'specification' => $request->input('specification'),
+                ];
 
-            \DB::table('products')
-                ->where('id', $id)
-                ->update($product);
+                \DB::table('products')
+                    ->where('id', $id)
+                    ->update($product);
 
-            if ($request->hasFile('photo')) {
+                if ($request->hasFile('photo')) {
+                    foreach ($request->file('photo') as $file) {
+                        if ($file->isValid()) {
+                            $nameFile = null;
+                            $name = uniqid(date('HisYmd'));
+                            $extension = $file->extension();
+                            $nameFile = "{$name}.{$extension}";
+                            $upload = $file->storeAs('products', $nameFile);
 
-                foreach ($request->file('photo') as $file) {
-                    if ($file->isValid()) {
-                        $nameFile = null;
-                        $name = uniqid(date('HisYmd'));
-                        $extension = $file->extension();
-                        $nameFile = "{$name}.{$extension}";
-                        $upload = $file->storeAs('products', $nameFile);
+                            if (!$upload) {
+                            }
 
-                        if (!$upload) {
-                        }
-
-                        if (Photo::where('product_id', $id)->get()->count() < 3) {
-                            /* Pode aumentar nº fotos do produto sem apagar as que já existem rotuladas ao produto */
-                            $foto = new Photo();
-                            $foto->product_id = $id;
-                            $foto->photo = $nameFile;
-                            $foto->save();
-                        } else {
-                            $aux = Photo::where('product_id', $id)->first();
-                            \DB::table('photos')
-                                ->where('id', $aux->id)
-                                ->delete();
-                            /* Apagar a foto mais recente  rotulada ao produto e só depois adiciona a nova, visto que já existiam 3 fotos do produto */
-                            $foto = new Photo();
-                            $foto->product_id = $id;
-                            $foto->photo = $nameFile;
-                            $foto->save();
+                            if (Photo::where('product_id', $id)->get()->count() < 3) {
+                                /* Pode aumentar nº fotos do produto sem apagar as que já existem rotuladas ao produto */
+                                $foto = new Photo();
+                                $foto->product_id = $id;
+                                $foto->photo = $nameFile;
+                                $foto->save();
+                            } else {
+                                $aux = Photo::where('product_id', $id)->first();
+                                \DB::table('photos')
+                                    ->where('id', $aux->id)
+                                    ->delete();
+                                /* Apagar a foto mais recente  rotulada ao produto e só depois adiciona a nova, visto que já existiam 3 fotos do produto */
+                                $foto = new Photo();
+                                $foto->product_id = $id;
+                                $foto->photo = $nameFile;
+                                $foto->save();
+                            }
                         }
                     }
-                }
 
-                return response()->json($request);
+                    session()->flash('success', 'Dados actualizado com sucesso');
+                    if (session('success')) {
+                        Alert::toast(session('success'), 'success');
+                    }
+                    return response()->json($request);
+                }
             }
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -522,7 +738,12 @@ class PainelController extends Controller
     public function workerUpdate($id)
     {
         if (Gate::denies('just-admin-and-manager')) {
-            return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+            session()->flash('error', 'Não tem permissão para acessar');
+
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
         $id = decrypt($id);
         $person = People::where('id', $id)->first();
@@ -534,7 +755,12 @@ class PainelController extends Controller
     {
         try {
             if (Gate::denies('just-admin-and-manager')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             $function = new User();
             if ($function->isClient()) {
@@ -543,37 +769,69 @@ class PainelController extends Controller
 
             $id = $request->input('id');
 
-            if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|String|min:3',
+                'gender' => 'required',
+                'bi' => 'required',
+                'adress' => 'required',
+                'ocupation' => 'required',
+                'phone' => 'required|numeric',
+                'birthday' => 'required',
+                'email' => 'required|email',
+            ], [
+                'name.required' => 'Preenche o campo nome',
+                'name.min' => 'Informe um nome válido',
+                'gender.required' => 'Preenche o campo gênero',
+                'bi.required' => 'Preenche o campo BI',
+                'adress.required' => 'Preenche o campo endereço',
+                'ocupation.required' => 'Preenche o campo área funcional',
+                'phone.required' => 'Preenche o campo telefone',
+                'birthday.required' => 'Preenche o campo data de nascimento',
+                'email.required' => 'Preenche o campo email',
+                'email.email' => 'Informe um email valido',
+            ]);
+
+            if ($validator->fails()) {
+                session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return response()->json($validator->errors(), 422);
+            } else {
+                $person = [
+                    'name' => $request->input('name'),
+                    'gender_id' => $request->input('gender'),
+                    'birthday' => $request->input('birthday'),
+                    'bi' => $request->input('bi'),
+                    'phone' => $request->input('phone'),
+                    'adress' => $request->input('adress'),
+                    'ocupation_id' => $request->input('ocupation'),
+                ];
+
+
+                \DB::table('people')
+                    ->where('id', $id)
+                    ->update($person);
+
+                $user = [
+                    'email' => $request->input('email'),
+                    'people_id' => $id,
+                ];
+
+                $aux_user = User::where('people_id', $id)->first();
+
+                \DB::table('users')
+                    ->where('id', $aux_user->id)
+                    ->update($user);
+
+                $request->session()->flash('success', 'Dados actualizado com sucesso');
+
+                if (session('success')) {
+                    Alert::toast(session('success'), 'success');
+                }
+                return response()->json($request);
             }
-
-            $person = [
-                'name' => $request->input('name'),
-                'gender_id' => $request->input('gender'),
-                'birthday' => $request->input('birthday'),
-                'bi' => $request->input('bi'),
-                'phone' => $request->input('phone'),
-                'adress' => $request->input('adress'),
-                'ocupation_id' => $request->input('ocupation'),
-            ];
-
-
-            \DB::table('people')
-                ->where('id', $id)
-                ->update($person);
-
-            $user = [
-                'email' => $request->input('email'),
-                'people_id' => $id,
-            ];
-
-            $aux_user = User::where('people_id', $id)->first();
-
-            \DB::table('users')
-                ->where('id', $aux_user->id)
-                ->update($user);
-
-            return response()->json($request);
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -632,10 +890,15 @@ class PainelController extends Controller
     {
         try {
             if (Gate::denies('just-admin-and-manager')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             Session::forget('cart');
-            
+
 
             $function = new User();
             if ($function->isClient()) {
@@ -645,7 +908,12 @@ class PainelController extends Controller
             $id = decrypt($id);
 
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
 
             $nameFile = Category::find($id)->cover;
@@ -670,7 +938,14 @@ class PainelController extends Controller
                 ->where('id', $id)
                 ->update($category);
 
-            return redirect()->back()->with('success', 'Dados actualizado com sucesso');
+            $request->session()->flash('success', 'Dados actualizado com sucesso');
+
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
+
+
+            return redirect()->back();
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -680,7 +955,12 @@ class PainelController extends Controller
     {
         try {
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             Session::forget('cart');
 
@@ -690,7 +970,12 @@ class PainelController extends Controller
             }
 
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             $id = decrypt($id);
 
@@ -698,7 +983,13 @@ class PainelController extends Controller
             $category->active = 0;
             $category->save();
 
-            return redirect()->route('painel.categories')->with('success', 'Dados removido com sucesso');
+            session()->flash('warning', 'Dados removido com sucesso');
+
+            if (session('warning')) {
+                Alert::toast(session('warning'), 'warning');
+            }
+
+            return redirect()->route('painel.categories');
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -709,7 +1000,12 @@ class PainelController extends Controller
     {
         try {
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             $function = new User();
             if ($function->isClient()) {
@@ -717,7 +1013,12 @@ class PainelController extends Controller
             }
 
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
 
             $brade = new Brade();
@@ -736,7 +1037,12 @@ class PainelController extends Controller
     {
         try {
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             $function = new User();
             if ($function->isClient()) {
@@ -744,18 +1050,41 @@ class PainelController extends Controller
             }
 
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
 
-            $nameFile = null;
 
-            if ($request->hasFile('cover') && $request->file('cover')->isValid()) {
-                $name = uniqid(date('HisYmd'));
-                $extension = $request->cover->extension();
-                $nameFile = "{$name}.{$extension}";
-                $upload = $request->cover->storeAs('categories', $nameFile);
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|String',
+                'description' => 'required|min:15|max:255',
+                'photo[]' => 'mimes:jpeg,png,jpg',
+            ], [
+                'name.required' => 'Preenche o campo nome',
+                'description.min' => 'Descrição deve ter no mínimo 15 caracteres',
+                'description.max' => 'Descrição deve ter no máximo 255 caracteres',
+                'description.required' => 'Preenche o campo descrição',
+                'photo[].mimes' => 'Informe um fotografias válidas (.jpeg, .jpg, .png)',
+            ]);
 
-                if (!$upload) {
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 422);
+            } else {
+
+                $nameFile = 'default.jpg';
+
+                if ($request->hasFile('cover') && $request->file('cover')->isValid()) {
+                    $name = uniqid(date('HisYmd'));
+                    $extension = $request->cover->extension();
+                    $nameFile = "{$name}.{$extension}";
+                    $upload = $request->cover->storeAs('categories', $nameFile);
+
+                    if (!$upload) {
+                    }
                 }
 
                 $category = new Category();
@@ -763,9 +1092,9 @@ class PainelController extends Controller
                 $category->cover = $nameFile;
                 $category->description = $request->input('description');
                 $category->save();
-            }
 
-            return response()->json($request);
+                return response()->json($request);
+            }
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -775,7 +1104,12 @@ class PainelController extends Controller
     {
         try {
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             $function = new User();
             if ($function->isClient()) {
@@ -783,14 +1117,35 @@ class PainelController extends Controller
             }
 
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
 
-            $collaborator = new Collaborator();
-            $collaborator->name = $request->input('name');
-            $collaborator->description = $request->input('description');
-            $collaborator->save();
-            return response()->json($request);
+
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|String',
+                'description' => 'required|min:15|max:255',
+                'photo[]' => 'mimes:jpeg,png,jpg',
+            ], [
+                'name.required' => 'Preenche o campo nome',
+                'description.min' => 'Descrição deve ter no mínimo 15 caracteres',
+                'description.max' => 'Descrição deve ter no máximo 255 caracteres',
+                'description.required' => 'Preenche o campo descrição',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 422);
+            } else {
+                $collaborator = new Collaborator();
+                $collaborator->name = $request->input('name');
+                $collaborator->description = $request->input('description');
+                $collaborator->save();
+                return response()->json($request);
+            }
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -801,7 +1156,12 @@ class PainelController extends Controller
     {
         try {
             if (Gate::denies('just-admin-and-manager')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             $function = new User();
             if ($function->isClient()) {
@@ -811,7 +1171,12 @@ class PainelController extends Controller
             $id = decrypt($id);
 
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
 
             $collaborator = [
@@ -823,7 +1188,13 @@ class PainelController extends Controller
                 ->where('id', $id)
                 ->update($collaborator);
 
-            return redirect()->back()->with('success', 'Dados actualizado com sucesso');
+            $request->session()->flash('success', 'Dados actualizado com sucesso');
+
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
+
+            return redirect()->back();
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -833,7 +1204,12 @@ class PainelController extends Controller
     {
         try {
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             $function = new User();
             if ($function->isClient()) {
@@ -841,7 +1217,12 @@ class PainelController extends Controller
             }
 
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             $id = decrypt($id);
 
@@ -849,7 +1230,13 @@ class PainelController extends Controller
             $collaborator->active = 0;
             $collaborator->save();
 
-            return redirect()->route('painel.collaborators')->with('success', 'Dados removido com sucesso');
+            session()->flash('warning', 'Dados removido com sucesso');
+
+            if (session('warning')) {
+                Alert::toast(session('warning'), 'warning');
+            }
+
+            return redirect()->route('painel.collaborators');
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -861,7 +1248,12 @@ class PainelController extends Controller
     {
         try {
             if (Gate::denies('just-admin-and-manager')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             $function = new User();
             if ($function->isClient()) {
@@ -869,7 +1261,12 @@ class PainelController extends Controller
             }
 
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
 
             $users = \DB::table('role_users')
@@ -877,7 +1274,10 @@ class PainelController extends Controller
                     $join->on('users.id', '=', 'role_users.user_id')
                         ->where([['users.active', '=', 1]]);
                 })
-                ->join('roles', 'role_users.role_id', '=', 'roles.id')
+                ->join('roles', function ($join) {
+                    $join->on('roles.id', '=', 'role_users.role_id')
+                        ->where([['roles.type', '!=', 'client']]);
+                })
                 ->join('people', 'people.id', '=', 'users.people_id')
                 ->join('genders', 'genders.id', '=', 'people.gender_id')
                 ->select('people.id', 'people.photo', 'people.name', 'genders.type as gender', 'users.email', 'roles.type as role')
@@ -892,7 +1292,12 @@ class PainelController extends Controller
     public function userUpdate($id)
     {
         if (Gate::denies('only-admin')) {
-            return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+            session()->flash('error', 'Não tem permissão para acessar');
+
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
         $id = decrypt($id);
         $people = People::where('id', $id)->first();
@@ -903,7 +1308,12 @@ class PainelController extends Controller
     {
         try {
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             $function = new User();
             if ($function->isClient()) {
@@ -913,7 +1323,12 @@ class PainelController extends Controller
             $id = decrypt($id);
 
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
 
             $people = [
@@ -949,7 +1364,13 @@ class PainelController extends Controller
             $roleUser->role_id = $role_id;
             $roleUser->save();
 
-            return redirect()->route('painel.users')->with('success', 'Usuário actualizado com sucesso');
+            $request->session()->flash('success', 'Dados actualizado com sucesso');
+
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
+
+            return redirect()->route('painel.users');
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -959,7 +1380,12 @@ class PainelController extends Controller
     {
         try {
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             $function = new User();
             if ($function->isClient()) {
@@ -967,7 +1393,12 @@ class PainelController extends Controller
             }
 
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
 
             $id = decrypt($id);
@@ -980,7 +1411,13 @@ class PainelController extends Controller
             $people->active = 0;
             $people->save();
 
-            return redirect()->back()->with('success', 'Colaborador removido com sucesso');
+            session()->flash('warning', 'Dados removido com sucesso');
+
+            if (session('warning')) {
+                Alert::toast(session('warning'), 'warning');
+            }
+
+            return redirect()->back();
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -1028,7 +1465,12 @@ class PainelController extends Controller
     {
         try {
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             Session::forget('cart');
 
@@ -1038,7 +1480,12 @@ class PainelController extends Controller
             }
 
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             $id = decrypt($id);
 
@@ -1079,7 +1526,13 @@ class PainelController extends Controller
                 $stock->save();
             }
 
-            return redirect()->back()->with('success', 'Colaborador removido com sucesso');
+            $request->session()->flash('success', 'Dados actualizado com sucesso');
+
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
+
+            return redirect()->back();
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -1090,7 +1543,12 @@ class PainelController extends Controller
     {
         try {
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
             Session::forget('cart');
 
@@ -1100,7 +1558,12 @@ class PainelController extends Controller
             }
 
             if (Gate::denies('only-admin')) {
-                return redirect()->back()->with('warning', 'Não tem permissão para realizar esta acção');
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
             }
 
             $id = decrypt($id);
@@ -1117,7 +1580,13 @@ class PainelController extends Controller
             $client->active = 0;
             $client->save();
 
-            return redirect()->back()->with('success', 'Colaborador removido com sucesso');
+            session()->flash('warning', 'Dados removido com sucesso');
+
+            if (session('warning')) {
+                Alert::toast(session('warning'), 'warning');
+            }
+
+            return redirect()->back();
         } catch (\Exception $e) {
             return $e->getMessage();
         }
