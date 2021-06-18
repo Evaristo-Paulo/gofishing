@@ -52,100 +52,103 @@
                 <div class="col-12">
                     <div class="section-title">
                         <h2>Nossos Produtos</h2>
-                        <p>Uma imagem vale mais que mil palavras, e com a GoShopping, as tuas podem valer muito mais
+                        <p>Uma imagem vale mais que 1.000 palavras, e com a GoShopping, as tuas podem valer muito mais
                             ainda.</p>
                     </div>
                 </div>
             </div>
-
-            @if(count($products) < 3 )
-                <div class="shop-products" style="grid-template-columns: repeat(auto-fit, minmax(200px, 300px))">
-                    @foreach( $products as $product )
-                        <div class="single-product">
-                            <div class="product-image">
-                                <img src="{{ url("storage/products/". $photos->where('product_id', $product->id)->first()->photo. "") }}"
-                                    alt="#">
-                                @if( $product->sale_id == 1 && $product->descount > 0 )
-                                    <span class="new-tag">Promoção</span>
-                                @endif
-                                <div class="button">
-                                    <a href="{{ route('store.product.details', encrypt($product->id)) }}"
-                                        class="btn"><i class="lni lni-cart"></i>
-                                        Visualizar</a>
-                                </div>
-                            </div>
-                            <div class="product-info">
-                                <i class="lni lni-tag"></i>
-                                <span style="display: inline"
-                                    class="category">{{ $categories->where('id', $product->category_id)->first()->name }}</span>
-                                <h4 class="title">
-                                    <a
-                                        href="{{ route('store.product.details', encrypt($product->id)) }}">{{ $product->name }}</a>
-                                </h4>
-                                <div class="price">
-                                    @if($product->sale_id == 1 && $product->descount > 0 )
-                                        <span
-                                            class="old-price">{{ $product->price }}
-                                            kz</span>
-                                    <span>{{ $product->price -  (($product->price * $product->descount)/100) }} kz</span>
-                                    @else
-                                    <span>{{ $product->price }} kz</span>
+            @if (count($products) == 0)
+                <h5 style="margin: 20px; text-align: center">Nenhum produto disponível</h5>
+            @else                
+                @if(count($products) < 3 )
+                    <div class="shop-products" style="grid-template-columns: repeat(auto-fit, minmax(200px, 300px))">
+                        @foreach( $products as $product )
+                            <div class="single-product">
+                                <div class="product-image">
+                                    <img src="{{ url("storage/products/". $photos->where('product_id', $product->id)->first()->photo. "") }}"
+                                        alt="#">
+                                    @if( $product->sale_id == 1 && $product->descount > 0 )
+                                        <span class="new-tag">Promoção</span>
                                     @endif
+                                    <div class="button">
+                                        <a href="{{ route('store.product.details', encrypt($product->id)) }}"
+                                            class="btn"><i class="lni lni-cart"></i>
+                                            Visualizar</a>
+                                    </div>
                                 </div>
-                                <a href="{{ route('store.cart.add', encrypt($product->id)) }}"
-                                    class="btn add-cart-btn">
-                                    <i class="lni lni-cart"></i>
-                                    Adicionar
-                                </a>
-                            </div>
-                        </div>
-                        <!-- End Single Product -->
-                    @endforeach
-                </div>
-            @else
-                <div class="shop-products">
-                    @foreach( $products as $product )
-                        <div class="single-product">
-                            <div class="product-image">
-                                <img src="{{ url("storage/products/". $photos->where('product_id', $product->id)->first()->photo. "") }}"
-                                    alt="#">
-                                @if( $product->sale_id == 1 && $product->descount > 0 )
-                                    <span class="new-tag">Promoção</span>
-                                @endif
-                                <div class="button">
-                                    <a href="{{ route('store.product.details', encrypt($product->id)) }}"
-                                        class="btn"><i class="lni lni-cart"></i>
-                                        Visualizar</a>
+                                <div class="product-info">
+                                    <i class="lni lni-tag"></i>
+                                    <span style="display: inline"
+                                        class="category">{{ $categories->where('id', $product->category_id)->first()->name }}</span>
+                                    <h4 class="title">
+                                        <a
+                                            href="{{ route('store.product.details', encrypt($product->id)) }}">{{ $product->name }}</a>
+                                    </h4>
+                                    <div class="price">
+                                        @if($product->sale_id == 1 && $product->descount > 0 )
+                                            <span
+                                                class="old-price">{{  number_format($product->price, 0, ',', '.') }}
+                                                kz</span>
+                                        <span>{{ number_format($product->price -  (($product->price * $product->descount)/100), 0, ',', '.') }} kz</span>
+                                        @else
+                                        <span>{{ number_format($product->price, 0, ',', '.') }} kz</span>
+                                        @endif
+                                    </div>
+                                    <a href="{{ route('store.cart.add', encrypt($product->id)) }}"
+                                        class="btn add-cart-btn">
+                                        <i class="lni lni-cart"></i>
+                                        Adicionar
+                                    </a>
                                 </div>
                             </div>
-                            <div class="product-info">
-                                <i class="lni lni-tag"></i>
-                                <span style="display: inline"
-                                    class="category">{{ $categories->where('id', $product->category_id)->first()->name }}</span>
-                                <h4 class="title">
-                                    <a
-                                        href="{{ route('store.product.details', encrypt($product->id)) }}">{{ $product->name }}</a>
-                                </h4>
-                                <div class="price">
-                                    @if($product->sale_id == 1 && $product->descount > 0 )
-                                        <span
-                                            class="old-price">{{ $product->price }}
-                                            kz</span>
-                                    <span>{{ $product->price -  (($product->price * $product->descount)/100) }} kz</span>
-                                    @else
-                                    <span>{{ $product->price }} kz</span>
+                            <!-- End Single Product -->
+                        @endforeach
+                    </div>
+                @else
+                    <div class="shop-products">
+                        @foreach( $products as $product )
+                            <div class="single-product">
+                                <div class="product-image">
+                                    <img src="{{ url("storage/products/". $photos->where('product_id', $product->id)->first()->photo. "") }}"
+                                        alt="#">
+                                    @if( $product->sale_id == 1 && $product->descount > 0 )
+                                        <span class="new-tag">Promoção</span>
                                     @endif
+                                    <div class="button">
+                                        <a href="{{ route('store.product.details', encrypt($product->id)) }}"
+                                            class="btn"><i class="lni lni-cart"></i>
+                                            Visualizar</a>
+                                    </div>
                                 </div>
-                                <a href="{{ route('store.cart.add', encrypt($product->id)) }}"
-                                    class="btn add-cart-btn">
-                                    <i class="lni lni-cart"></i>
-                                    Adicionar
-                                </a>
+                                <div class="product-info">
+                                    <i class="lni lni-tag"></i>
+                                    <span style="display: inline"
+                                        class="category">{{ $categories->where('id', $product->category_id)->first()->name }}</span>
+                                    <h4 class="title">
+                                        <a
+                                            href="{{ route('store.product.details', encrypt($product->id)) }}">{{ $product->name }}</a>
+                                    </h4>
+                                    <div class="price">
+                                        @if($product->sale_id == 1 && $product->descount > 0 )
+                                            <span
+                                                class="old-price">{{ number_format($product->price, 0, ',', '.') }}
+                                                kz</span>
+                                        <span>{{ number_format($product->price  -  (($product->price * $product->descount)/100), 0, ',', '.') }} kz</span>
+                                        @else
+                                        <span>{{ number_format($product->price, 0, ',', '.') }} kz</span>
+                                        @endif
+                                    </div>
+                                    <a href="{{ route('store.cart.add', encrypt($product->id)) }}"
+                                        class="btn add-cart-btn">
+                                        <i class="lni lni-cart"></i>
+                                        Adicionar
+                                    </a>
+                                </div>
                             </div>
-                        </div>
-                        <!-- End Single Product -->
-                    @endforeach
-                </div>
+                            <!-- End Single Product -->
+                        @endforeach
+                    </div>
+                @endif
             @endif
             {{ $products->links() }}
         </div>

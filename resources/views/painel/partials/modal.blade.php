@@ -13,17 +13,32 @@
                     {{ csrf_field() }}
                     @method('PUT')
                     <div class="form-group">
-                        <label>Email</label>
-                        <input name="email" class="form-control" value="{{ Auth::user()->email }}" type="text"
+                        <label for="painel-worker-update-email">Email</label>
+                        <input id="painel-"  id="painel-worker-update-email" name="email" class="form-control" value="{{ Auth::user()->email }}" type="text"
                             readonly>
+                            @if($errors->has('email'))
+                                <span class="request-error-message">
+                                    {{ $errors->first('email') }}
+                                </span>
+                            @endif
                     </div>
                     <div class="form-group">
-                        <label>Nova Senha</label>
-                        <input name="newPassword" required class="form-control" required type="password">
+                        <label for="painel-worker-update-password">Nova Senha</label>
+                        <input id="painel-"  name="newPassword" id="painel-worker-update-password" required class="form-control" required type="password">
+                        @if($errors->has('newPassword'))
+                            <span class="request-error-message">
+                                {{ $errors->first('newPassword') }}
+                            </span>
+                        @endif
                     </div>
                     <div class="form-group">
-                        <label>Confirma Senha</label>
-                        <input name="confiPassword" required class="form-control" required type="password">
+                        <label for="painel-worker-update-confirm-password">Confirma Senha</label>
+                        <input id="painel-"  name="confiPassword" id="painel-worker-update-confirm-password" required class="form-control" required type="password">
+                        @if($errors->has('confiPassword'))
+                            <span class="request-error-message">
+                                {{ $errors->first('confiPassword') }}
+                            </span>
+                        @endif
                     </div>
                     <div class="group-btn d-flex my-2 justify-content-end">
                         <button type="submit" class="btn bg-primary-2">Alterar</button>
@@ -54,16 +69,16 @@
                     </div>
                     @include('painel.partials.alert')
                     <div class="form-group">
-                        <label>Nome</label>
-                        <input name="name" class="form-control" required type="text">
+                        <label for="painel-category-name">Nome</label>
+                        <input id="painel-category-name"  name="name" required class="form-control" required type="text">
                     </div>
                     <div class="form-group">
-                        <label>Descrição (Opcional). Máximo 250 caracteres</label>
-                        <textarea name="description" class="form-control" maxlength="250"></textarea>
+                        <label for="painel-category-description">Descrição (Opcional)</label>
+                        <textarea name="description" id="painel-category-description" class="form-control" maxlength="255"></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Capa (Opcional)</label>
-                        <input name="cover" type="file" class="form-control-file form-control height-auto">
+                        <label for="painel-category-cover">Capa (Opcional)</label>
+                        <input id="painel-category-cover"  name="cover" type="file" class="form-control-file form-control height-auto">
                     </div>
                     <div class="group-btn d-flex my-2 justify-content-end">
                         <button type="submit" class="btn bg-primary-2">Registar</button>
@@ -92,18 +107,18 @@
                         @method('PUT')
 
                         <div class="form-group">
-                            <label>Nome</label>
-                            <input name="name" value="{{ $category->name }}" class="form-control" required
+                            <label for="painel-category-update-name">Nome</label>
+                            <input id="painel-category-update-name"  name="name" required value="{{ $category->name }}" class="form-control" required
                                 type="text">
                         </div>
                         <div class="form-group">
-                            <label>Descrição (Opcional). Máximo 250 caracteres</label>
-                            <textarea name="description" class="form-control"
-                                maxlength="250">{{ $category->description }}</textarea>
+                            <label for="painel-category-description">Descrição (Opcional)</label>
+                            <textarea name="description" class="form-control" id="painel-category-description"
+                                maxlength="255">{{ $category->description }}</textarea>
                         </div>
                         <div class="form-group">
-                            <label>Capa </label>
-                            <input name="cover" type="file" value="{{ $category->photo }}"
+                            <label for="painel-category-update-cover">Capa (Opcional)</label>
+                            <input id="painel-category-update-cover"  name="cover" type="file" value="{{ $category->photo }}"
                                 class="form-control-file form-control height-auto">
                         </div>
                         <div class="group-btn d-flex my-2 justify-content-end">
@@ -135,12 +150,12 @@
 
                     @include('painel.partials.alert')
                     <div class="form-group">
-                        <label>Nome</label>
-                        <input name="name" class="form-control" required type="text">
+                        <label for="painel-collaborator-update-name">Nome</label>
+                        <input id="painel-collaborator-update-name"  name="name" required class="form-control" required type="text">
                     </div>
                     <div class="form-group">
-                        <label>Descrição (Opcional). Máximo 250 caracteres</label>
-                        <textarea name="description" class="form-control" maxlength="250"></textarea>
+                        <label for="painel-collaborator-update-description">Descrição (Opcional)</label>
+                        <textarea name="description" id="painel-collaborator-update-description" class="form-control" maxlength="255"></textarea>
                     </div>
                     <div class="group-btn d-flex my-2 justify-content-end">
                         <button type="submit" class="btn bg-primary-2">Registar</button>
@@ -169,14 +184,14 @@
                         @method('PUT')
 
                         <div class="form-group">
-                            <label>Nome</label>
-                            <input name="name" value="{{ $collaborator->name }}" class="form-control" required
+                            <label for="painel-collaborator-update-name">Nome</label>
+                            <input id="painel-collaborator-update-name"  name="name" required value="{{ $collaborator->name }}" class="form-control" required
                                 type="text">
                         </div>
                         <div class="form-group">
-                            <label>Descrição (Opcional). Máximo 250 caracteres</label>
-                            <textarea name="description" class="form-control"
-                                maxlength="250">{{ $collaborator->description }}</textarea>
+                            <label for="painel-collaborator-update-description">Descrição (Opcional)</label>
+                            <textarea name="description" id="painel-collaborator-update-description" class="form-control"
+                                maxlength="255">{{ $collaborator->description }}</textarea>
                         </div>
                         <div class="group-btn d-flex my-2 justify-content-end">
                             <button type="submit" class="btn bg-primary-2">Actualizar</button>
@@ -206,12 +221,12 @@
 
                     @include('painel.partials.alert')
                     <div class="form-group">
-                        <label>Nome</label>
-                        <input name="name" class="form-control" required type="text">
+                        <label for="painel-brand-name">Nome</label>
+                        <input id="painel-brand-name"  name="name" required class="form-control" required type="text">
                     </div>
                     <div class="form-group">
-                        <label>Descrição (Opcional). Máximo 250 caracteres</label>
-                        <textarea name="description" class="form-control" maxlength="250"></textarea>
+                        <label for="painel-brand-description">Descrição (Opcional)</label>
+                        <textarea name="description" id="painel-brand-description" class="form-control" maxlength="255"></textarea>
                     </div>
                     <div class="group-btn d-flex my-2 justify-content-end">
                         <button type="submit" class="btn bg-primary-2">Registar</button>
@@ -240,12 +255,12 @@
                         {{ csrf_field() }}
 
                         <div class="form-group">
-                            <label>Produto</label>
-                            <input value="{{ $stock->product }}" name="product" class="form-control" readonly required
+                            <label for="painel-stock-name">Produto</label>
+                            <input id="painel-stock-name"  value="{{ $stock->product }}" name="product" class="form-control" readonly required
                                 type="text">
                         </div>
                         <div class="form-group">
-                            <label>Fornecedor</label>
+                            <label for="">Fornecedor</label>
                             <select name="collaborator" class="custom-select form-control">
                                 @foreach( $collaborators as $collaborator )
                                     <option value="{{ $collaborator->id }}">{{ $collaborator->name }}
@@ -254,8 +269,8 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Qty. <span style="font-size: .7rem">(* quantidade a ser acrescentada)</span></label>
-                            <input class="form-control" name="stock" min="1" value="1" required type="number">
+                            <label for="painel-stock-qty">Qty. <span style="font-size: .7rem">(* quantidade a ser acrescentada)</span></label>
+                            <input id="painel-stock-qty"  required class="form-control" name="stock" min="1" value="1" required type="number">
                         </div>
 
                         <div class="group-btn d-flex my-2 justify-content-end">

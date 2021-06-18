@@ -24,13 +24,13 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Nome</label>
-                                    <input type="text" name="name" class="form-control">
+                                    <label for="painel-product-name" >Nome</label>
+                                    <input id="painel-product-name"  type="text" required name="name" class="form-control">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Categoria <span class="add-new text-primary-2" data-toggle="modal"
+                                    <label for="" >Categoria <span class="add-new text-primary-2" data-toggle="modal"
                                             data-target="#category-register"><i class="fa fa-plus"
                                                 aria-hidden="true"></i> Novo</span></label>
                                     <select name="category" class="custom-select form-control">
@@ -44,7 +44,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Marca <span class="add-new text-primary-2" data-toggle="modal"
+                                    <label for="painel-" >Marca <span class="add-new text-primary-2" data-toggle="modal"
                                             data-target="#brand-register"><i class="fa fa-plus" aria-hidden="true"></i>
                                             Novo</span></label>
                                     <select name="brade" class="custom-select form-control">
@@ -56,7 +56,7 @@
                             </div>
                             <div class="col-md-3 col-sm-12">
                                 <div class="form-group">
-                                    <label>Estilo</label>
+                                    <label for="painel-" >Estilo</label>
                                     <select name="style" class="custom-select form-control">
                                         @foreach( $styles as $style )
                                             <option value="{{ $style->id }}">{{ $style->type }}</option>
@@ -66,8 +66,8 @@
                             </div>
                             <div class="col-md-3 col-sm-12">
                                 <div class="form-group">
-                                    <label>Tamanho</label>
-                                    <input name="size" type="text" class="form-control">
+                                    <label for="painel-product-size" >Tamanho</label>
+                                    <input id="painel-product-size"  name="size" required type="text" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -79,7 +79,7 @@
                         <div class="row">
                             <div class="col-md-3 col-sm-12">
                                 <div class="form-group">
-                                    <label>Fornecedor <span class="add-new text-primary-2" data-toggle="modal"
+                                    <label for="painel-" >Fornecedor <span class="add-new text-primary-2" data-toggle="modal"
                                             data-target="#colaborator-register"><i class="fa fa-plus"
                                                 aria-hidden="true"></i> Novo</span></label>
                                     <select name="collaborator" class="custom-select form-control">
@@ -92,27 +92,27 @@
                             </div>
                             <div class="col-md-3 col-sm-12">
                                 <div class="form-group">
-                                    <label>Qty. Fornecida</label>
-                                    <input name="stock" type="number" class="form-control">
+                                    <label for="painel-product-qty" >Qty. Fornecida</label>
+                                    <input id="painel-product-qty"  required name="stock" type="number" class="form-control">
                                 </div>
                             </div>
                             <div class="col-md-3 col-sm-12">
                                 <div class="form-group">
-                                    <label>Preço Unitário</label>
-                                    <input name="price" type="number" class="form-control">
+                                    <label for="painel-product-price" >Preço Unitário</label>
+                                    <input id="painel-product-price"  required name="price" type="number" class="form-control">
                                 </div>
                             </div>
                             <div class="col-md-3 col-sm-12">
                                 <div class="form-group">
-                                    <label>Desconto (%)</label>
-                                    <input name="descount" min="0" type="number" class="form-control">
+                                    <label for="painel-product-descount" >Desconto (%)</label>
+                                    <input id="painel-product-descount"  name="descount" min="0" type="number" class="form-control">
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Promoção</label>
+                                    <label for="painel-" >Promoção</label>
                                     <select name="onsale" class="custom-select form-control">
                                         @foreach( $sales as $sale )
                                             @if ( $sale->id == 1 )
@@ -126,7 +126,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Condição</label>
+                                    <label for="painel-" >Condição</label>
                                     <select name="condition" class="custom-select form-control">
                                         @foreach( $conditions as $condition )
                                             <option value="{{ $condition->id }}">{{ $condition->type }}</option>
@@ -142,14 +142,14 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Introdução</label>
-                                    <textarea name="specification" class="form-control"></textarea>
+                                    <label for="painel-product-introduction" >Introdução</label>
+                                    <textarea id="painel-product-introduction"  required maxlength="255" name="specification" class="form-control"></textarea>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Descrição</label>
-                                    <textarea name="description" class="form-control"></textarea>
+                                    <label for="painel-product-description" >Descrição</label>
+                                    <textarea id="painel-product-description"  required maxlength="255" name="description" class="form-control"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -160,22 +160,22 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Fotografia 1</label>
-                                    <input name="photo[]" multiple type="file" class="form-control-file form-control height-auto">
+                                    <label for="painel-product-photo-1" >Fotografia 1 (<span class="text-danger">Obrigatório</span>)</label>
+                                    <input id="painel-product-photo-1"  name="photo[]" required multiple type="file" class="form-control-file form-control height-auto">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Fotografia 2</label>
-                                    <input name="photo[]" multiple type="file" class="form-control-file form-control height-auto">
+                                    <label for="painel-product-photo-2" >Fotografia 2 (Opcional)</label>
+                                    <input id="painel-product-photo-2"  name="photo[]" multiple type="file" class="form-control-file form-control height-auto">
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Fotografia 3</label>
-                                    <input name="photo[]" multiple type="file" class="form-control-file form-control height-auto">
+                                    <label for="painel-product-photo-3" >Fotografia 3 (Opcional)</label>
+                                    <input id="painel-product-photo-3"  name="photo[]" multiple type="file" class="form-control-file form-control height-auto">
                                 </div>
                             </div>
                         </div>

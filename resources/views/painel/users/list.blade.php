@@ -39,7 +39,11 @@
                                     <div class="table-actions">
                                         <a href="{{ route('painel.users.update', encrypt($user->id) ) }}"
                                             data-color="#265ed7"><i class="icon-copy dw dw-edit2"></i></a>
-                                        <a href="{{ route('painel.users.remove', encrypt($user->id) ) }}" data-color="#e95959"><i class="icon-copy dw dw-delete-3"></i></a>
+                                            @if (Auth::user()->people_id == $user->id)
+                                                <a href="javascript:void(0)" data-color="#e95959"><i class="icon-copy dw dw-delete-3"></i></a>
+                                            @else
+                                                <a href="{{ route('painel.users.remove', encrypt($user->id) ) }}" data-color="#e95959"><i class="icon-copy dw dw-delete-3"></i></a>
+                                            @endif
                                     </div>
                                 </td>
                             </tr>

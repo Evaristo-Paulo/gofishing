@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Facades\Validator;
 
 
 class StoreController extends Controller
@@ -30,39 +31,63 @@ class StoreController extends Controller
     {
         try {
 
-            $person = [
-                'name' => $request->input('name'),
-                'gender_id' => $request->input('gender'),
-                'ocupation_id' => Ocupation::where('type', 'Outros')->first()->id,
-            ];
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|min:3',
+                'gender' => 'required',
+                'email' => 'required|email',
+                'password' => 'required|min:6',
+            ], [
+                'name.required' => 'Preenche o campo nome completo',
+                'name.min' => 'Nome completo deve ter no mínimo 3 caracteres',
+                'password.min' => 'Senha deve ter no mínimo 6 caracteres',
+                'gender.required' => 'Preenche o campo gênero',
+                'email.required' => 'Preenche o campo email',
+                'email.email' => 'Informe um email válido',
+                'password.required' => 'Preenche o campo senha',
+            ]);
 
-            $aux_person = People::create($person);
+            if ($validator->fails()) {
+                session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back()->withErrors($validator->errors())->withInput($request->all());
+            } else {
 
-            $user = [
-                'email' => $request->input('email'),
-                'people_id' => $aux_person->id,
-                'password' => Hash::make($request->input('password')),
-            ];
+                $person = [
+                    'name' => $request->input('name'),
+                    'gender_id' => $request->input('gender'),
+                    'ocupation_id' => Ocupation::where('type', 'Outros')->first()->id,
+                ];
 
-            $aux_user = User::create($user);
+                $aux_person = People::create($person);
 
-            $client = new Client();
-            $client->user_id = $aux_user->id;
-            $client->save();
+                $user = [
+                    'email' => $request->input('email'),
+                    'people_id' => $aux_person->id,
+                    'password' => Hash::make($request->input('password')),
+                ];
 
-            $roleUser = new RoleUser();
-            $role_id = Role::where('type', 'client')->first()->id;
-            $roleUser->user_id = $aux_user->id;
-            $roleUser->role_id = $role_id;
-            $roleUser->save();
+                $aux_user = User::create($user);
 
-            $request->session()->flash('success', 'Cliente registado com sucesso');
+                $client = new Client();
+                $client->user_id = $aux_user->id;
+                $client->save();
 
-            if (session('success')) {
-                Alert::toast(session('success'), 'success');
+                $roleUser = new RoleUser();
+                $role_id = Role::where('type', 'client')->first()->id;
+                $roleUser->user_id = $aux_user->id;
+                $roleUser->role_id = $role_id;
+                $roleUser->save();
+
+                $request->session()->flash('success', 'Cliente registado com sucesso');
+
+                if (session('success')) {
+                    Alert::toast(session('success'), 'success');
+                }
+
+                return redirect()->back();
             }
-
-            return redirect()->back();
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -71,25 +96,50 @@ class StoreController extends Controller
     public function loginStore(Request $request)
     {
         try {
-            $function = new User();
-            $user = $function->user($request->input('email'));
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email',
+                'password' => 'required',
+            ], [
+                'email.required' => 'Preenche o campo email',
+                'email.email' => 'Informe um email válido',
+                'password.required' => 'Preenche o campo senha',
+            ]);
 
-            if (count($user)) {
-                $credentials = [
-                    'email' => $request->input('email'),
-                    'password' => $request->input('password')
-                ];
-
-                if (Auth::attempt($credentials)) {
-                    Auth::logoutOtherDevices($request->input('password'));
-                    /* Fez autenticação */
-                    $user = auth()->user();
-                    Auth::login($user);
-
-                    return redirect()->back();
+            if ($validator->fails()) {
+                session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
                 }
+                return redirect()->back()->withErrors($validator->errors())->withInput($request->all());
+            } else {
+                $function = new User();
+                $user = $function->user($request->input('email'));
+
+                if (count($user)) {
+                    $credentials = [
+                        'email' => $request->input('email'),
+                        'password' => $request->input('password')
+                    ];
+
+                    if (Auth::attempt($credentials)) {
+                        Auth::logoutOtherDevices($request->input('password'));
+                        /* Fez autenticação */
+                        $user = auth()->user();
+                        Auth::login($user);
+
+                        session()->flash('success', 'Login efectuado com sucesso');
+                        if (session('success')) {
+                            Alert::toast(session('success'), 'success');
+                        }
+                        return redirect()->back();
+                    }
+                }
+                session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back()->with('lerror', 'Email ou senha não encontrado')->withInput($request->all());
             }
-            return redirect()->back()->with('errorMessage', 'Email ou senha não encontrada')->withInput($request->all());
         } catch (\Exception $e) {
             return redirect()->back()->with('errorMessage', $e->getMessage());
         }
@@ -112,12 +162,21 @@ class StoreController extends Controller
             ->select('products.*')
             ->SimplePaginate(9);
 
-        if (!Session::has('cart')) {
+        if (Session::has('cart')) {
+            $oldCart = Session::get('cart');
+            $cart = new Cart($oldCart);
+            $hproducts = $cart->items;
+            $totalPrice = $cart->totalPrice;
+
+            foreach ($hproducts as $hproduct) {
+                if ($hproduct['item']['sale_id'] == 1 && $hproduct['item']['descount'] > 0) {
+                    $totalPrice -= ($hproduct['item']['price'] - (($hproduct['item']['price'] * $hproduct['item']['descount']) / 100));
+                }
+            }
+        } else {
+            $totalPrice = 0;
+            $hproducts = [];
         }
-        $oldCart = Session::get('cart');
-        $cart = new Cart($oldCart);
-        $hproducts = $cart->items;
-        $totalPrice = $cart->totalPrice;
 
         return view('store.products', compact('products', 'hproducts', 'totalPrice'));
     }
@@ -144,11 +203,15 @@ class StoreController extends Controller
                     $join->on('products.id', '=', 'stocks.product_id')
                         ->where([['products.active', '=', 1]]);
                 })
+                ->join('categories', function ($join) {
+                    $join->on('categories.id', '=', 'products.category_id')
+                        ->where([['categories.active', '=', 1]]);
+                })
                 ->join('collaborators', function ($join) {
                     $join->on('collaborators.id', '=', 'stocks.collaborator_id')
                         ->where([['collaborators.active', '=', 1]]);
                 })
-                ->select('stocks.*', 'products.name as product', 'products.id as product_id', 'collaborators.name as collaborator')
+                ->select('stocks.*', 'products.name as product','categories.name as category', 'products.id as product_id', 'collaborators.name as collaborator')
                 ->get();
 
             $function = new Stock();
@@ -179,13 +242,21 @@ class StoreController extends Controller
             $function = new Product();
             $youMayLike = $function->productsGroupByID($youMayLike);
 
-            if (!Session::has('cart')) {
-            }
+            if (Session::has('cart')) {
+                $oldCart = Session::get('cart');
+                $cart = new Cart($oldCart);
+                $hproducts = $cart->items;
+                $totalPrice = $cart->totalPrice;
 
-            $oldCart = Session::get('cart');
-            $cart = new Cart($oldCart);
-            $hproducts = $cart->items;
-            $totalPrice = $cart->totalPrice;
+                foreach ($hproducts as $hproduct) {
+                    if ($hproduct['item']['sale_id'] == 1 && $hproduct['item']['descount'] > 0) {
+                        $totalPrice -= ($hproduct['item']['price'] - (($hproduct['item']['price'] * $hproduct['item']['descount']) / 100));
+                    }
+                }
+            } else {
+                $totalPrice = 0;
+                $hproducts = [];
+            }
 
             return view('store.product-details', compact('product', 'youMayLike', 'qtd_stock', 'hproducts', 'totalPrice'));
         } catch (\Exception $e) {
@@ -203,6 +274,13 @@ class StoreController extends Controller
             $cart = new Cart($oldCart);
             $hproducts = $cart->items;
             $totalPrice = $cart->totalPrice;
+
+            foreach ($hproducts as $hproduct) {
+                if ($hproduct['item']['sale_id'] == 1 && $hproduct['item']['descount'] > 0) {
+                    $totalPrice -= ($hproduct['item']['price'] - (($hproduct['item']['price'] * $hproduct['item']['descount']) / 100));
+                }
+            }
+
             return view('store.cart', compact('hproducts', 'totalPrice'));
         } catch (\Exception $e) {
             return $e->getMessage();

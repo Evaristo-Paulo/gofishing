@@ -28,6 +28,7 @@ class Stock extends Model
                 'collaborator' => $dado->collaborator,
                 'product_id' => $dado->product_id,
                 'product' => $dado->product,
+                'category' => $dado->category,
                 'qty' => $qty,
                 'collaborators' => $aux, // Adicionar todas as fotos salvas 
             ];
@@ -56,5 +57,27 @@ class Stock extends Model
         } while (count($main) > 0);
 
         return $products;
+    }
+
+    public function stocks (){
+        $stockq = \DB::table('stocks')
+                ->join('products', function ($join) {
+                    $join->on('products.id', '=', 'stocks.product_id')
+                        ->where([['products.active', '=', 1]]);
+                })
+                ->join('categories', function ($join) {
+                    $join->on('categories.id', '=', 'products.category_id')
+                        ->where([['categories.active', '=', 1]]);
+                })
+                ->join('collaborators', function ($join) {
+                    $join->on('collaborators.id', '=', 'stocks.collaborator_id')
+                        ->where([['collaborators.active', '=', 1]]);
+                })
+                ->select('stocks.*', 'products.name as product', 'categories.name as category', 'products.id as product_id', 'collaborators.name as collaborator')
+                ->get();
+
+            $stocks = $this->stocksGroupByID($stockq);
+
+            return $stocks;
     }
 }

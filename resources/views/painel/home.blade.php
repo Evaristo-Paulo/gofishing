@@ -59,12 +59,14 @@
                     <div class="d-flex flex-wrap justify-content-between align-items-center pb-0 pb-md-3">
                         <div class="h5 mb-md-0">Actividades de vendas</div>
                         <div class="form-group mb-md-0">
-                            <select class="form-control form-control-sm selectpicker">
-                                <option value="">Last Week</option>
-                                <option value="">Last Month</option>
-                                <option value="">Last 6 Month</option>
-                                <option value="">Last 1 year</option>
+                            <select name="month" class="form-control form-control-sm selectpicker">
+                                @foreach ( $months as $month )
+                                <option value="{{ $month->id }}">{{ $month->name  }}</option>
+                                @endforeach
                             </select>
+                        </div>
+                        <div class="form-group mb-md-0">
+                            <input type="number" min="1990"  max="2021" name="year" value="2021" class="form-control form-control-sm" >
                         </div>
                     </div>
                     <div id="activities-chart"></div>
@@ -73,10 +75,11 @@
             <div class="col-lg-4 col-md-6 mb-20">
                 <div class="card-box height-100-p pd-20 min-height-200px">
                     <div class="d-flex justify-content-between pb-10">
-                        <div class="h5 mb-0">Top produtos mais vendidos</div>
+                        <div class="h5 mb-0">Produtos mais vendidos</div>
                     </div>
                     <div class="user-list">
                         <ul>
+                            @for($i = 0; $i < 5; $i++)
                             <li class="d-flex align-items-center justify-content-between">
                                 <div class="name-avatar d-flex align-items-center pr-2">
                                     <div class="avatar mr-2 flex-shrink-0">
@@ -85,66 +88,16 @@
                                     </div>
                                     <div class="txt">
                                         <span class="badge badge-pill badge-sm" data-bgcolor="#e7ebf5"
-                                            data-color="#265ed7">4.9</span>
-                                        <div class="font-14 weight-600">Dr. Neil Wagner</div>
-                                        <div class="font-12 weight-500" data-color="#b2b1b6">Pediatrician</div>
+                                            data-color="#265ed7">53</span>
+                                        <div class="font-14 weight-600">Converse All Star</div>
+                                        <div class="font-12 weight-500" data-color="#b2b1b6">Calçados</div>
                                     </div>
                                 </div>
                                 <div class="cta flex-shrink-0">
-                                    <a href="#" class="btn btn-sm btn-outline-primary">Ver Stock</a>
+                                    <a href="{{ route('painel.stock') }}" class="btn btn-sm btn-outline-primary">Ver stock</a>
                                 </div>
                             </li>
-                            <li class="d-flex align-items-center justify-content-between">
-                                <div class="name-avatar d-flex align-items-center pr-2">
-                                    <div class="avatar mr-2 flex-shrink-0">
-                                        <img src="vendors/images/photo2.jpg" class="border-radius-100 box-shadow"
-                                            width="50" height="50" alt="">
-                                    </div>
-                                    <div class="txt">
-                                        <span class="badge badge-pill badge-sm" data-bgcolor="#e7ebf5"
-                                            data-color="#265ed7">4.9</span>
-                                        <div class="font-14 weight-600">Dr. Ren Delan</div>
-                                        <div class="font-12 weight-500" data-color="#b2b1b6">Pediatrician</div>
-                                    </div>
-                                </div>
-                                <div class="cta flex-shrink-0">
-                                    <a href="#" class="btn btn-sm btn-outline-primary">Ver Stock</a>
-                                </div>
-                            </li>
-                            <li class="d-flex align-items-center justify-content-between">
-                                <div class="name-avatar d-flex align-items-center pr-2">
-                                    <div class="avatar mr-2 flex-shrink-0">
-                                        <img src="vendors/images/photo3.jpg" class="border-radius-100 box-shadow"
-                                            width="50" height="50" alt="">
-                                    </div>
-                                    <div class="txt">
-                                        <span class="badge badge-pill badge-sm" data-bgcolor="#e7ebf5"
-                                            data-color="#265ed7">4.9</span>
-                                        <div class="font-14 weight-600">Dr. Garrett Kincy</div>
-                                        <div class="font-12 weight-500" data-color="#b2b1b6">Pediatrician</div>
-                                    </div>
-                                </div>
-                                <div class="cta flex-shrink-0">
-                                    <a href="#" class="btn btn-sm btn-outline-primary">Ver Stock</a>
-                                </div>
-                            </li>
-                            <li class="d-flex align-items-center justify-content-between">
-                                <div class="name-avatar d-flex align-items-center pr-2">
-                                    <div class="avatar mr-2 flex-shrink-0">
-                                        <img src="vendors/images/photo4.jpg" class="border-radius-100 box-shadow"
-                                            width="50" height="50" alt="">
-                                    </div>
-                                    <div class="txt">
-                                        <span class="badge badge-pill badge-sm" data-bgcolor="#e7ebf5"
-                                            data-color="#265ed7">4.9</span>
-                                        <div class="font-14 weight-600">Dr. Callie Reed</div>
-                                        <div class="font-12 weight-500" data-color="#b2b1b6">Pediatrician</div>
-                                    </div>
-                                </div>
-                                <div class="cta flex-shrink-0">
-                                    <a href="#" class="btn btn-sm btn-outline-primary">Ver Stock</a>
-                                </div>
-                            </li>
+                            @endfor
                         </ul>
                     </div>
                 </div>
@@ -152,41 +105,45 @@
         </div>
 
         <div class="card-box pb-10">
-            <div class="h5 pd-20 mb-0">Produtos que precisam ser acrescidos (<span class="text-danger">stock negativo</span>)</div>
+            <div class="h5 pd-20 mb-0">Produtos em stock negativo</div>
             <table class="data-table table nowrap">
                 <thead>
                     <tr>
                         <th class="table-plus">Nome</th>
                         <th>Categoria</th>
-                        <th>Fornecedor</th>
+                        <th>Fornecedores</th>
                         <th>Stock</th>
-                        <th class="datatable-nosort">Actualização</th>
+                        <th class="datatable-nosort">Acrescentar</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @for($i = 0; $i < 6; $i++)
-                        <tr>
-                            <td class="table-plus">
-                                <div class="name-avatar d-flex align-items-center">
-                                    <div class="avatar mr-2 flex-shrink-0">
-                                        <img src="vendors/images/photo4.jpg" class="border-radius-100 shadow" width="40"
-                                            height="40" alt="">
-                                    </div>
-                                    <div class="txt">
-                                        <div class="weight-600">Nike Jordan</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>Calçado</td>
-                            <td>Nike</td>
-                            <td>7 unidade(s)</td>
-                            <td>
-                                <div class="table-actions">
-                                    <a href="#" data-color="#265ed7"><i class="icon-copy dw dw-edit2"></i></a>
-                                </div>
-                            </td>
-                        </tr>
-                    @endfor
+                    @foreach ( $stocks as $stock )
+                    @if ($stock['qty'] < 10)
+                    <tr>
+                        <td class="table-plus">
+                            <div class="name-avatar d-flex align-items-center">
+								<div class="avatar mr-2 flex-shrink-0">
+                                    <img src="{{ url("storage/products/". $photos->where('product_id', $stock['product_id'] )->first()->photo. "") }}"
+                                            class="border-radius-100 shadow" width="40" height="40" alt="">
+								</div>
+								<div class="txt">
+									<div class="weight-600">{{  $stock['product'] }}</div>
+								</div>
+							</div>
+                        </td>
+                        <td>{{  $stock['category'] }}</td>
+                        <td>{{  implode(', ', $stock['collaborators']) }}</td>
+                        <td>
+                            <span class="text-danger">{{  number_format($stock['qty'], 0, ',', '.') }}</span>
+                        </td>
+                        <td>
+                            <div class="table-actions">
+                                <a href="#" data-toggle="modal" data-target="#stock{{ $stock['id'] }}-update" data-color="#265ed7"><i class="icon-copy dw dw-edit2"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    @endif
+                    @endforeach
                 </tbody>
             </table>
         </div>

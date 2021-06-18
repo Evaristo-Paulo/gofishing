@@ -16,13 +16,13 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Nome</label>
-                            <input type="text" name="name"  value="{{ $people->name }}" class="form-control">
+                            <label for="painel-user-name" >Nome</label>
+                            <input id="painel-user-name" type="text" required name="name"  value="{{ $people->name }}" class="form-control">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Gênero</label>
+                            <label for="" >Gênero</label>
                             <select class="custom-select form-control" name='gender'>
                                 @foreach ( $genders as $gender )
                                     @if($gender->id == $people->gender_id)
@@ -38,13 +38,13 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" name="email" value="{{ $users->where('people_id', $people->id )->first()->email }}" class="form-control">
+                            <label for="painel-user-email" >Email</label>
+                            <input id="painel-user-email" type="email" required name="email" value="{{ $users->where('people_id', $people->id )->first()->email }}" class="form-control">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Role</label>
+                            <label for="" >Role</label>
                             <select class="custom-select form-control" name="role">
                                 @foreach ( $roles as $role )
                                     @if( $role->id == $roles_users->where('user_id', $users->where('people_id', $people->id )->first()->id)->first()->role_id)

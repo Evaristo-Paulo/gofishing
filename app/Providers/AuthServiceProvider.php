@@ -17,6 +17,7 @@ use App\Models\RoleUser;
 use App\Models\Condition;
 use App\Models\Ocupation;
 use App\Models\Collaborator;
+use App\Models\Month;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -79,7 +80,8 @@ class AuthServiceProvider extends ServiceProvider
             $styles = Style::all();
             $roles_users = RoleUser::all();
             $photos = Photo::all();
-            View::share(compact('genders','photos', 'stockq', 'sales', 'conditions', 'styles', 'brades', 'collaborators', 'categories', 'ocupations', 'roles', 'people', 'roles_users', 'users'));
+            $months = Month::all();
+            View::share(compact('genders','months','photos', 'stockq', 'sales', 'conditions', 'styles', 'brades', 'collaborators', 'categories', 'ocupations', 'roles', 'people', 'roles_users', 'users'));
         }
     }
 }

@@ -22,7 +22,7 @@
                             <th>Promoção</th>
                             <th>Condição</th>
                             <th>Introdução</th>
-                            <th>Detalhes</th>
+                            <th>Descrição</th>
                             <th>Acção</th>
                         </tr>
                     </thead>
@@ -49,7 +49,7 @@
                                 <td>{{ $product['size'] }}</td>
                                 <td>{{ implode(', ', $product['collaborators']) }}
                                 </td>
-                                <td>{{ $product['price'] }}</td>
+                                <td>{{ number_format($product['price'], 0, ',', '.') }}</td>
                                 <td>{{ $product['descount'] }}</td>
                                 <td>{{ $sales->where('id', $product['sale_id'])->first()->type }}
                                 </td>

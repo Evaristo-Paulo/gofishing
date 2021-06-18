@@ -6,7 +6,7 @@
                 <div class="row">
                     <div class="col-lg-3 col-md-4 col-12">
                         <div class="footer-logo">
-                            <a href="index.html">
+                            <a href="{{ route('store.home') }}">
                                 <img src="{{ asset('store/assets/images/logo/white-logo.svg') }}"
                                     alt="#">
                             </a>
@@ -16,13 +16,13 @@
                         <div class="footer-newsletter">
                             <h4 class="title">
                                 Subscrever na Newsletter
-                                <span>Seja o primeiro a saber sobre novos produtos e ofertas.</span>
+                                <span>Seja o primeiro a receber notificações sobre novos produtos e ofertas.</span>
                             </h4>
                             <div class="newsletter-form-head">
                                 <form action="#" method="get" target="_blank" class="newsletter-form">
                                     <input name="EMAIL" placeholder="Email" type="email">
                                     <div class="button">
-                                        <button class="btn">Subscrever<span class="dir-part"></span></button>
+                                        <button class="btn" type="button">Subscrever<span class="dir-part"></span></button>
                                     </div>
                                 </form>
                             </div>
@@ -98,7 +98,6 @@
                             <li><a href="javascript:void(0)"><i class="lni lni-facebook-filled"></i></a></li>
                             <li><a href="javascript:void(0)"><i class="lni lni-twitter-original"></i></a></li>
                             <li><a href="javascript:void(0)"><i class="lni lni-instagram"></i></a></li>
-                            <li><a href="javascript:void(0)"><i class="lni lni-google"></i></a></li>
                         </ul>
                     </div>
                 </div>

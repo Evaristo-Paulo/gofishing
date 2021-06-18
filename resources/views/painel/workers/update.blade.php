@@ -20,19 +20,19 @@
                 {{ csrf_field() }}
                 
                     <h5>Dados Pessoais</h5>
-                    <input type="hidden" name="id" value="{{ $person->id }}">
+                    <input id="painel-worker-" type="hidden" name="id" value="{{ $person->id }}">
 
                     <section>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Nome</label>
-                                    <input type="text" name="name" value="{{ $person->name }}" class="form-control">
+                                    <label for="painel-worker-name" >Nome</label>
+                                    <input id="painel-worker-name" required type="text" name="name" value="{{ $person->name }}" class="form-control">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Gênero</label>
+                                    <label for="" >Gênero</label>
                                     <select class="custom-select form-control" name="gender">
                                         @foreach ( $genders as $gender )
                                             @if($gender->id == $person->gender_id)
@@ -48,14 +48,14 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Data de Nascimento</label>
-                                    <input type="text" name="birthday" value="{{ $person->birthday }}" class="form-control date-picker">
+                                    <label for="painel-worker-birthday" >Data de Nascimento</label>
+                                    <input id="painel-worker-birthday" required type="text" name="birthday" value="{{ $person->birthday }}" class="form-control date-picker">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Bilhete de Identidade</label>
-                                    <input type="text" name="bi" value="{{ $person->bi }}" class="form-control">
+                                    <label for="painel-worker-bi" >Bilhete de Identidade</label>
+                                    <input id="painel-worker-bi" required type="text" name="bi" value="{{ $person->bi }}" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -66,27 +66,27 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Telefone</label>
-                                    <input type="tel" name="phone" value="{{ $person->phone }}" class="form-control">
+                                    <label for="painel-worker-phone" >Telefone</label>
+                                    <input id="painel-worker-phone" required type="tel" name="phone" value="{{ $person->phone }}" class="form-control">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Email</label>
-                                    <input type="email" name="email" value="{{ $users->where('people_id', $person->id )->first()->email }}" class="form-control">
+                                    <label for="painel-worker-email" >Email</label>
+                                    <input id="painel-worker-email" required type="email" name="email" value="{{ $users->where('people_id', $person->id )->first()->email }}" class="form-control">
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Endereço</label>
-                                    <input type="text" name="adress" value="{{ $person->adress }}" class="form-control">
+                                    <label for="painel-worker-adress" >Endereço</label>
+                                    <input id="painel-worker-adress" required type="text" name="adress" value="{{ $person->adress }}" class="form-control">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Área Funcional</label>
+                                    <label for="" >Área Funcional</label>
                                     <select class="custom-select form-control" name="ocupation">
                                         @foreach ( $ocupations as $ocupation )
                                             @if($ocupation->id == $person->ocupation_id)

@@ -32,14 +32,29 @@
                                         {{ $product['item']['name'] }}
                                     </span>
                                 </td>
-                                <td>{{ $product['item']['price'] }} kz
+                                <td>
+                                    @if ($product['item']['sale_id'] == 1 && $product['item']['descount'] > 0)
+                                        {{ $product['item']['price'] - (($product['item']['price'] * $product['item']['descount'])/100) }} kz
+                                    @else
+                                    {{ $product['item']['price'] }} kz
+                                    @endif
                                 </td>
                                 <td>
-                                    <span class="totalItem"><span
-                                            class="dtItem">{{ $product['item']['price'] }}</span>
+                                    <span class="totalItem">
+                                        @if ($product['item']['sale_id'] == 1 && $product['item']['descount'] > 0)
+                                        <span
+                                        class="dtItem">{{ $product['item']['price'] - (($product['item']['price'] * $product['item']['descount'])/100) }}</span>
+                                        @else
+                                        <span
+                                        class="dtItem">{{ $product['item']['price'] }}</span>
+                                        @endif
                                         kz</span>
                                     <input type="number" class="qtdItem form-control"
-                                        data-value="{{ $product['item']['price'] }}"
+                                        @if ($product['item']['sale_id'] == 1 && $product['item']['descount'] > 0)
+                                            data-value="{{ $product['item']['price'] - (($product['item']['price'] * $product['item']['descount'])/100) }}"
+                                        @else
+                                            data-value="{{ $product['item']['price'] }}"
+                                        @endif
                                         value="{{ $product['qty'] }}" name="" min="1" id="">
 
                                 </td>
@@ -77,14 +92,30 @@
                                 {{ $product['item']['name'] }}
                                 </span>
                             </td>
-                            <td>{{ $product['item']['price'] }} kz</td>
                             <td>
-                                <input type="number" class="qtdItemMobile form-control"
-                                    data-value="{{ $product['item']['price'] * $product['qty'] }}"
+                                @if ($product['item']['sale_id'] == 1 && $product['item']['descount'] > 0)
+                                    {{ $product['item']['price'] - (($product['item']['price'] * $product['item']['descount'])/100) }} kz
+                                @else
+                                    {{ $product['item']['price'] }} kz
+                                @endif                            
+                            </td>
+                            <td>
+                                <input type="number" class="qtdItemMobile form-control" 
+                                @if ($product['item']['sale_id'] == 1 && $product['item']['descount'] > 0)
+                                data-value="{{ ($product['item']['price'] - (($product['item']['price'] * $product['item']['descount'])/100))}}"
+                                @else
+                                data-value="{{ $product['item']['price']}}"
+                                @endif
                                     value="{{ $product['qty'] }}" name="" min="1" id="">
                             </td>
                             <td class="totalItemMobile"><span
-                                    class="dtItemMobile">{{ $product['item']['price'] * $product['qty'] }}</span>
+                                    class="dtItemMobile">
+                                    @if ($product['item']['sale_id'] == 1 && $product['item']['descount'] > 0)
+                                    {{ ($product['item']['price'] - (($product['item']['price'] * $product['item']['descount'])/100)) * $product['qty'] }}
+                                    @else
+                                    {{ $product['item']['price'] * $product['qty'] }}
+                                    @endif
+                                </span>
                                 kz</td>
                             <td>
                                 <a href="{{ route('store.cart.remove.item', encrypt($product['item']['id']) ) }}"

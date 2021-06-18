@@ -19,19 +19,19 @@
                 {{ csrf_field() }}
                     
                     <h5>Dados do Produto</h5>
-                    <input type="hidden" name="id" value="{{ $product->id }}">
+                    <input id="painel-" type="hidden" name="id" value="{{ $product->id }}">
                     
                     <section>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Nome</label>
-                                    <input type="text" name="name" value="{{ $product->name }}" class="form-control">
+                                    <label for="painel-product-update-name" >Nome</label>
+                                    <input id="painel-product-update-name" required type="text" name="name" value="{{ $product->name }}" class="form-control">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Categoria <span class="add-new text-primary-2" data-toggle="modal"
+                                    <label for="" >Categoria <span class="add-new text-primary-2" data-toggle="modal"
                                             data-target="#category-register"><i class="fa fa-plus"
                                                 aria-hidden="true"></i> Novo</span></label>
                                     <select name="category" class="custom-select form-control">
@@ -49,7 +49,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Marca <span class="add-new text-primary-2" data-toggle="modal"
+                                    <label for="" >Marca <span class="add-new text-primary-2" data-toggle="modal"
                                             data-target="#brand-register"><i class="fa fa-plus" aria-hidden="true"></i>
                                             Novo</span></label>
                                     <select name="brade" class="custom-select form-control">
@@ -65,7 +65,7 @@
                             </div>
                             <div class="col-md-3 col-sm-12">
                                 <div class="form-group">
-                                    <label>Estilo</label>
+                                    <label for="" >Estilo</label>
                                     <select name="style" class="custom-select form-control">
                                         @foreach ( $styles as $style )
                                             @if($style->id == $product->style_id)
@@ -79,8 +79,8 @@
                             </div>
                             <div class="col-md-3 col-sm-12">
                                 <div class="form-group">
-                                    <label>Tamanho</label>
-                                    <input type="text" name="size" value="{{ $product->size }}" class="form-control">
+                                    <label for="painel-product-update-size" >Tamanho</label>
+                                    <input id="painel-product-update-size" required type="text" name="size" value="{{ $product->size }}" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -92,21 +92,21 @@
                         <div class="row">
                             <div class="col-md-6 col-sm-12">
                                 <div class="form-group">
-                                    <label>Preço Unitário</label>
-                                    <input name="price" type="number" name="price"  value="{{ $product->price }}" class="form-control">
+                                    <label for="painel-product-update-price" >Preço Unitário</label>
+                                    <input id="painel-product-update-price" required name="price" type="number" name="price"  value="{{ $product->price }}" class="form-control">
                                 </div>
                             </div>
                             <div class="col-md-6 col-sm-12">
                                 <div class="form-group">
-                                    <label>Desconto (%)</label>
-                                    <input name="descount" min="0" value="{{ $product->descount }}" type="number" class="form-control">
+                                    <label for="painel-product-update-descount" >Desconto (%)</label>
+                                    <input id="painel-product-update-descount" name="descount" min="0" value="{{ $product->descount }}" type="number" class="form-control">
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Promoção</label>
+                                    <label for="" >Promoção</label>
                                     <select name="onsale" class="custom-select form-control">
                                         @foreach ( $sales as $sale )
                                             @if($sale->id == $product->sale_id)
@@ -120,7 +120,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Condição</label>
+                                    <label for="" >Condição</label>
                                     <select name="condition" class="custom-select form-control">
                                         @foreach ( $conditions as $condition )
                                             @if($condition->id == $product->condition_id)
@@ -141,14 +141,14 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Introdução</label>
-                                    <textarea name="specification" class="form-control">{{ $product->specification }}</textarea>
+                                    <label for="painel-product-update-introduction" >Introdução</label>
+                                    <textarea id="painel-product-update-introduction" required name="specification" maxlength="255" class="form-control">{{ $product->specification }}</textarea>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Descrição</label>
-                                    <textarea name="description" class="form-control">{{ $product->description }}</textarea>
+                                    <label for="painel-product-update-description" >Descrição</label>
+                                    <textarea id="painel-product-update-description" required name="description" maxlength="255" class="form-control">{{ $product->description }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -159,22 +159,22 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Fotografia 1</label>
-                                    <input name="photo[]" multiple type="file" class="form-control-file form-control height-auto">
+                                    <label for="painel-product-photo-1" >Fotografia 1 (Opcional)</label>
+                                    <input id="painel-product-photo-1" name="photo[]" multiple type="file" class="form-control-file form-control height-auto">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Fotografia 2</label>
-                                    <input name="photo[]" multiple type="file" class="form-control-file form-control height-auto">
+                                    <label for="painel-product-photo-2" >Fotografia 2 (Opcional)</label>
+                                    <input id="painel-product-photo-2" name="photo[]" multiple type="file" class="form-control-file form-control height-auto">
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Fotografia 3</label>
-                                    <input name="photo[]" multiple type="file" class="form-control-file form-control height-auto">
+                                    <label for="painel-product-photo-3" >Fotografia 3 (Opcional)</label>
+                                    <input id="painel-product-photo-3" name="photo[]" multiple type="file" class="form-control-file form-control height-auto">
                                 </div>
                             </div>
                         </div>

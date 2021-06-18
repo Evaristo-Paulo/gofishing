@@ -13,12 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 // E-COMMERCE
-Route::get('/', 'StoreController@home')->name('store.home');
+Route::get('/loja/home', 'StoreController@products')->name('store.home');
 Route::prefix('/loja/produtos')->name('store.')->group(function(){
     Route::get('/logout', 'StoreController@logout')->name('logout');
     Route::post('/login', 'StoreController@loginStore')->name('login.store');
@@ -32,12 +28,10 @@ Route::prefix('/loja/produtos')->name('store.')->group(function(){
 
 // PAINEL
 Route::get('/login', 'PainelController@login')->name('login');
-
 Route::prefix('/painel')->name('painel.')->group(function(){
     Route::get('/home', 'PainelController@home')->name('home')->middleware('auth');
     Route::get('/logout', 'PainelController@logout')->name('logout')->middleware('auth');
     Route::post('/login', 'PainelController@loginStore')->name('login.store');
-
     Route::get('/produtos/registo', 'PainelController@productRegister')->name('products.register')->middleware('auth');
     Route::post('/produtos/registo', 'PainelController@productRegisterStore')->name('products.register.store')->middleware('auth');
     Route::get('/produtos/{id}/actualizacao', 'PainelController@productUpdate')->name('products.update')->middleware('auth');

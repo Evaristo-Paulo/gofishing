@@ -30,7 +30,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td>{{  $collaborator['qty'] }}</td>
+                                <td>{{  number_format($collaborator['qty'], 0, ',', '.') }}</td>
                                 <td>{{  $collaborator['description'] }}</td>
                                 <td>
                                     <div class="table-actions">

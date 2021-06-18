@@ -8,20 +8,20 @@
             </div>
             <form class="modal-body">
                 <div class="form-group">
-                    <label for="name">Nome</label>
-                    <input type="text" id="name" class="form-control" name="name">
+                    <label for="getting-touch-name">Nome</label>
+                    <input type="text" id="getting-touch-name" class="form-control" name="name">
                 </div>
                 <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" class="form-control" name="email">
+                    <label for="getting-touch-email">Email</label>
+                    <input type="email" id="getting-touch-email" class="form-control" name="email">
                 </div>
                 <div class="form-group">
-                    <label for="subject">Assunto</label>
-                    <input type="text" id="subject" class="form-control" name="subject">
+                    <label for="getting-touch-subject">Assunto</label>
+                    <input type="text" id="getting-touch-subject" class="form-control" name="subject">
                 </div>
                 <div class="form-group">
-                    <label for="message">Mensagem</label>
-                    <textarea name="message" class="form-control" id="message" rows="3"></textarea>
+                    <label for="getting-touch-message">Mensagem</label>
+                    <textarea name="message" class="form-control" id="getting-touch-message" rows="3"></textarea>
                 </div>
                 <div class="modal-footer-custom">
                     <button type="button" class="btn btn-success">Enviar</button>
@@ -43,13 +43,27 @@
             <form class="modal-body" action="{{ route('store.login.store') }}" method="POST">
                 {{ csrf_field() }}
 
+                @if (session('lerror'))
+                    <p class="request-error-message text-center">{{ session('lerror') }}</p>
+                @endif
+
                 <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" class="form-control" name="email">
+                    <label for="store-login-email">Email</label>
+                    <input  required type="email" id="store-login-email" class="form-control" value="{{ old('email') }}" name="email">
+                    @if($errors->has('email'))
+                        <span class="request-error-message">
+                            {{ $errors->first('email') }}
+                        </span>
+                    @endif
                 </div>
                 <div class="form-group">
-                    <label for="password">Senha</label>
-                    <input type="password" id="password" class="form-control" name="password">
+                    <label for="store-login-password">Senha</label>
+                    <input required type="password" id="store-login-password"  class="form-control" name="password">
+                    @if($errors->has('password'))
+                        <span class="request-error-message">
+                            {{ $errors->first('password') }}
+                        </span>
+                    @endif
                 </div>
                 <div class="modal-footer-custom">
                     <button type="submit" class="btn btn-success">Entrar</button>
@@ -93,12 +107,21 @@
                 <h5 class="modal-title">Formulário de registo</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
+            @if (session('rerror'))
+                <p class="request-error-message text-center">{{ session('rerror') }}</p>
+             @endif
             <form class="modal-body" action="{{ route('store.register.store.save') }}" method="POST">
                 {{ csrf_field() }}
 
                 <div class="form-group">
-                    <label for="name">Nome Completo</label>
-                    <input type="text" id="name" class="form-control" name="name">
+                    <label for="store-register-full-name">Nome Completo</label>
+                    <input required type="text" id="store-register-full-name" value="{{ old('name') }}" class="form-control" name="name">
+                    @if($errors->has('name'))
+                        <span class="request-error-message">
+                            {{ $errors->first('name') }}
+                        </span>
+                    @endif
                 </div>
                 <div class="form-group">
                     <label>Gênero</label>
@@ -109,12 +132,22 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" class="form-control" name="email">
+                    <label for="store-register-email">Email</label>
+                    <input required type="email" id="store-register-email" value="{{ old('email') }}" class="form-control" name="email">
+                    @if($errors->has('email'))
+                        <span class="request-error-message">
+                            {{ $errors->first('email') }}
+                        </span>
+                    @endif
                 </div>
                 <div class="form-group">
-                    <label for="password">Senha</label>
-                    <input type="password" id="password" class="form-control" name="password">
+                    <label for="store-register-password">Senha</label>
+                    <input required type="password" id="store-register-password" value="{{ old('password') }}" class="form-control" name="password">
+                    @if($errors->has('password'))
+                        <span class="request-error-message">
+                            {{ $errors->first('password') }}
+                        </span>
+                    @endif
                 </div>
                 <div class="modal-footer-custom">
                     <button type="type" class="btn btn-success">Registar</button>

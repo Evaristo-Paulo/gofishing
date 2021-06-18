@@ -104,9 +104,16 @@
                                                             {{ $product['item']['name'] }}</a>
                                                     </h4>
                                                     <p class="quantity">{{ $product['qty'] }}x -
+                                                        @if ($product['item']['sale_id'] ==1 && $product['item']['descount'] > 0)
                                                         <span
-                                                            class="amount">{{ $product['item']['price'] }}
-                                                            kz</span></p>
+                                                        class="amount">{{ number_format($product['item']['price'] - (($product['item']['price'] * $product['item']['descount'])/100), 0, ',', '.') }}
+                                                        kz</span></p> 
+                                                        @else
+                                                        <span
+                                                        class="amount">{{ number_format($product['item']['price'], 0, ',', '.') }}
+                                                        kz</span></p>
+                                                        @endif
+                                                        
                                                 </div>
                                             </li>
                                             @endforeach
@@ -114,7 +121,7 @@
                                         <div class="bottom">
                                             <div class="total">
                                                 <span>Total Pedido</span>
-                                                <span class="total-amount">{{ $totalPrice }} kz</span>
+                                                <span class="total-amount">{{ number_format($totalPrice, 0, ',', '.') }} kz</span>
                                             </div>
                                             <div class="button">
                                                 <a href="{{ route('store.cart') }}"
@@ -217,7 +224,7 @@
                         <li><a
                                 href="#">{{ $people->where('id', Auth::user()->people_id)->first()->name }}</a>
                         </li>
-                        <li><a href="#">Sair</a></li>
+                        <li><a href="{{ route('store.logout') }}">Sair</a></li>
                     @else
                         <li><a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
                         <li><a href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Registar</a></li>

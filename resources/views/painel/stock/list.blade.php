@@ -5,15 +5,16 @@
     <div class="xs-pd-20-10 pd-ltr-20">
         <div class="card-box mb-30">
             <div class="pd-20">
-                <h4 class="text-blue h4">Listagem de Produtos (Stock)</h4>
+                <h4 class="text-blue h4">Listagem de produtos em stock</h4>
             </div>
             <div class="pb-20">
                 <table class="data-table table hover multiple-select-row nowrap">
                     <thead>
                         <tr>
                             <th class="table-plus datatable-nosort">Produto</th>
+                            <th>Categoria</th>
                             <th>Fornecedores</th>
-                            <th>Qtd.</th>
+                            <th>Stock</th>
                             <th>Variação</th>
                             <th>Acção</th>
                         </tr>
@@ -32,8 +33,9 @@
 									</div>
 								</div>
                             </td>
+                            <td>{{  $stock['category'] }}</td>
                             <td>{{  implode(', ', $stock['collaborators']) }}</td>
-                            <td>{{  $stock['qty'] }}</td>
+                            <td>{{  number_format($stock['qty'], 0, ',', '.') }}</td>
                             <td>
                                 @if ( $stock['qty'] < 10 )
                                     <span class="text-danger">Negativa</span>

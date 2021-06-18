@@ -45,8 +45,11 @@
                         </a>
                     </li>
                     <ul>
-                        <li><a href="{{ route('painel.home') }}">Entrar</a></li>
-                        <li><a href="">Sair</a></li>
+                        @auth()
+                            <li><a href="{{ route('painel.logout') }}">Sair</a></li>
+                        @else
+                            <li><a href="{{ route('painel.home') }}">Entrar</a></li>
+                        @endauth
                     </ul>
                 </ul>
             </nav>

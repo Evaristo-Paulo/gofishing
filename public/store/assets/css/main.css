@@ -5219,3 +5219,9 @@ form .form-group input{
         display: block !important;
     }
 }
+
+.request-error-message {
+    font-weight: bold;
+    color: #dc3545;
+    font-size: .9rem
+}

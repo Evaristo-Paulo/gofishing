@@ -31,7 +31,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td>{{ $category['qty'] }}</td>
+                                <td>{{ number_format($category['qty'], 0, ',', '.') }}</td>
                                 <td>{{ $category['description'] }}</td>
                                 <td>
                                     <div class="table-actions">

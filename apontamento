@@ -1,13 +1,9 @@
-- Validação
 - Relatório/Estatística
-- Aplicar lógica de desconto no carrinho
 - Filtragem (Site)
-- ID dos formulários
-- dividir casas de milhares
+- dividir casas de milhares (Carrinho) js
+- Organizar a home do painel
 - Tirar info da tabela no carrinho quando estamos no fone
-- mensagem ao actualizar produtp
 - fazer a home do site
-- analisar validação da foto de produto
 - Como desativar mensagem de erros em produção no laravel
-- quando apaga-se o fornecedor, influenciar em algumas coisas, menos no produto que ele forneceu
-- ao enviar o formulario com ajax, quando ha erro, enviar para route back (investigar com retornar a rota anterior em JS)
+- quando apaga-se o fornecedor, influenciar na estatística apresentada
+- icon view no visualizar produto loja e icon stock (car ou truck)

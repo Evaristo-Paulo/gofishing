@@ -42,9 +42,11 @@
                         @endif
                         <h3 class="price">
                             @if ($product[0]->sale_id == 1 && $product[0]->descount > 0)
-                                <span class="old-price">{{ $product[0]->price }}kz</span>
+                                <span class="old-price">{{ number_format($product[0]->price, 0, ',', '.') }}kz</span>
+                                {{ number_format($product[0]->price - (($product[0]->price * $product[0]->descount )/100), 0, ',', '.')}} kz
+                            @else
+                            {{ number_format($product[0]->price, 0, ',', '.')}} kz
                             @endif
-                            {{ $product[0]->price - (($product[0]->price * $product[0]->descount )/100)}} kz
                         </h3>
                         <p>Stock: {{ $qtd_stock }} unidade(s)</p>
                         <div class="button-group">
@@ -159,10 +161,10 @@
                                 <div class="price">
                                     @if ($product['sale_id'] == 1 && $product['descount'] > 0)
                                     <span
-                                    class="old-price">{{ $product['price'] }} kz</span>
-                                    <span>{{ $product['price'] - (($product['price'] * $product['descount'])/100) }} kz</span>
+                                    class="old-price">{{ number_format($product['price'], 0, ',', '.') }} kz</span>
+                                    <span>{{ number_format($product['price'] - (($product['price'] * $product['descount'])/100), 0, ',', '.') }} kz</span>
                                     @else
-                                    <span>{{ $product['price'] }} kz</span>
+                                    <span>{{ number_format($product['price'], 0, ',','.') }} kz</span>
                                     @endif
                                 </div>
                                 <a href="{{ route('store.cart.add', encrypt($product['id'])) }}"
@@ -174,7 +176,7 @@
                         </div>
                     @empty
                         <div class="youMayLike">
-                            <h5>Nenhum produto relacionado</h5>
+                            <h5>Nenhum produto relacionado disponível</h5>
                         </div>
                     @endforelse
                 </div>
@@ -204,9 +206,9 @@
                                 </h4>
                                 <div class="price">
                                     <span
-                                        class="old-price">{{ $product['price'] + (($product['price'] * 25)/100) }}
+                                        class="old-price">{{ number_format($product['price'] - (($product['price'] * $product['descount'])/100), 0, ',','.') }}
                                         kz</span>
-                                    <span>{{ $product['price'] }} kz</span>
+                                    <span>{{ number_format($product['price'], 0, ',','.') }} kz</span>
                                 </div>
                                 <a href="{{ route('store.cart.add', encrypt($product['id'])) }}"
                                     class="btn add-cart-btn">

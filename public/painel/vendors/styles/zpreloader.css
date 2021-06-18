@@ -120,4 +120,5 @@ textarea {
 .request-error-message {
     font-weight: 500;
     color: #dc3545;
+    font-size: .9rem
 }

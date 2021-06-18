@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Cart;
 use App\User;
 use App\Models\Role;
 use App\Models\Brade;
@@ -56,7 +57,12 @@ class PainelController extends Controller
             ->select('people.id as people_id', 'people.name', 'users.email', 'genders.type as gender')
             ->get()->count();
 
-        return view('painel.home', compact('qtd_products', 'qtd_clients', 'qtd_collabs'));
+        $photos = Photo::all();
+        $function = new Stock();
+
+        $stocks = $function->stocks();
+
+        return view('painel.home', compact('qtd_products', 'qtd_clients', 'qtd_collabs', 'stocks', 'photos'));
     }
 
     public function login()
@@ -220,27 +226,50 @@ class PainelController extends Controller
 
             $id = decrypt($id);
 
-            if ($request->input('newPassword') != $request->input('confiPassword')) {
-                return redirect()->back()->with('warning', 'Senhas não coencidem');
+            $validator = Validator::make($request->all(), [
+                'newPassword' => 'required|min:6',
+                'confiPassword' => 'required|min:6|same:newPassword',
+                'email' => 'required|email',
+            ], [
+                'newPassword.required' => 'Preenche o campo nova senha',
+                'newPassword.min' => 'Nova senha deve ter no mínimo 6 caracteres',
+                'confiPassword.min' => 'Confirma senha deve ter no mínimo 6 caracteres',
+                'confiPassword.same' => 'Confirma senha deve ser igual a senha',
+                'confiPassword.required' => 'Preenche o campo confirma senha',
+                'email.required' => 'Preenche o campo email',
+                'email.email' => 'Informe um email valido',
+            ]);
+
+            if ($validator->fails()) {
+                session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back()->withErrors($validator->errors())->withInput();
+            } else {
+
+                if ($request->input('newPassword') != $request->input('confiPassword')) {
+                    return redirect()->back()->with('warning', 'Senhas não coencidem');
+                }
+
+                $user = [
+                    'password' => Hash::make($request->input('newPassword')),
+                ];
+
+                $aux_user = User::where('people_id', $id)->first();
+
+                \DB::table('users')
+                    ->where('id', $aux_user->id)
+                    ->update($user);
+
+                $request->session()->flash('success', 'Senha actualizada com sucesso');
+
+                if (session('success')) {
+                    Alert::toast(session('success'), 'success');
+                }
+
+                return redirect()->back();
             }
-
-            $user = [
-                'password' => Hash::make($request->input('newPassword')),
-            ];
-
-            $aux_user = User::where('people_id', $id)->first();
-
-            \DB::table('users')
-                ->where('id', $aux_user->id)
-                ->update($user);
-
-            $request->session()->flash('success', 'Senha actualizada com sucesso');
-
-            if (session('success')) {
-                Alert::toast(session('success'), 'success');
-            }
-
-            return redirect()->back();
         } catch (\Exception $e) {
 
             dd('Estoou aqui');
@@ -320,7 +349,7 @@ class PainelController extends Controller
                 $aux_person = People::create($person);
                 $user = [
                     'email' => $request->input('email'),
-                    'password' => Hash::make('goshoping'),
+                    'password' => Hash::make('goshopping'),
                     'people_id' => $aux_person->id,
                 ];
                 $aux_user = User::create($user);
@@ -414,7 +443,7 @@ class PainelController extends Controller
                 'size' => 'required',
                 'specification' => 'required|min:15|max:255',
                 'description' => 'required|min:15|max:255',
-                'photos[]' => 'mimes:jpeg,png,jpg',
+                'photo[]' => 'mimes:jpeg,png,jpg',
                 'onsale' => 'required',
                 'condition' => 'required',
                 'stock' => 'required|numeric',
@@ -434,7 +463,7 @@ class PainelController extends Controller
                 'description.min' => 'Descrição deve ter no mínimo 15 caracteres',
                 'description.max' => 'Descrição deve ter no máximo 255 caracteres',
                 'description.required' => 'Preenche o campo descrição',
-                'photos[].mimes' => 'Informe um fotografias válidas (.jpeg, .jpg, .png)',
+                'photo[].mimes' => 'Informe um fotografias válidas (.jpeg, .jpg, .png)',
                 'onsale.required' => 'Preenche o campo promoção',
                 'condition.required' => 'Preenche o campo condição',
                 'stock.required' => 'Preenche o campo qty. fornecida',
@@ -514,8 +543,6 @@ class PainelController extends Controller
                 return redirect()->back();
             }
 
-            Session::forget('cart');
-
             $function = new User();
             if ($function->isClient()) {
                 return redirect()->back();
@@ -550,25 +577,34 @@ class PainelController extends Controller
                 return redirect()->back();
             }
 
-            Session::forget('cart');
             $function = new User();
             if ($function->isClient()) {
                 return redirect()->back();
             }
 
-            if (Gate::denies('only-admin')) {
-                session()->flash('error', 'Não tem permissão para acessar');
-
-                if (session('error')) {
-                    Alert::toast(session('error'), 'error');
-                }
-                return redirect()->back();
-            }
             $id = decrypt($id);
 
             $product = Product::find($id);
             $product->active = 0;
             $product->save();
+
+
+            if (Session::has('cart')) {
+                $oldCart = Session::get('cart');
+                $cart = new Cart($oldCart);
+                $products = $cart->items;
+
+                foreach ($products as $innerProduct) {
+                    if ($innerProduct['item']['id'] == $id) {
+                        $cart->removeItem($product->id);
+                        if (count($cart->items) > 0) {
+                            Session::put('cart', $cart);
+                        } else {
+                            Session::forget('cart');
+                        }
+                    }
+                }
+            }
 
             session()->flash('warning', 'Dados removido com sucesso');
 
@@ -594,7 +630,6 @@ class PainelController extends Controller
                 }
                 return redirect()->back();
             }
-            Session::forget('cart');
 
             $function = new User();
             if ($function->isClient()) {
@@ -602,7 +637,6 @@ class PainelController extends Controller
             }
 
             $id = $request->input('id');
-
 
             $validator = Validator::make($request->all(), [
                 'name' => 'required|String',
@@ -622,7 +656,6 @@ class PainelController extends Controller
                 'brade.required' => 'Preenche o campo marca',
                 'style.required' => 'Preenche o campo estilo',
                 'price.numeric' => 'Informe um preço unitário válido',
-                'stock.numeric' => 'Informe uma qty. fornecida válida',
                 'price.required' => 'Preenche o campo preço unitário',
                 'size.required' => 'Preenche o campo tamanho',
                 'specification.required' => 'Preenche o campo introdução',
@@ -692,13 +725,32 @@ class PainelController extends Controller
                             }
                         }
                     }
-
-                    session()->flash('success', 'Dados actualizado com sucesso');
-                    if (session('success')) {
-                        Alert::toast(session('success'), 'success');
-                    }
-                    return response()->json($request);
                 }
+
+                if (Session::has('cart')) {
+                    $oldCart = Session::get('cart');
+                    $cart = new Cart($oldCart);
+                    $products = $cart->items;
+
+                    $product = Product::find($id);
+
+                    foreach ($products as $innerProduct) {
+                        if ($innerProduct['item']['id'] == $id) {
+                            $cart->removeItem($product->id);
+                            if (count($cart->items) > 0) {
+                                Session::put('cart', $cart);
+                            } else {
+                                Session::forget('cart');
+                            }
+                        }
+                    }
+                }
+
+                session()->flash('success', 'Dados actualizado com sucesso');
+                if (session('success')) {
+                    Alert::toast(session('success'), 'success');
+                }
+                return response()->json($request);
             }
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -1434,26 +1486,10 @@ class PainelController extends Controller
                 return redirect()->back();
             }
 
-            $stockq = \DB::table('stocks')
-                ->join('products', function ($join) {
-                    $join->on('products.id', '=', 'stocks.product_id')
-                        ->where([['products.active', '=', 1]]);
-                })
-                ->join('categories', function ($join) {
-                    $join->on('categories.id', '=', 'products.category_id')
-                        ->where([['categories.active', '=', 1]]);
-                })
-                ->join('collaborators', function ($join) {
-                    $join->on('collaborators.id', '=', 'stocks.collaborator_id')
-                        ->where([['collaborators.active', '=', 1]]);
-                })
-                ->select('stocks.*', 'products.name as product', 'products.id as product_id', 'collaborators.name as collaborator')
-                ->get();
-
             $photos = Photo::all();
-
             $function = new Stock();
-            $stocks = $function->stocksGroupByID($stockq);
+
+            $stocks = $function->stocks();
 
             return view('painel.stock.list', compact('photos', 'stocks'));
         } catch (\Exception $e) {
