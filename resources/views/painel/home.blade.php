@@ -55,19 +55,13 @@
         </div>
         <div class="row pb-10">
             <div class="col-md-8 mb-20">
-                <div class="card-box height-100-p pd-20">
-                    <div class="d-flex flex-wrap justify-content-between align-items-center pb-0 pb-md-3">
-                        <div class="h5 mb-md-0">Actividades de vendas</div>
-                        <div class="form-group mb-md-0">
-                            <select name="month" class="form-control form-control-sm selectpicker">
-                                @foreach ( $months as $month )
-                                <option value="{{ $month->id }}">{{ $month->name  }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group mb-md-0">
-                            <input type="number" min="1990"  max="2021" name="year" value="2021" class="form-control form-control-sm" >
-                        </div>
+                <div class="card-box height-100-p pd-20 min-height-200px">
+                    <div class="d-flex flex-wrap justify-content-between align-items-star pb-0 pb-md-3">
+                        <div class="h5 mb-md-0">Actividade de vendas anual - 2021</div>
+                        <form action="" class="filter-chart">
+                            <input type="number" min="1990"  max="2021" name="year" value="2021" >
+                            <button class="btn" type="submit" style="background-color: #255cd3; color: #fff">Filtro</button>
+                        </form>
                     </div>
                     <div id="activities-chart"></div>
                 </div>
@@ -79,17 +73,17 @@
                     </div>
                     <div class="user-list">
                         <ul>
-                            @for($i = 0; $i < 5; $i++)
+                            @for($i = 0; $i < 4; $i++)
                             <li class="d-flex align-items-center justify-content-between">
                                 <div class="name-avatar d-flex align-items-center pr-2">
                                     <div class="avatar mr-2 flex-shrink-0">
-                                        <img src="vendors/images/photo1.jpg" class="border-radius-100 box-shadow"
+                                        <img src="{{ asset('storage/products/best-sell.jpg') }}" class="border-radius-100 box-shadow"
                                             width="50" height="50" alt="">
                                     </div>
                                     <div class="txt">
                                         <span class="badge badge-pill badge-sm" data-bgcolor="#e7ebf5"
-                                            data-color="#265ed7">53</span>
-                                        <div class="font-14 weight-600">Converse All Star</div>
+                                            data-color="#265ed7">32</span>
+                                        <div class="font-14 weight-600">Bota Country</div>
                                         <div class="font-12 weight-500" data-color="#b2b1b6">Calçados</div>
                                     </div>
                                 </div>

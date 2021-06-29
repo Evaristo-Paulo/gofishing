@@ -14,16 +14,19 @@ use Illuminate\Support\Facades\Route;
 */
 
 // E-COMMERCE
-Route::get('/loja/home', 'StoreController@products')->name('store.home');
-Route::prefix('/loja/produtos')->name('store.')->group(function(){
+Route::get('/', 'StoreController@home')->name('store.home');
+Route::prefix('/loja')->name('store.')->group(function(){
     Route::get('/logout', 'StoreController@logout')->name('logout');
     Route::post('/login', 'StoreController@loginStore')->name('login.store');
     Route::post('/registo-de-clente', 'StoreController@registerStore')->name('register.store.save');
     Route::get('/', 'StoreController@products')->name('products');
-    Route::get('/{id}/detalhes', 'StoreController@productDetails')->name('product.details');
-    Route::get('/carrinho', 'StoreController@cart')->name('cart');
-    Route::get('/carrinho/{id}/remocao', 'StoreController@getRemoveItem')->name('cart.remove.item');
-    Route::get('/{id}/adiciona-no-carrinho', 'StoreController@getAddToCart')->name('cart.add');
+    Route::get('/produtos/{id}/detalhes', 'StoreController@productDetails')->name('product.details');
+    Route::get('/', 'StoreController@products')->name('products');
+    Route::get('/produtos/categorias/{slug}/filtro', 'StoreController@productFilterByCategory')->name('product.filter.by.category');
+    Route::get('/produtos/marcas/{slug}/filtro', 'StoreController@productFilterByBrand')->name('product.filter.by.brand');
+    Route::get('/produtos/carrinho', 'StoreController@cart')->name('cart');
+    Route::get('/produtos/carrinho/{id}/remocao', 'StoreController@getRemoveItem')->name('cart.remove.item');
+    Route::get('/produtos/{id}/adiciona-no-carrinho', 'StoreController@getAddToCart')->name('cart.add');
 });
 
 // PAINEL
@@ -66,6 +69,13 @@ Route::prefix('/painel')->name('painel.')->group(function(){
 
     Route::get('/clientes', 'PainelController@clients')->name('clients');
     Route::get('/clientes/{id}/remocao', 'PainelController@clientRemove')->name('clients.remove')->middleware('auth');
+
+    Route::get('/relatorios/lista-de-categorias', 'PainelController@categoryRepport')->name('categories.repport');
+    Route::get('/relatorios/lista-de-clientes', 'PainelController@clientRepport')->name('clients.repport');
+    Route::get('/relatorios/lista-de-fornecedores', 'PainelController@collaboratorRepport')->name('collaborators.repport');
+    Route::get('/relatorios/lista-de-funcionarios', 'PainelController@workerRepport')->name('workers.repport');
+    Route::get('/relatorios/lista-de-produtos', 'PainelController@productRepport')->name('products.repport');
+    Route::get('/relatorios/lista-de-produtos-por-categoria', 'PainelController@productByCategoryRepport')->name('product.by.categories.repport');
 
     Route::get('/usuarios', 'PainelController@users')->name('users')->middleware('auth');
     Route::get('/usuarios/{id}/actualizacao', 'PainelController@userUpdate')->name('users.update')->middleware('auth');

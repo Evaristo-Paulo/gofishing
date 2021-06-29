@@ -24,7 +24,7 @@ class StoreController extends Controller
 {
     public function home()
     {
-        return view('store.welcome');
+        return redirect()->route('store.products');
     }
 
     public function registerStore(Request $request)
@@ -149,7 +149,7 @@ class StoreController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect()->back();
+        return redirect()->route('store.products');
     }
 
     public function products()
@@ -177,8 +177,85 @@ class StoreController extends Controller
             $totalPrice = 0;
             $hproducts = [];
         }
+        $filterCategory = $filterBrand = 'todas';
 
-        return view('store.products', compact('products', 'hproducts', 'totalPrice'));
+        return view('store.products', compact('products', 'hproducts', 'totalPrice', 'filterCategory', 'filterBrand'));
+    }
+
+    public function productFilterByCategory($slug)
+    {
+        $filterCategory = $slug;
+        $filterBrand ='todas';
+        
+        $products = \DB::table('products')
+            ->join('categories', function ($join) use ($slug) {
+                $join->on('categories.id', '=', 'products.category_id')
+                    ->where([['categories.active', '=', 1], ['categories.slug', '=', $slug], ['products.active', '=', 1], ['products.condition_id', '=', 1]]);
+            })
+            ->select('products.*')
+            ->SimplePaginate(9);
+
+        if (Session::has('cart')) {
+            $oldCart = Session::get('cart');
+            $cart = new Cart($oldCart);
+            $hproducts = $cart->items;
+            $totalPrice = $cart->totalPrice;
+
+            foreach ($hproducts as $hproduct) {
+                if ($hproduct['item']['sale_id'] == 1 && $hproduct['item']['descount'] > 0) {
+                    $totalPrice -= ($hproduct['item']['price'] - (($hproduct['item']['price'] * $hproduct['item']['descount']) / 100));
+                }
+            }
+        } else {
+            $totalPrice = 0;
+            $hproducts = [];
+        }
+
+        session()->flash('success', 'Filtro aplicado com sucesso');
+        if (session('success')) {
+            Alert::toast(session('success'), 'success');
+        }
+        return view('store.products', compact('products', 'hproducts', 'totalPrice', 'filterCategory','filterBrand'));
+    }
+
+    public function productFilterByBrand($slug)
+    {
+        $filterBrand = $slug;
+        $filterCategory ='todas';
+        
+        $products = \DB::table('products')
+            ->join('categories', function ($join) {
+                $join->on('categories.id', '=', 'products.category_id')
+                    ->where([['categories.active', '=', 1], ['products.active', '=', 1], ['products.condition_id', '=', 1]]);
+            })
+            ->join('brades', function ($join) use ($slug) {
+                $join->on('brades.id', '=', 'products.brade_id')
+                    ->where([['brades.slug', '=', $slug ]]);
+            })
+            ->select('products.*')
+            ->SimplePaginate(9);
+
+        if (Session::has('cart')) {
+            $oldCart = Session::get('cart');
+            $cart = new Cart($oldCart);
+            $hproducts = $cart->items;
+            $totalPrice = $cart->totalPrice;
+
+            foreach ($hproducts as $hproduct) {
+                if ($hproduct['item']['sale_id'] == 1 && $hproduct['item']['descount'] > 0) {
+                    $totalPrice -= ($hproduct['item']['price'] - (($hproduct['item']['price'] * $hproduct['item']['descount']) / 100));
+                }
+            }
+        } else {
+            $totalPrice = 0;
+            $hproducts = [];
+        }
+
+        session()->flash('success', 'Filtro aplicado com sucesso');
+        if (session('success')) {
+            Alert::toast(session('success'), 'success');
+        }
+        return view('store.products', compact('products', 'hproducts', 'totalPrice', 'filterCategory','filterBrand'));
     }
 
     public function productDetails($id)
@@ -211,7 +288,7 @@ class StoreController extends Controller
                     $join->on('collaborators.id', '=', 'stocks.collaborator_id')
                         ->where([['collaborators.active', '=', 1]]);
                 })
-                ->select('stocks.*', 'products.name as product','categories.name as category', 'products.id as product_id', 'collaborators.name as collaborator')
+                ->select('stocks.*', 'products.name as product', 'categories.name as category', 'products.id as product_id', 'collaborators.name as collaborator')
                 ->get();
 
             $function = new Stock();

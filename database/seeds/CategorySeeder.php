@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Category;
+use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
@@ -14,23 +15,23 @@ class CategorySeeder extends Seeder
     {
         Category::create([
             'name' => 'Calçados',
+            'slug' => Str::slug('calcados'),
             'description' => 'Categoria de calçados',
         ]);
         Category::create([
-            'name' => 'Chapéus',
-            'description' => 'Categoria de chapéus',
-        ]);
-        Category::create([
             'name' => 'Roupas Femininas',
+            'slug' => Str::slug('roupas-femininas'),
             'description' => 'Categoria de roupas femininas',
         ]);
         Category::create([
             'name' => 'Roupas Masculinas',
+            'slug' => Str::slug('roupas-masculinas'),
             'description' => 'Categoria de roupas masculinas',
         ]);
         Category::create([
-            'name' => 'Sapatos',
-            'description' => 'Categoria de sapatos',
+            'name' => 'Casacos',
+            'slug' => Str::slug('casacos'),
+            'description' => 'Categoria de casacos',
         ]);
     }
 }

@@ -2550,11 +2550,11 @@ ol {
 }
 
 .trending-product .filter {
-    width: 25%
+    width: 26%
 }
 
 .trending-product .shop-content {
-    width: 73%
+    width: 72%
 }
 
 .header .nav-social ul li:last-child,
@@ -3354,6 +3354,7 @@ ol {
     overflow: hidden;
     position: relative;
     height: 250px;
+    padding: 50px;
 }
 
 .single-product .product-image .sale-tag {
@@ -5057,6 +5058,9 @@ ol {
     font-size: 1rem;
     margin-bottom: 10px
 }
+.filter-item a {
+    color: rgb(121, 120, 120);
+}
 
 
 .filter-title {
@@ -5172,7 +5176,7 @@ ol {
     text-align: center;
     font-weight: 700;
     padding: 10px;
-    margin: 10px 0;
+    margin: 50px 0;
     color: #0167F3;
     background-color: #fff;
     font-size: .9rem;
@@ -5206,6 +5210,10 @@ form .form-group input{
     display: none !important;
 }
 
+#desktop-table-box-price {
+    display: none;
+}
+
 .table-mobile {
     display: block !important;
 }
@@ -5216,7 +5224,11 @@ form .form-group input{
     }
 
     #datatable-responsive {
-        display: block !important;
+        display: table !important;
+    }
+
+    #desktop-table-box-price {
+        display: block;
     }
 }
 
@@ -5225,3 +5237,4 @@ form .form-group input{
     color: #dc3545;
     font-size: .9rem
 }
+

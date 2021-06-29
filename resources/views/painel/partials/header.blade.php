@@ -7,7 +7,6 @@
             <div class="user-notification">
                 <div class="dropdown">
                     <a class="dropdown-toggle no-arrow" href="#" role="button" data-toggle="dropdown">
-                        <i class="icon-copy dw dw-email-1 mx-3"></i>
                         <i class="icon-copy dw dw-notification"></i>
                         <span class="badge notification-active"></span>
                     </a>
@@ -16,16 +15,9 @@
                             <ul>
                                 <li>
                                     <a href="#">
-                                        <img src="{{ url("storage/people/". $people->where('id', Auth::user()->people_id)->first()->photo. "") }}" alt="">
-                                        <h3>John Doe</h3>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed...</p>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <img src="vendors/images/photo1.jpg" alt="">
-                                        <h3>Lea R. Frith</h3>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed...</p>
+                                        <img src="{{ url('painel/vendors/images/paper-map-cuate.svg') }}" alt="">
+                                        <h3>Notificação</h3>
+                                        <p>Existem pedidos que precisam ser entregues</p>
                                     </a>
                                 </li>
                             </ul>

@@ -1,12 +1,8 @@
 var options = {
 	series: [
 	{
-		name: "Patients",
-		data: [10, 15, 12, 20, 18, 26, 24, 25, 20, 25, 22, 30]
-	},
-	{
-		name: "Consultations",
-		data: [15, 10, 17, 15, 23, 21, 30, 20, 26, 20, 28, 25]
+		name: "Vendas",
+		data: [15, 10, 12, 15, 23, 21, 20, 20, 26, 20, 28, 25]
 	}
 	],
 	chart: {
@@ -24,10 +20,10 @@ var options = {
 			opacity: 0.2
 		},
 		toolbar: {
-			show: false
+			show: true
 		}
 	},
-	colors: ['#f0746c', '#255cd3'],
+	colors: ['#255cd3'],
 	dataLabels: {
 		enabled: false,
 	},
@@ -39,7 +35,7 @@ var options = {
 		show: false,
 	},
 	markers: {
-		colors: ['#f0746c', '#255cd3'],
+		colors: ['#255cd3'],
 		size: 5,
 		strokeColors: '#ffffff',
 		strokeWidth: 2,
@@ -48,7 +44,7 @@ var options = {
 		}
 	},
 	xaxis: {
-		categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+		categories: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Júlio', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
 		labels:{
 			style:{
 				colors: '#8c9094'
@@ -57,7 +53,6 @@ var options = {
 	},
 	yaxis: {
 		min: 0,
-		max: 35,
 		labels:{
 			style:{
 				colors: '#8c9094'
@@ -66,7 +61,7 @@ var options = {
 	},
 	legend: {
 		position: 'top',
-		horizontalAlign: 'right',
+		horizontalAlign: 'left',
 		floating: true,
 		offsetY: 0,
 		labels: {

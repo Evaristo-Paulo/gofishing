@@ -68,23 +68,20 @@
                 </div>
 
             </div>
-
-
-            <table id="datatable-responsive" class="table table-bordered dt-responsive nowrap" cellspacing="0"
-                width="100%">
-                <thead style="background-color: #0166f3ca; color: #fff">
+            
+            <table class="table data-table-export nowrap" id="datatable-responsive">
+                <thead>
                     <tr>
-                        <th>Produto</th>
+                        <th class="table-plus datatable-nosort">Produto</th>
                         <th>Valor Unitário</th>
-                        <th>Quantidade</th>
-                        <th>Total</th>
-                        <th>Remover Item</th>
+                        <th>Qty.</th>
+                        <th>Remove Item</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach( $hproducts as $product )
                         <tr>
-                            <td>
+                            <td  class="table-plus">
                                 <div class="cart-img-head">
                                     <img src="{{ url("storage/products/". $photos->where('product_id', $product['item']['id'])->first()->photo ."") }}" alt="">
                                 </div>
@@ -92,7 +89,7 @@
                                 {{ $product['item']['name'] }}
                                 </span>
                             </td>
-                            <td>
+                            <td >
                                 @if ($product['item']['sale_id'] == 1 && $product['item']['descount'] > 0)
                                     {{ $product['item']['price'] - (($product['item']['price'] * $product['item']['descount'])/100) }} kz
                                 @else
@@ -117,7 +114,7 @@
                                     @endif
                                 </span>
                                 kz</td>
-                            <td>
+                            <td  class="table-actions">
                                 <a href="{{ route('store.cart.remove.item', encrypt($product['item']['id']) ) }}"
                                     class="text-danger btn"><i class="lni lni-close"></i></a>
                             </td>
@@ -126,7 +123,7 @@
                 </tbody>
             </table>
 
-            <div class="boxOrder">
+            <div class="boxOrder" id="desktop-table-box-price">
                 Total Pedido: <span class="totalOrderMobile">{{ $totalPrice }}</span> kz
             </div>
 
@@ -161,6 +158,206 @@
     <link
         href="{{ asset('store/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css') }}"
         rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css"
+        href="{{ asset('painel/vendors/styles/icon-font.min.css') }}">
+    <link rel="stylesheet" type="text/css"
+        href="{{ asset('painel/src/plugins/datatables/css/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" type="text/css"
+        href="{{ asset('painel/src/plugins/datatables/css/responsive.bootstrap4.min.css') }}">
+    <style>
+    .table thead th {
+        font-weight: 600;
+        font-size: 15px;
+        border-bottom: 0;
+        padding-left: 1rem
+    }
+
+    .table td,
+    .table th {
+        vertical-align: middle
+    }
+
+    .table td {
+        font-size: 14px;
+        font-weight: 500;
+        padding: 1rem
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background: #eaeef2
+    }
+
+    table.dataTable.display tbody tr.odd,
+    table.dataTable.display tbody tr:hover,
+    table.dataTable.hover tbody tr:hover,
+    table.dataTable.stripe tbody tr.odd {
+        background: #ecf0f3 !important
+    }
+
+    table.dataTable tbody tr.selected,
+    table.dataTable.display tbody tr:hover.selected,
+    table.dataTable.hover tbody tr:hover.selected {
+        background-color: #181f48 !important;
+        color: #fff
+    }
+
+    table.dataTable.display tbody tr.odd.selected,
+    table.dataTable.stripe tbody tr.odd.selected {
+        background-color: #1b00ff !important
+    }
+
+    table.dataTable thead .sorting:after,
+    table.dataTable thead .sorting:before,
+    table.dataTable thead .sorting_asc:after,
+    table.dataTable thead .sorting_asc:before,
+    table.dataTable thead .sorting_asc_disabled:after,
+    table.dataTable thead .sorting_asc_disabled:before,
+    table.dataTable thead .sorting_desc:after,
+    table.dataTable thead .sorting_desc:before,
+    table.dataTable thead .sorting_desc_disabled:after,
+    table.dataTable thead .sorting_desc_disabled:before {
+        font-family: "dropways";
+        font-size: 14px
+    }
+
+    table.dataTable thead .sorting:before,
+    table.dataTable thead .sorting_asc:before,
+    table.dataTable thead .sorting_asc_disabled:before,
+    table.dataTable thead .sorting_desc:before,
+    table.dataTable thead .sorting_desc_disabled:before {
+        content: "\eabb"
+    }
+
+    table.dataTable thead .sorting:after,
+    table.dataTable thead .sorting_asc:after,
+    table.dataTable thead .sorting_asc_disabled:after,
+    table.dataTable thead .sorting_desc:after,
+    table.dataTable thead .sorting_desc_disabled:after {
+        content: "\eaba";
+        right: .2em
+    }
+
+    .blog-list ul li:hover .blog-caption h4 a,
+    .fontawesome-icon-list .fa-hover:hover a,
+    table.dataTable thead .sorting_asc:before,
+    table.dataTable thead .sorting_desc:after {
+        color: #1b00ff
+    }
+
+    table.dataTable>tbody>tr.child ul.dtr-details {
+        white-space: normal
+    }
+
+    .dataTables_length,
+    .dt-buttons,
+    div.dataTables_wrapper div.dataTables_filter,
+    div.dataTables_wrapper div.dataTables_info,
+    div.dataTables_wrapper div.dataTables_paginate {
+        padding-left: 15px;
+        padding-right: 15px
+    }
+
+    .dt-checkbox,
+    .dt-checkbox input {
+        width: 20px;
+        height: 20px;
+        position: relative
+    }
+
+    .dt-checkbox input {
+        position: absolute;
+        opacity: 0;
+        z-index: 1;
+        left: 0;
+        top: 0
+    }
+
+    .dt-checkbox span,
+    .dt-checkbox span:before {
+        width: 20px;
+        height: 20px;
+        -webkit-transition: all .3s ease-in-out;
+        transition: all .3s ease-in-out
+    }
+
+    .dt-checkbox span {
+        position: relative;
+        display: block;
+        border: 1px solid #9e9e9e;
+        border-radius: 4px
+    }
+
+    .dt-checkbox span:before {
+        content: "";
+        background: url(../images/check-mark.png) no-repeat;
+        position: absolute;
+        left: 0;
+        top: -1px;
+        background-size: 12px 12px;
+        background-position: center center;
+        -webkit-transform: scale(0);
+        transform: scale(0)
+    }
+
+    .dt-checkbox input:checked~span {
+        background: #1b00ff;
+        border-color: #1b00ff;
+        color: #fff
+    }
+
+    .dt-checkbox input:checked~span:before {
+        -webkit-transform: scale(1);
+        transform: scale(1)
+    }
+
+    .plyr {
+        border-radius: 10px;
+        -webkit-box-shadow: 0 0 10px 2px rgba(0, 0, 0, .15);
+        box-shadow: 0 0 10px 2px rgba(0, 0, 0, .15)
+    }
+
+    .popover-header {
+        font-weight: 500
+    }
+
+    .list-group-flush .list-group-item {
+        border-top: 0;
+        margin-bottom: 0
+    }
+
+    .docs-cropped .modal-body>canvas,
+    .docs-cropped .modal-body>img,
+    .img-preview>img {
+        max-width: 100%
+    }
+
+    .apexcharts-svg * {
+        font-family: 'Inter', sans-serif !important
+    }
+
+    table.dataTable.dtr-inline.collapsed>tbody>tr[role=row]>td:first-child:before,
+    table.dataTable.dtr-inline.collapsed>tbody>tr[role=row]>th:first-child:before {
+        -webkit-box-shadow: none;
+        box-shadow: none;
+        border: 0;
+        border-radius: 0;
+        font-family: "FontAwesome";
+        background: 0 0;
+        content: "\f107";
+        color: #444;
+        font-size: 23px;
+        left: 7px;
+        top: 50%;
+        margin-top: -7px
+    }
+
+    table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td:first-child:before,
+    table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th:first-child:before {
+        content: "\f106";
+        background: 0 0
+    }
+    </style>
 @endpush
 
 @push('js')
@@ -200,6 +397,20 @@
     <script
         src="{{ asset('store/vendors/datatables.net-scroller/js/dataTables.scroller.min.js') }}">
     </script>
+
+    <script src="{{ asset('painel/vendors/scripts/zpreloader.js') }}"></script>
+    <script src="{{ asset('painel/src/plugins/datatables/js/jquery.dataTables.min.js') }}">
+    </script>
+    <script
+        src="{{ asset('painel/src/plugins/datatables/js/dataTables.bootstrap4.min.js') }}">
+    </script>
+    <script
+        src="{{ asset('painel/src/plugins/datatables/js/dataTables.responsive.min.js') }}">
+    </script>
+    <script
+        src="{{ asset('painel/src/plugins/datatables/js/responsive.bootstrap4.min.js') }}">
+    </script>
+    <script src="{{ url('painel/vendors/scripts/datatable-setting.js') }}"></script>
 
     <!-- Custom Theme Scripts -->
     <script src="{{ asset('store/vendors/build/js/custom.min.js') }}"></script>

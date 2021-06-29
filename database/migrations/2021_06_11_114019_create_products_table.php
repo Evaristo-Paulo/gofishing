@@ -22,6 +22,7 @@ class CreateProductsTable extends Migration
             $table->integer('active')->unsigned()->default(1);
             $table->text('description');
             $table->text('specification');
+            $table->string('slug');
             $table->bigInteger('brade_id')->unsigned();
             $table->foreign('brade_id')->references('id')->on('brades')->onDelete('cascade');
             $table->bigInteger('style_id')->unsigned();

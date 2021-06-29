@@ -1,9 +1,8 @@
 - Relatório/Estatística
-- Filtragem (Site)
 - dividir casas de milhares (Carrinho) js
 - Organizar a home do painel
 - Tirar info da tabela no carrinho quando estamos no fone
-- fazer a home do site
 - Como desativar mensagem de erros em produção no laravel
 - quando apaga-se o fornecedor, influenciar na estatística apresentada
 - icon view no visualizar produto loja e icon stock (car ou truck)
+- notificação de productos vendidos/pedidos

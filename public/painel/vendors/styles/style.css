@@ -1526,6 +1526,26 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th:first-child:before {
     padding-right: 10px
 }
 
+.filter-chart {
+    display: flex;
+}
+.filter-chart input{
+    border: 1px solid rgba(136, 136, 136, 0.246);
+    padding-left: 10px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+.filter-chart .btn {
+    width: 100%;
+    height: 30px;
+    display: flex;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    align-items: center;
+    font-size: 1rem
+}
+
 .header-left .header-search .dropdown .dropdown-toggle {
     position: absolute;
     right: 0;
@@ -3611,7 +3631,7 @@ body.IE .register-page-wrap .container {
     border-radius: 100%;
 }
 
-.profile-photo .avatar-photo{
+.profile-photo .avatar-photo {
     width: 100%;
     height: 100%;
 }

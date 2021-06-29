@@ -45,7 +45,7 @@
             <div class="row align-items-center">
                 <div class="col-lg-3 col-md-3 col-7">
                     <!-- Start Header Logo -->
-                    <a class="navbar-brand" href="{{ route('store.home') }}">
+                    <a class="navbar-brand" href="{{ route('store.products') }}">
                         <img src="{{ asset('store/assets/images/logo/logo.svg') }}"
                             alt="Logo">
                     </a>
@@ -174,21 +174,8 @@
                         <div class="collapse navbar-collapse sub-menu-bar" id="navbarSupportedContent">
                             <ul id="nav" class="navbar-nav ms-auto">
                                 <li class="nav-item">
-                                    <a href="{{ route('store.home') }}"
+                                    <a href="{{ route('store.products') }}"
                                         aria-label="Toggle navigation">Home</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="dd-menu collapsed active" href="javascript:void(0)"
-                                        data-bs-toggle="collapse" data-bs-target="#submenu-1-2"
-                                        aria-controls="navbarSupportedContent" aria-expanded="false"
-                                        aria-label="Toggle navigation">Loja</a>
-                                    <ul class="sub-menu collapse" id="submenu-1-2">
-                                        <li class="nav-item"><a
-                                                href="{{ route('store.cart') }}">Carrinho</a></li>
-                                        <li class="nav-item"><a
-                                                href="{{ route('store.products') }}">Nossos
-                                                Produtos</a></li>
-                                    </ul>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" data-bs-toggle="modal" data-bs-target="#contactUsModal"
@@ -207,9 +194,6 @@
                     <ul>
                         <li>
                             <a href="javascript:void(0)"><i class="lni lni-facebook-filled"></i></a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)"><i class="lni lni-twitter-original"></i></a>
                         </li>
                         <li>
                             <a href="javascript:void(0)"><i class="lni lni-instagram"></i></a>
@@ -247,7 +231,7 @@
             </div>
             <div class="col-lg-6 col-md-6 col-12">
                 <ul class="breadcrumb-nav">
-                    <li><a href="{{ route('store.home') }}"><i class="lni lni-home"></i> Home</a></li>
+                    <li><a href="{{ route('store.products') }}"><i class="lni lni-home"></i> Home</a></li>
                     <li><a href="{{ route('store.products') }}">Produtos</a></li>
                     @yield('breadcrumb-subtitle')
                 </ul>

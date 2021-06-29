@@ -6,7 +6,7 @@
                 <div class="row">
                     <div class="col-lg-3 col-md-4 col-12">
                         <div class="footer-logo">
-                            <a href="{{ route('store.home') }}">
+                            <a href="{{ route('store.products') }}">
                                 <img src="{{ asset('store/assets/images/logo/white-logo.svg') }}"
                                     alt="#">
                             </a>
@@ -58,7 +58,7 @@
                         <div class="single-footer f-link">
                             <h3>Informação</h3>
                             <ul>
-                                <li><a href="{{ route('store.home') }}">Home</a></li>
+                                <li><a href="{{ route('store.products') }}">Home</a></li>
                                 <li><a href="#">Sobre Nós</a></li>
                                 <li><a href="#" data-bs-toggle="modal"
                                     data-bs-target="#contactUsModal" >Contacta-Nos</a></li>
@@ -96,7 +96,6 @@
                                 <span>Siga-Nos:</span>
                             </li>
                             <li><a href="javascript:void(0)"><i class="lni lni-facebook-filled"></i></a></li>
-                            <li><a href="javascript:void(0)"><i class="lni lni-twitter-original"></i></a></li>
                             <li><a href="javascript:void(0)"><i class="lni lni-instagram"></i></a></li>
                         </ul>
                     </div>

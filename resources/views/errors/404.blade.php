@@ -36,7 +36,6 @@
 </head>
 
 <body>
-
     <div class="error-page d-flex align-items-center flex-wrap justify-content-center pd-20">
         <div class="pd-10">
             <div class="error-page-wrap text-center">
@@ -44,7 +43,7 @@
                 <h3>Página Não Encontrada</h3>
                 <p>Desculpa, não conseguimos localizar a página que você procura.<br>Verifique a URL.</p>
                 <div class="pt-20 mx-auto max-width-200">
-                    <a href="{{ route('painel.home') }}"
+                    <a href="{{ route('store.products') }}"
                         class="btn bg-primary-2 text-white btn-block btn-lg">Voltar Para Home</a>
                 </div>
             </div>

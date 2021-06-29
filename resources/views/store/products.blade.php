@@ -7,46 +7,7 @@
 <!-- End Breadcrumbs -->
 <section class="trending-product section" style="margin-top: 12px">
     <div class="container">
-        <div class="filter">
-            <div class="filter-title">
-                <h2>Filtro</h2>
-            </div>
-            <div class="filter-content">
-                <div class="filter-item">
-                    <div class="filter-item-title">
-                        <h3>Categorias</h3>
-                    </div>
-                    <form action="">
-                        @foreach($categories as $category )
-                            <div class="form-group">
-                                <label class="custom-control custom-checkbox">
-                                    <input checked type="checkbox" name="category" value="{{ $category->name }}"
-                                        class="custom-control-input">
-                                    <span class="custom-control-indicator">{{ $category->name }}</span>
-                                </label>
-                            </div>
-                        @endforeach
-                    </form>
-                </div>
-
-                <div class="filter-item">
-                    <div class="filter-item-title">
-                        <h3>Marcas</h3>
-                    </div>
-                    <form action="">
-                        @foreach($brades as $brade )
-                            <div class="form-group">
-                                <label class="custom-control custom-checkbox">
-                                    <input checked type="checkbox" name="category" value="{{ $brade->name }}"
-                                        class="custom-control-input">
-                                    <span class="custom-control-indicator">{{ $brade->name }}</span>
-                                </label>
-                            </div>
-                        @endforeach
-                    </form>
-                </div>
-            </div>
-        </div>
+        @include('store.partials.filter')
         <div class="shop-content">
             <div class="row">
                 <div class="col-12">
@@ -213,48 +174,4 @@
 </section>
 <!-- End Banner Area -->
 
-<!-- Start Shipping Info -->
-<section class="shipping-info">
-    <div class="container">
-        <ul>
-            <!-- Free Shipping -->
-            <li>
-                <div class="media-icon">
-                    <i class="lni lni-delivery"></i>
-                </div>
-                <div class="media-body">
-                    <h5>Serviço de Delivery</h5>
-                </div>
-            </li>
-            <!-- Money Return -->
-            <li>
-                <div class="media-icon">
-                    <i class="lni lni-support"></i>
-                </div>
-                <div class="media-body">
-                    <h5>Suporte 24h</h5>
-                </div>
-            </li>
-            <!-- Support 24/7 -->
-            <li>
-                <div class="media-icon">
-                    <i class="lni lni-credit-cards"></i>
-                </div>
-                <div class="media-body">
-                    <h5>Pagamentos online</h5>
-                </div>
-            </li>
-            <!-- Safe Payment -->
-            <li>
-                <div class="media-icon">
-                    <i class="lni lni-reload"></i>
-                </div>
-                <div class="media-body">
-                    <h5>Possibilidade de devolução</h5>
-                </div>
-            </li>
-        </ul>
-    </div>
-</section>
-<!-- End Shipping Info -->
 @endsection

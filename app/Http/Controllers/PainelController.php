@@ -13,6 +13,7 @@ use App\Models\People;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\RoleUser;
+use Illuminate\Support\Str;
 use App\Models\Collaborator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -480,6 +481,7 @@ class PainelController extends Controller
 
                     $product = [
                         'name' => $request->input('name'),
+                        'slug' => Str::slug($request->input('name')),
                         'category_id' => $request->input('category'),
                         'brade_id' => $request->input('brade'),
                         'style_id' => $request->input('style'),
@@ -678,6 +680,7 @@ class PainelController extends Controller
             } else {
                 $product = [
                     'name' => $request->input('name'),
+                    'slug' => Str::slug($request->input('name')),
                     'category_id' => $request->input('category'),
                     'brade_id' => $request->input('brade'),
                     'style_id' => $request->input('style'),
@@ -982,6 +985,7 @@ class PainelController extends Controller
 
             $category = [
                 'name' => $request->input('name'),
+                'slug' => Str::slug($request->input('name')),
                 'cover' => $nameFile,
                 'description' => $request->input('description'),
             ];
@@ -1075,6 +1079,7 @@ class PainelController extends Controller
 
             $brade = new Brade();
             $brade->name = $request->input('name');
+            $brade->slug = Str::slug($request->input('name'));
             $brade->description = $request->input('description');
             $brade->save();
 
@@ -1141,6 +1146,7 @@ class PainelController extends Controller
 
                 $category = new Category();
                 $category->name = $request->input('name');
+                $category->slug = Str::slug($request->input('name'));
                 $category->cover = $nameFile;
                 $category->description = $request->input('description');
                 $category->save();
@@ -1648,5 +1654,137 @@ class PainelController extends Controller
             ->get();
 
         return view('painel.clients.list', compact('clients'));
+    }
+
+    public function categoryRepport()
+    {
+        try {
+            if (Gate::denies('only-admin')) {
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
+            }
+
+            session()->flash('success', 'Relatório emitido com sucesso');
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
+            return redirect()->back();
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function clientRepport()
+    {
+        try {
+            if (Gate::denies('only-admin')) {
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
+            }
+
+            session()->flash('success', 'Relatório emitido com sucesso');
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
+            return redirect()->back();
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function workerRepport()
+    {
+        try {
+            if (Gate::denies('only-admin')) {
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
+            }
+
+            session()->flash('success', 'Relatório emitido com sucesso');
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
+            return redirect()->back();
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function collaboratorRepport()
+    {
+        try {
+            if (Gate::denies('only-admin')) {
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
+            }
+
+            session()->flash('success', 'Relatório emitido com sucesso');
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
+            return redirect()->back();
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function productRepport()
+    {
+        try {
+            if (Gate::denies('only-admin')) {
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
+            }
+
+            session()->flash('success', 'Relatório emitido com sucesso');
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
+            return redirect()->back();
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function productByCategoryRepport()
+    {
+        try {
+            if (Gate::denies('only-admin')) {
+                session()->flash('error', 'Não tem permissão para acessar');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
+            }
+
+            session()->flash('success', 'Relatório emitido com sucesso');
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
+            return redirect()->back();
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 }

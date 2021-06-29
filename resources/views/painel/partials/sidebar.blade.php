@@ -1,7 +1,8 @@
 <div class="left-side-bar">
     <div class="brand-logo">
         <a href="{{ route('painel.home') }}">
-            <img src="{{ asset('store/assets/images/logo/new-logo.svg') }}" alt="" class="light-logo">
+            <img src="{{ asset('store/assets/images/logo/new-logo.svg') }}" alt=""
+                class="light-logo">
         </a>
         <div class="close-sidebar" data-toggle="left-sidebar-close">
             <i class="ion-close-round"></i>
@@ -21,7 +22,7 @@
                     </a>
                     <ul class="submenu">
                         @can('only-admin')
-                        <li><a href="#" data-toggle="modal" data-target="#category-register">Registo</a></li>
+                            <li><a href="#" data-toggle="modal" data-target="#category-register">Registo</a></li>
                         @endcan
                         <li><a href="{{ route('painel.categories') }}">Listagem</a></li>
                     </ul>
@@ -32,7 +33,7 @@
                     </a>
                     <ul class="submenu">
                         @can('only-admin')
-                        <li><a href="{{  route('painel.products.register') }}">Registo</a></li>
+                            <li><a href="{{ route('painel.products.register') }}">Registo</a></li>
                         @endcan
                         <li><a href="{{ route('painel.products') }}">Listagem</a></li>
                         <li class="dropdown">
@@ -59,7 +60,7 @@
                     </a>
                     <ul class="submenu">
                         @can('only-admin')
-                        <li><a href="#" data-toggle="modal" data-target="#colaborator-register">Registo</a></li>
+                            <li><a href="#" data-toggle="modal" data-target="#colaborator-register">Registo</a></li>
                         @endcan
                         <li><a href="{{ route('painel.collaborators') }}">Listagem</a></li>
 
@@ -71,45 +72,39 @@
                     </a>
                     <ul class="submenu">
                         @can('only-admin')
-                        <li><a href="{{ route('painel.workers.register') }}">Registo</a></li>
+                            <li><a href="{{ route('painel.workers.register') }}">Registo</a></li>
                         @endcan
                         <li><a href="{{ route('painel.workers') }}">Listagem</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
                     <a href="javascript:;" class="dropdown-toggle">
-                        <span class="micon dw dw-analytics-3"></span><span class="mtext">Estatística</span>
+                        <span class="micon dw dw-analytics-3"></span><span class="mtext">Relatórios</span>
                     </a>
                     <ul class="submenu">
-                        <li><a href="javascript:;">Level 1</a></li>
-                        <li class="dropdown">
-                            <a href="javascript:;" class="dropdown-toggle">
-                                <span class="micon fa fa-plug"></span><span class="mtext">Level 2</span>
-                            </a>
-                            <ul class="submenu child">
-                                <li><a href="javascript:;">Level 2</a></li>
-                                <li><a href="javascript:;">Level 2</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="javascript:;">Level 1</a></li>
-                        <li><a href="javascript:;">Level 1</a></li>
+                        <li><a href="{{ route('painel.categories.repport') }}">Lista de Categorias</a></li>
+                        <li><a href="{{ route('painel.clients.repport') }}">Lista de Clientes</a></li>
+                        <li><a href="{{ route('painel.collaborators.repport') }}">Lista de Fornecedores</a></li>
+                        <li><a href="{{ route('painel.workers.repport') }}">Lista de Funcionários</a></li>
+                        <li><a href="{{ route('painel.products.repport') }}">Lista de Produtos</a></li>
+                        <li><a href="{{ route('painel.product.by.categories.repport') }}">Lista de Produtos por Categorias</a></li>
                     </ul>
                 </li>
                 @can('just-admin-and-manager')
-                <li>
-                    <div class="dropdown-divider"></div>
-                </li>
-                <li>
-                    <div class="sidebar-small-cap">Painel de Controle</div>
-                </li>
-                <li>
-                    <a href="javascript:;" class="dropdown-toggle">
-                        <span class="micon dw dw-settings1"></span><span class="mtext">Usuários</span>
-                    </a>
-                    <ul class="submenu">
-                        <li><a href="{{ route('painel.users') }}">Listagem</a></li>
-                    </ul>
-                </li> 
+                    <li>
+                        <div class="dropdown-divider"></div>
+                    </li>
+                    <li>
+                        <div class="sidebar-small-cap">Painel de Controle</div>
+                    </li>
+                    <li>
+                        <a href="javascript:;" class="dropdown-toggle">
+                            <span class="micon dw dw-settings1"></span><span class="mtext">Usuários</span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="{{ route('painel.users') }}">Listagem</a></li>
+                        </ul>
+                    </li>
                 @endcan
             </ul>
         </div>
