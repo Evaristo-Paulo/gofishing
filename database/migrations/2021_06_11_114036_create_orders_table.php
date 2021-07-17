@@ -19,6 +19,7 @@ class CreateOrdersTable extends Migration
             $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
             $table->enum('state', ['WA', 'PA']);
             $table->integer('active')->unsigned()->default(1);
+            $table->integer('payment')->unsigned();
             $table->timestamps();
         });
     }

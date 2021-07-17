@@ -53,18 +53,19 @@
                 </div>
                 <div class="col-lg-5 col-md-7 d-xs-none">
                     <!-- Start Main Menu Search -->
-                    <div class="main-menu-search">
+                    <form class="main-menu-search" method="POST" action="{{ route('store.product.filter.by.name') }}">
+                        {{  csrf_field() }}
                         <!-- navbar search start -->
                         <div class="navbar-search search-style-5">
                             <div class="search-input">
-                                <input type="text" placeholder="Pesquisar">
+                                <input type="text" name="name" required placeholder="Pesquisar">
                             </div>
                             <div class="search-btn">
-                                <button><i class="lni lni-search-alt"></i></button>
+                                <button type="submit"><i class="lni lni-search-alt"></i></button>
                             </div>
                         </div>
                         <!-- navbar search Ends -->
-                    </div>
+                    </form>
                     <!-- End Main Menu Search -->
                 </div>
                 <div class="col-lg-4 col-md-2 col-5">
@@ -126,7 +127,7 @@
                                             <div class="button">
                                                 <a href="{{ route('store.cart') }}"
                                                     class="btn my-2 animate">Carrinho</a>
-                                                <a href="#" class="btn animate"
+                                                <a href="{{ route('store.checkout') }}" class="btn animate"
                                                     style="background-color: #218838">Checkout</a>
                                             </div>
                                         </div>
@@ -143,7 +144,7 @@
                                             </div>
                                             <div class="button">
                                                 <a href="{{ route('store.cart') }}"
-                                                    class="btn my-2 animate"><i class="lni lni-cart"></i> Carrinho</a>
+                                                    class="btn my-2 animate"> Carrinho</a>
                                             </div>
                                         </div>
                                     @endif

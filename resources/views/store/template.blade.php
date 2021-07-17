@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title>GoShopping - Vestir bem é uma virtude</title>
+    <title>Goshopping</title>
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="shortcut icon" type="image/x-icon"
@@ -51,6 +51,7 @@
     </a>
 
     <!-- ========================= JS here ========================= -->
+    <script src="{{ asset('store/vendors/jquery/dist/jquery.min.js') }}" ></script>
     <script src="{{ asset('store/assets/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('store/assets/js/tiny-slider.js') }}"></script>
     <script src="{{ asset('store/assets/js/glightbox.min.js') }}"></script>

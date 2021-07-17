@@ -4,7 +4,7 @@
 <head>
     <!-- Basic Page Info -->
     <meta charset="utf-8">
-    <title>GoShopping</title>
+    <title>Goshopping</title>
 
     <!-- Site favicon -->
     <link rel="shortcut icon" type="image/x-icon"

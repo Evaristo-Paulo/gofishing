@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Cart;
 use App\User;
+use Stripe\Charge;
+use Stripe\Stripe;
 use App\Models\Role;
+use App\Models\Sold;
+use App\Models\Order;
 use App\Models\Stock;
 use App\Models\Client;
 use App\Models\People;
@@ -12,6 +16,8 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\RoleUser;
 use App\Models\Ocupation;
+use Illuminate\Support\Str;
+use App\Models\OrderProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -25,6 +31,41 @@ class StoreController extends Controller
     public function home()
     {
         return redirect()->route('store.products');
+    }
+
+    
+    public function contactUs(Request $request)
+    {
+        try{
+            session()->flash('success', 'Mensagem enviada com sucesso');
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
+            return redirect()->back();
+        } catch (\Exception $e) {
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
+        }
+    }
+
+    public function newsLetter(Request $request)
+    {
+        try{
+            session()->flash('success', 'Subscrição realizada com sucesso');
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
+            return redirect()->back();
+        } catch (\Exception $e) {
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
+        }
     }
 
     public function registerStore(Request $request)
@@ -89,7 +130,11 @@ class StoreController extends Controller
                 return redirect()->back();
             }
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -159,20 +204,18 @@ class StoreController extends Controller
                 $join->on('categories.id', '=', 'products.category_id')
                     ->where([['categories.active', '=', 1], ['products.active', '=', 1], ['products.condition_id', '=', 1]]);
             })
-            ->select('products.*')
-            ->SimplePaginate(9);
+            ->join('stocks', function ($join) {
+                $join->on('products.id', '=', 'stocks.product_id')
+                    ->where([['products.active', '=', 1]]);
+            })
+            ->select('products.*', 'stocks.qty as stock')
+            ->paginate(9);
 
         if (Session::has('cart')) {
             $oldCart = Session::get('cart');
             $cart = new Cart($oldCart);
             $hproducts = $cart->items;
             $totalPrice = $cart->totalPrice;
-
-            foreach ($hproducts as $hproduct) {
-                if ($hproduct['item']['sale_id'] == 1 && $hproduct['item']['descount'] > 0) {
-                    $totalPrice -= ($hproduct['item']['price'] - (($hproduct['item']['price'] * $hproduct['item']['descount']) / 100));
-                }
-            }
         } else {
             $totalPrice = 0;
             $hproducts = [];
@@ -185,27 +228,25 @@ class StoreController extends Controller
     public function productFilterByCategory($slug)
     {
         $filterCategory = $slug;
-        $filterBrand ='todas';
-        
+        $filterBrand = 'todas';
+
         $products = \DB::table('products')
             ->join('categories', function ($join) use ($slug) {
                 $join->on('categories.id', '=', 'products.category_id')
                     ->where([['categories.active', '=', 1], ['categories.slug', '=', $slug], ['products.active', '=', 1], ['products.condition_id', '=', 1]]);
             })
-            ->select('products.*')
-            ->SimplePaginate(9);
+            ->join('stocks', function ($join) {
+                $join->on('products.id', '=', 'stocks.product_id')
+                    ->where([['products.active', '=', 1]]);
+            })
+            ->select('products.*', 'stocks.qty as stock')
+            ->paginate(9);
 
         if (Session::has('cart')) {
             $oldCart = Session::get('cart');
             $cart = new Cart($oldCart);
             $hproducts = $cart->items;
             $totalPrice = $cart->totalPrice;
-
-            foreach ($hproducts as $hproduct) {
-                if ($hproduct['item']['sale_id'] == 1 && $hproduct['item']['descount'] > 0) {
-                    $totalPrice -= ($hproduct['item']['price'] - (($hproduct['item']['price'] * $hproduct['item']['descount']) / 100));
-                }
-            }
         } else {
             $totalPrice = 0;
             $hproducts = [];
@@ -215,14 +256,52 @@ class StoreController extends Controller
         if (session('success')) {
             Alert::toast(session('success'), 'success');
         }
-        return view('store.products', compact('products', 'hproducts', 'totalPrice', 'filterCategory','filterBrand'));
+        return view('store.products', compact('products', 'hproducts', 'totalPrice', 'filterCategory', 'filterBrand'));
     }
+
+    public function productFilterByName(Request $request)
+    {
+        $filterCategory = 'todas';
+        $filterBrand = 'todas';
+        $slug = Str::slug($request->input('name'));
+
+        $products = \DB::table('products')
+            ->join('categories', function ($join) use ($slug) {
+                $join->on('categories.id', '=', 'products.category_id')
+                    ->where([['products.slug', 'like', '%' . $slug . '%']]);
+            })
+            ->join('stocks', function ($join) {
+                $join->on('products.id', '=', 'stocks.product_id')
+                    ->where([['products.active', '=', 1]]);
+            })
+            ->select('products.*', 'stocks.qty as stock')
+            ->paginate(9);
+
+        if (Session::has('cart')) {
+            $oldCart = Session::get('cart');
+            $cart = new Cart($oldCart);
+            $hproducts = $cart->items;
+            $totalPrice = $cart->totalPrice;
+             
+        } else {
+            $totalPrice = 0;
+            $hproducts = [];
+        }
+        $search = true;
+
+        session()->flash('success', 'Pesquisa efectuada com sucesso');
+        if (session('success')) {
+            Alert::toast(session('success'), 'success');
+        }
+        return view('store.products', compact('products', 'search', 'hproducts', 'totalPrice', 'filterCategory', 'filterBrand'));
+    }
+
 
     public function productFilterByBrand($slug)
     {
         $filterBrand = $slug;
-        $filterCategory ='todas';
-        
+        $filterCategory = 'todas';
+
         $products = \DB::table('products')
             ->join('categories', function ($join) {
                 $join->on('categories.id', '=', 'products.category_id')
@@ -230,10 +309,14 @@ class StoreController extends Controller
             })
             ->join('brades', function ($join) use ($slug) {
                 $join->on('brades.id', '=', 'products.brade_id')
-                    ->where([['brades.slug', '=', $slug ]]);
+                    ->where([['brades.slug', '=', $slug]]);
             })
-            ->select('products.*')
-            ->SimplePaginate(9);
+            ->join('stocks', function ($join) {
+                $join->on('products.id', '=', 'stocks.product_id')
+                    ->where([['products.active', '=', 1]]);
+            })
+            ->select('products.*', 'stocks.qty as stock')
+            ->paginate(9);
 
         if (Session::has('cart')) {
             $oldCart = Session::get('cart');
@@ -241,11 +324,7 @@ class StoreController extends Controller
             $hproducts = $cart->items;
             $totalPrice = $cart->totalPrice;
 
-            foreach ($hproducts as $hproduct) {
-                if ($hproduct['item']['sale_id'] == 1 && $hproduct['item']['descount'] > 0) {
-                    $totalPrice -= ($hproduct['item']['price'] - (($hproduct['item']['price'] * $hproduct['item']['descount']) / 100));
-                }
-            }
+             
         } else {
             $totalPrice = 0;
             $hproducts = [];
@@ -255,7 +334,7 @@ class StoreController extends Controller
         if (session('success')) {
             Alert::toast(session('success'), 'success');
         }
-        return view('store.products', compact('products', 'hproducts', 'totalPrice', 'filterCategory','filterBrand'));
+        return view('store.products', compact('products', 'hproducts', 'totalPrice', 'filterCategory', 'filterBrand'));
     }
 
     public function productDetails($id)
@@ -312,7 +391,11 @@ class StoreController extends Controller
                     $join->on('categories.id', '=', 'products.category_id')
                         ->where([['categories.active', '=', 1],  ['category_id', '=', $aux_category->id]]);
                 })
-                ->select('products.*', 'photos.photo')
+                ->join('stocks', function ($join) {
+                    $join->on('products.id', '=', 'stocks.product_id')
+                        ->where([['products.active', '=', 1]]);
+                })
+                ->select('products.*', 'photos.photo', 'stocks.qty as stock')
                 ->limit(4)
                 ->get();
 
@@ -324,12 +407,6 @@ class StoreController extends Controller
                 $cart = new Cart($oldCart);
                 $hproducts = $cart->items;
                 $totalPrice = $cart->totalPrice;
-
-                foreach ($hproducts as $hproduct) {
-                    if ($hproduct['item']['sale_id'] == 1 && $hproduct['item']['descount'] > 0) {
-                        $totalPrice -= ($hproduct['item']['price'] - (($hproduct['item']['price'] * $hproduct['item']['descount']) / 100));
-                    }
-                }
             } else {
                 $totalPrice = 0;
                 $hproducts = [];
@@ -337,7 +414,11 @@ class StoreController extends Controller
 
             return view('store.product-details', compact('product', 'youMayLike', 'qtd_stock', 'hproducts', 'totalPrice'));
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -352,15 +433,16 @@ class StoreController extends Controller
             $hproducts = $cart->items;
             $totalPrice = $cart->totalPrice;
 
-            foreach ($hproducts as $hproduct) {
-                if ($hproduct['item']['sale_id'] == 1 && $hproduct['item']['descount'] > 0) {
-                    $totalPrice -= ($hproduct['item']['price'] - (($hproduct['item']['price'] * $hproduct['item']['descount']) / 100));
-                }
-            }
+            //dd():
+            $stocks = Stock::all();
 
-            return view('store.cart', compact('hproducts', 'totalPrice'));
+            return view('store.cart', compact('hproducts', 'totalPrice', 'stocks'));
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -378,6 +460,12 @@ class StoreController extends Controller
                 Session::put('cart', $cart);
             } else {
                 Session::forget('cart');
+
+                session()->flash('warning', 'Produto removido do carrinho');
+                if (session('warning')) {
+                    Alert::toast(session('warning'), 'warning');
+                }
+                return redirect()->route('store.products');
             }
 
             session()->flash('warning', 'Produto removido do carrinho');
@@ -386,9 +474,87 @@ class StoreController extends Controller
                 Alert::toast(session('warning'), 'warning');
             }
 
-            return redirect()->back()->with('success', 'Dados removido com sucesso');
+            return redirect()->back();
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
+        }
+    }
+
+    public function cartUpdatePrice(Request $request)
+    {
+        try {
+            $product_array = $request->input('products');
+            $qty_array = $request->input('qtys');
+
+            Session::forget('cart');
+
+            foreach ($product_array as $key => $id) {
+                $qty = 0;
+                do {
+                    $product = Product::find($id);
+                    $oldCart = Session::has('cart') ? Session::get('cart') : null;
+                    $cart = new Cart($oldCart);
+                    $cart->add($product, $product->id);
+                    $request->session()->put('cart', $cart);
+                    $qty++;
+                } while ($qty < $qty_array[$key]);
+            }
+
+
+            $request->session()->flash('success', 'Carrinho actualizado com sucesso');
+
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
+
+            return redirect()->back();
+        } catch (\Exception $e) {
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
+        }
+    }
+
+    public function cartUpdate(Request $request)
+    {
+        try {
+            $product_array = $request->input('products');
+            $qty_array = $request->input('qtys');
+
+            Session::forget('cart');
+
+            foreach ($product_array as $key => $id) {
+                $qty = 0;
+                do {
+                    $product = Product::find($id);
+                    $oldCart = Session::has('cart') ? Session::get('cart') : null;
+                    $cart = new Cart($oldCart);
+                    $cart->add($product, $product->id);
+                    $request->session()->put('cart', $cart);
+                    $qty++;
+                } while ($qty < $qty_array[$key]);
+            }
+
+
+            $request->session()->flash('success', 'Carrinho actualizado com sucesso');
+
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
+
+            return redirect()->back();
+        } catch (\Exception $e) {
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -400,6 +566,8 @@ class StoreController extends Controller
             $product = Product::find($id);
             $oldCart = Session::has('cart') ? Session::get('cart') : null;
             $cart = new Cart($oldCart);
+
+            //dd( $product );
             $cart->add($product, $product->id);
             $request->session()->put('cart', $cart);
 
@@ -409,9 +577,146 @@ class StoreController extends Controller
                 Alert::toast(session('success'), 'success');
             }
 
+            return redirect()->back();
+        } catch (\Exception $e) {
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
+        }
+    }
+
+    public function checkout()
+    {
+        try {
+            if (!Auth::check()) {
+                session()->flash('error', 'Faça o login');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
+            }
+
+            $function = new User();
+            if (!$function->isClient()) {
+                session()->flash('error', 'Regista-se como cliente');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
+            }
+
+            if (!Session::has('cart')) {
+                return redirect()->back();
+            }
+            $oldCart = Session::get('cart');
+            $cart = new Cart($oldCart);
+            $hproducts = $cart->items;
+            $totalPrice = $cart->totalPrice;
+
+             
+
+            $kwanzaToDollar = (round((($totalPrice) / 644.5), 0));
+
+            Stripe::setApiKey('sk_test_51J9qa8KrBI5BIIZaYGFkUd3PvsKcBlmcSOpI0HOz3YjJDFuyR13MGw1PGkvR4Cgtg8c43OELZ7bG7nvY9njOkseR00uWVvHqVK');
+            $payment_intent = \Stripe\PaymentIntent::create([
+                'amount' => $kwanzaToDollar * 100,
+                'currency' => 'usd',
+                'payment_method_types' => ['card'],
+                'description' => 'Pagamento efectuado com cartão',
+                'receipt_email' => Auth::user()->email,
+            ]);
+
+            $intent = $payment_intent->client_secret;
+
+            return view('store.checkout', compact('hproducts', 'totalPrice', 'intent'));
+        } catch (\Exception $e) {
+            session()->flash('error', 'Ops! Verifique sua internet e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
+        }
+    }
+
+    public function confirmPayment()
+    {
+        try {
+            if (!Auth::check()) {
+                session()->flash('error', 'Faça o login');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
+            }
+
+            $function = new User();
+            if (!$function->isClient()) {
+                session()->flash('error', 'Regista-se como cliente');
+
+                if (session('error')) {
+                    Alert::toast(session('error'), 'error');
+                }
+                return redirect()->back();
+            }
+
+            if (!Session::has('cart')) {
+                return redirect()->back();
+            }
+
+            $oldCart = Session::get('cart');
+            $cart = new Cart($oldCart);
+            $products = $cart->items;
+            $totalPrice = $cart->totalPrice;
+
+
+            $client = Client::where('user_id', Auth::user()->id)->first();
+
+            $order = [
+                'client_id' => $client->id,
+                'state' => 'WA',
+                'payment' => $totalPrice,
+            ];
+
+            $order = Order::create($order);
+
+            //Save sales and order_ product
+            foreach ($products as $product) {
+                $sold = new Sold();
+                $sold->product_id = $product['item']['id'];
+                $sold->qty = $product['qty'];
+                $sold->save();
+
+                $stock = Stock::where('product_id', $product['item']['id'])->first();
+                $stock->qty -= $product['qty'];
+                $stock->save();
+
+                $orderProduct = new OrderProduct();
+                $orderProduct->order_id = $order->id;
+                $orderProduct->product_id = $product['item']['id'];
+                $orderProduct->state = 'WA';
+                $orderProduct->qty =  $product['qty'];
+                $orderProduct->payment = ($product['item']['sale_id'] == 1 && $product['item']['descount'] > 0) ? ($product['item']['price'] - (($product['item']['price'] * $product['item']['descount']) / 100)) * $product['qty'] : $product['item']['price'] * $product['qty'];
+                $orderProduct->save();
+            }
+
+            Session::forget('cart');
+
+            session()->flash('success', 'Pagamento efectuado com sucesso');
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
             return redirect()->route('store.products');
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 }

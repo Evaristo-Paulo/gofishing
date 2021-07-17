@@ -99,11 +99,13 @@ class Product extends Model
                 'size' => $dado->size,
                 'price' => $dado->price,
                 'descount' => $dado->descount,
+                'slug' => $dado->slug,
                 'collaborators' => $aux_collabs,
                 'sale_id' => $dado->sale_id,
                 'condition_id' => $dado->condition_id,
                 'description' => $dado->description,
                 'specification' => $dado->specification,
+                'stock' => $dado->stock,
                 'active' => $dado->active,
                 'photo' => $aux, // Adicionar todas as fotos salvas 
             ];

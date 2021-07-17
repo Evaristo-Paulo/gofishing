@@ -18,7 +18,6 @@
                     data-url="/painel/produtos/registo" data-urlback="/painel/produtos">
                     {{ csrf_field() }}
                     
-
                     <h5>Dados do Produto</h5>
                     <section>
                         <div class="row">

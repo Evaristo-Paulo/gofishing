@@ -109,8 +109,7 @@
                 <div class="inner">
                     <div class="content">
                         <h2 class="wow fadeInUp" data-wow-delay=".4s">Fale Connosco</h2>
-                        <p class="wow fadeInUp" data-wow-delay=".6s">Please, purchase full version of the template
-                            to get all pages,<br> features and commercial license.</p>
+                        <p class="wow fadeInUp" data-wow-delay=".6s">Nossos profissionais estão prontos para puder lhe ajudar.</p>
                         <div class="button wow fadeInUp" data-wow-delay=".8s">
                             <a href="#" data-bs-toggle="modal" data-bs-target="#contactUsModal"
                                 class="btn">Contanta-Nos</a>
@@ -130,23 +129,26 @@
                 <div class="col-12">
                     <div class="section-title">
                         <h2>Produtos que talvez gostas</h2>
-                        <p>Melhor que 1 par de calçado, só mesmo vários pares de calçados.</p>
+                        <p>Melhor que 1 par, só mesmo vários pares.</p>
                     </div>
                 </div>
             </div>
             @if( count($youMayLike) < 3 )
                 <div class="shop-products" style="grid-template-columns: repeat(auto-fit, minmax(200px, 400px))">
                     @forelse( $youMayLike as $product )
-                        <div class="single-product">
+                        <div class="single-product @if($product['stock'] == 0 ) single-product-out-of-stock @endif">
                             <div class="product-image">
                                 <img src="{{ url("storage/products/". $photos->where('product_id', $product['id'])->first()->photo. "") }}"
                                     alt="#">
                                 @if( $product['sale_id'] == 1 && $product['descount'] > 0 )
                                     <span class="new-tag">Promoção</span>
                                 @endif
+                                @if( $product['stock'] == 0 )
+                                    <span class="new-tag">Esgostado</span>
+                                @endif
                                 <div class="button">
                                     <a href="{{ route('store.product.details', encrypt($product['id'])) }}"
-                                        class="btn"><i class="lni lni-cart"></i>
+                                        class="btn"><i class="lni lni-eye"></i>
                                         Visualizar</a>
                                 </div>
                             </div>
@@ -183,16 +185,19 @@
             @else
                 <div class="shop-products">
                     @forelse( $youMayLike as $product )
-                        <div class="single-product">
+                        <div class="single-product @if($product['stock'] == 0 ) single-product-out-of-stock @endif">
                             <div class="product-image">
                                 <img src="{{ url("storage/products/". $photos->where('product_id', $product['id'])->first()->photo. "") }}"
                                     alt="#">
                                 @if( $product['sale_id'] == 1 )
                                     <span class="new-tag">Promoção</span>
                                 @endif
+                                @if( $product['stock'] == 0 )
+                                    <span class="new-tag">Esgostado</span>
+                                @endif
                                 <div class="button">
                                     <a href="{{ route('store.product.details', encrypt($product['id'])) }}"
-                                        class="btn"><i class="lni lni-cart"></i>
+                                        class="btn"><i class="lni lni-eye"></i>
                                         Visualizar</a>
                                 </div>
                             </div>
@@ -205,10 +210,13 @@
                                         href="{{ route('store.product.details', encrypt($product['id'])) }}">{{ $product['name'] }}</a>
                                 </h4>
                                 <div class="price">
+                                    @if ($product['sale_id'] == 1 && $product['descount'] > 0)
                                     <span
-                                        class="old-price">{{ number_format($product['price'] - (($product['price'] * $product['descount'])/100), 0, ',','.') }}
-                                        kz</span>
+                                    class="old-price">{{ number_format($product['price'], 0, ',', '.') }} kz</span>
+                                    <span>{{ number_format($product['price'] - (($product['price'] * $product['descount'])/100), 0, ',', '.') }} kz</span>
+                                    @else
                                     <span>{{ number_format($product['price'], 0, ',','.') }} kz</span>
+                                    @endif
                                 </div>
                                 <a href="{{ route('store.cart.add', encrypt($product['id'])) }}"
                                     class="btn add-cart-btn">
@@ -229,63 +237,6 @@
 </section>
 <!-- End Item Details -->
 
-
-<!-- Review Modal -->
-<div class="modal fade review-modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Leave a Review</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <label for="review-name">Your Name</label>
-                            <input class="form-control" type="text" id="review-name" required>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <label for="review-email">Your Email</label>
-                            <input class="form-control" type="email" id="review-email" required>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <label for="review-subject">Subject</label>
-                            <input class="form-control" type="text" id="review-subject" required>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <label for="review-rating">Rating</label>
-                            <select class="form-control" id="review-rating">
-                                <option>5 Stars</option>
-                                <option>4 Stars</option>
-                                <option>3 Stars</option>
-                                <option>2 Stars</option>
-                                <option>1 Star</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="review-message">Review</label>
-                    <textarea class="form-control" id="review-message" rows="8" required></textarea>
-                </div>
-            </div>
-            <div class="modal-footer button">
-                <button type="button" class="btn">Submit Review</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- End Review Modal -->
 @endsection
 @push('js')
     <script type="text/javascript">

@@ -14,67 +14,75 @@
         <div class="cart">
             <!-- TABLE MOBILE  -->
             <div class="table-responsive table-mobile">
-                <table class="table table-bordered" cellspacing="0">
-                    <thead style="background-color: #0166f3ca; color: #fff">
-                        <tr>
-                            <th>Produto</th>
-                            <th>Valor Unitário</th>
-                            <th>Quantidade</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach( $hproducts as $product )
+                <h6 class="cart-update-text">Quantidade(s) actualizada(s). Atenção, actualize o carrinho antes de fazer o checkout.</h6>
+                <form id="cart-update-mobile" action="{{ route('store.cart.update.price.item') }}" method="POST">
+                    {{ csrf_field() }}
+                    <table class="table table-bordered" cellspacing="0">
+                        <thead style="background-color: #0166f3ca; color: #fff">
                             <tr>
-                                <td class="tb-product-name">
-                                    <a href="{{ route('store.cart.remove.item', encrypt($product['item']['id'])) }}"
-                                        class="remove-item text-danger btn"><i class="lni lni-close"></i></a>
-                                    <span class="item-title">
-                                        {{ $product['item']['name'] }}
-                                    </span>
-                                </td>
-                                <td>
-                                    @if ($product['item']['sale_id'] == 1 && $product['item']['descount'] > 0)
-                                        {{ $product['item']['price'] - (($product['item']['price'] * $product['item']['descount'])/100) }} kz
-                                    @else
-                                    {{ $product['item']['price'] }} kz
-                                    @endif
-                                </td>
-                                <td>
-                                    <span class="totalItem">
-                                        @if ($product['item']['sale_id'] == 1 && $product['item']['descount'] > 0)
-                                        <span
-                                        class="dtItem">{{ $product['item']['price'] - (($product['item']['price'] * $product['item']['descount'])/100) }}</span>
-                                        @else
-                                        <span
-                                        class="dtItem">{{ $product['item']['price'] }}</span>
-                                        @endif
-                                        kz</span>
-                                    <input type="number" class="qtdItem form-control"
-                                        @if ($product['item']['sale_id'] == 1 && $product['item']['descount'] > 0)
-                                            data-value="{{ $product['item']['price'] - (($product['item']['price'] * $product['item']['descount'])/100) }}"
-                                        @else
-                                            data-value="{{ $product['item']['price'] }}"
-                                        @endif
-                                        value="{{ $product['qty'] }}" name="" min="1" id="">
-
-                                </td>
+                                <th>Produto</th>
+                                <th>Valor Unitário</th>
+                                <th>Quantidade</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-
+                        </thead>
+                        <tbody>
+                            @foreach( $hproducts as $product )
+                                <tr>
+                                    <td class="tb-product-name">
+                                        <a href="{{ route('store.cart.remove.item', encrypt($product['item']['id'])) }}"
+                                            class="remove-item text-danger btn"><i class="lni lni-close"></i></a>
+                                        <span class="item-title">
+                                            {{ $product['item']['name'] }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if ($product['item']['sale_id'] == 1 && $product['item']['descount'] > 0)
+                                            {{ $product['item']['price'] - (($product['item']['price'] * $product['item']['descount'])/100) }} kz
+                                        @else
+                                        {{ $product['item']['price'] }} kz
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <span class="totalItem">
+                                            @if ($product['item']['sale_id'] == 1 && $product['item']['descount'] > 0)
+                                            <span
+                                            class="dtItem">{{ $product['item']['price'] - (($product['item']['price'] * $product['item']['descount'])/100) }}</span>
+                                            @else
+                                            <span
+                                            class="dtItem">{{ $product['item']['price'] }}</span>
+                                            @endif
+                                            kz</span>
+                                        <input type="number" class="qtdItem form-control"
+                                            @if ($product['item']['sale_id'] == 1 && $product['item']['descount'] > 0)
+                                                data-value="{{ $product['item']['price'] - (($product['item']['price'] * $product['item']['descount'])/100) }}"
+                                            @else
+                                                data-value="{{ $product['item']['price'] }}"
+                                            @endif
+                                            value="{{ $product['qty'] }}" name="qtys[]" min="1" id="" max="{{ $stocks->where('product_id', $product['item']['id'])->first()->qty}}">
+                                            <input type="hidden" name="products[]" value="{{ $product['item']['id'] }}" >
+                                            <p class="text-warning">* Restam apenas {{ $stocks->where('product_id', $product['item']['id'])->first()->qty}} unidade(s) </p>
+                                        </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+    
+                </form>
                 <div class="boxOrder">
                     Total Pedido: <span class="totalOrder">{{ $totalPrice }}</span> kz
                 </div>
 
             </div>
-            
+            <h6 class="cart-update-text">Quantidade(s) actualizada(s). Atenção, actualize o carrinho antes de fazer o checkout.</h6>
+            <form id="cart-update" method="POST" action="{{ route('store.cart.update.item') }}">
+                {{ csrf_field() }}
             <table class="table data-table-export nowrap" id="datatable-responsive">
                 <thead>
                     <tr>
                         <th class="table-plus datatable-nosort">Produto</th>
                         <th>Valor Unitário</th>
                         <th>Qty.</th>
+                        <th>Total</th>
                         <th>Remove Item</th>
                     </tr>
                 </thead>
@@ -97,13 +105,15 @@
                                 @endif                            
                             </td>
                             <td>
-                                <input type="number" class="qtdItemMobile form-control" 
-                                @if ($product['item']['sale_id'] == 1 && $product['item']['descount'] > 0)
-                                data-value="{{ ($product['item']['price'] - (($product['item']['price'] * $product['item']['descount'])/100))}}"
-                                @else
-                                data-value="{{ $product['item']['price']}}"
-                                @endif
-                                    value="{{ $product['qty'] }}" name="" min="1" id="">
+                                    <input type="number" class="qtdItemMobile form-control" 
+                                    @if ($product['item']['sale_id'] == 1 && $product['item']['descount'] > 0)
+                                    data-value="{{ ($product['item']['price'] - (($product['item']['price'] * $product['item']['descount'])/100))}}"
+                                    @else
+                                    data-value="{{ $product['item']['price']}}"
+                                    @endif
+                                        value="{{ $product['qty'] }}" name="qtys[]" min="1" id="" max="{{ $stocks->where('product_id', $product['item']['id'])->first()->qty }}">
+                                    <input type="hidden" name="products[]" value="{{ $product['item']['id'] }}" >
+                                    <p class="text-warning">* Restam apenas {{ $stocks->where('product_id', $product['item']['id'])->first()->qty}} unidade(s) </p>
                             </td>
                             <td class="totalItemMobile"><span
                                     class="dtItemMobile">
@@ -122,16 +132,19 @@
                     @endforeach
                 </tbody>
             </table>
+        </form>
 
             <div class="boxOrder" id="desktop-table-box-price">
                 Total Pedido: <span class="totalOrderMobile">{{ $totalPrice }}</span> kz
             </div>
 
 
-            <div class="checkout mt-4 d-flex justify-content-end">
-                <a href="{{ route('store.products') }}" class="btn mx-2"
+            <div class="checkout mt-4 d-flex justify-content-end flex-wrap align-item-space-between">
+                <a href="{{ route('store.products') }}" class="btn my-1 mx-2"
                     style="border: 1px solid rgba(0, 0, 0, 0.151)">Continuar compra</a>
-                <a href="#" class="btn btn-success">Checkout</a>
+                <button class="btn btn-primary my-1 mx-2" id="cart-update-btn">Actualizar carrinho</button>
+                <button class="btn btn-primary my-1" id="cart-update-btn-mobile">Actualizar carrinho</button>
+                <a href="{{ route('store.checkout') }}" class="my-1 btn btn-success" style="margin-left: 5px">Checkout</a>
             </div>
         </div>
     </div>

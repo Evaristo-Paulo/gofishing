@@ -19,10 +19,11 @@
                                 <span>Seja o primeiro a receber notificações sobre novos produtos e ofertas.</span>
                             </h4>
                             <div class="newsletter-form-head">
-                                <form action="#" method="get" target="_blank" class="newsletter-form">
-                                    <input name="EMAIL" placeholder="Email" type="email">
+                                <form action="{{ route('store.newsletter') }}" method="POST" class="newsletter-form">
+                                    {{ csrf_field() }}
+                                    <input name="email" required placeholder="Email" type="email">
                                     <div class="button">
-                                        <button class="btn" type="button">Subscrever<span class="dir-part"></span></button>
+                                        <button class="btn" type="submit">Subscrever<span class="dir-part"></span></button>
                                     </div>
                                 </form>
                             </div>
@@ -86,7 +87,7 @@
                     </div>
                     <div class="col-lg-4 col-12">
                         <div class="copyright">
-                            <p><a href="#" rel="nofollow" target="_blank"> &copy; GoShopping 
+                            <p><a href="#" rel="nofollow" target="_blank"> &copy; Goshopping 
                                     2021 -</a> Todos Direitos Reservados</p>
                         </div>
                     </div>

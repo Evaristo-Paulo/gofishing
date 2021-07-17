@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Cart;
 use App\User;
+use Carbon\Carbon;
 use App\Models\Role;
+use App\Models\Sold;
 use App\Models\Brade;
+use App\Models\Month;
+use App\Models\Order;
 use App\Models\Photo;
 use App\Models\Stock;
 use App\Models\Client;
@@ -15,6 +19,7 @@ use App\Models\Category;
 use App\Models\RoleUser;
 use Illuminate\Support\Str;
 use App\Models\Collaborator;
+use App\Models\OrderProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -28,12 +33,16 @@ use Illuminate\Support\Facades\Validator;
 class PainelController extends Controller
 {
 
-    public function home()
+    public function home(Request $request)
     {
+        $year = $request->all() ? $request->input('year') : Carbon::now()->year;
+
         $function = new User();
         if ($function->isClient()) {
-            return redirect()->back();
+            return redirect()->route('store.products');
         }
+        $function_stats = new Sold();
+        $statsActivities = $function_stats->statsActivities($year);
 
         $qtd_products = \DB::table('products')
             ->join('categories', function ($join) {
@@ -62,8 +71,37 @@ class PainelController extends Controller
         $function = new Stock();
 
         $stocks = $function->stocks();
+        $months = DB::table('months')->pluck('name');
 
-        return view('painel.home', compact('qtd_products', 'qtd_clients', 'qtd_collabs', 'stocks', 'photos'));
+        $bestSell = \DB::table('solds')
+            ->join('products', function ($join) {
+                $join->on('products.id', '=', 'solds.product_id')
+                    ->where([['products.active', '=', 1]]);
+            })
+            ->selectRaw('solds.product_id, sum(solds.qty) as qty, products.name, products.category_id')
+            ->groupBy('solds.product_id', 'products.name', 'products.category_id')
+            ->orderBy('qty', 'desc')
+            ->limit(5)
+            ->get();
+
+        if ($request->all()) {
+            $request->session()->flash('success', 'Filtro aplicado com sucesso');
+
+            if (session('success')) {
+                Alert::toast(session('success'), 'success');
+            }
+        }
+
+        return view('painel.home', compact('qtd_products', 'year', 'qtd_clients', 'qtd_collabs', 'stocks', 'photos', 'bestSell'))->with(
+            'months',
+            json_encode($months, JSON_NUMERIC_CHECK)
+        )->with(
+            'statsActivities',
+            json_encode($statsActivities, JSON_NUMERIC_CHECK)
+        )->with(
+            'year',
+            json_encode($year, JSON_NUMERIC_CHECK)
+        );
     }
 
     public function login()
@@ -120,7 +158,11 @@ class PainelController extends Controller
             $person = People::find($id);
             return view('painel.workers.profile', compact('person'));
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -274,7 +316,11 @@ class PainelController extends Controller
         } catch (\Exception $e) {
 
             dd('Estoou aqui');
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -367,14 +413,17 @@ class PainelController extends Controller
                 return response()->json($request);
             }
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
     public function products()
     {
 
-        try {
 
             $function = new User();
             if ($function->isClient()) {
@@ -390,16 +439,18 @@ class PainelController extends Controller
                     $join->on('categories.id', '=', 'products.category_id')
                         ->where([['categories.active', '=', 1]]);
                 })
-                ->select('products.*', 'photos.photo')
+                ->join('stocks', function ($join) {
+                    $join->on('products.id', '=', 'stocks.product_id')
+                        ->where([['products.active', '=', 1]]);
+                })
+                ->select('products.*', 'photos.photo', 'stocks.qty as stock')
                 ->get();
 
             $function = new Product();
             $products = $function->productsGroupByID($result);
 
             return view('painel.products.list', compact('products'));
-        } catch (\Exception $e) {
-            return $e->getMessage();
-        }
+        
     }
 
 
@@ -444,7 +495,7 @@ class PainelController extends Controller
                 'size' => 'required',
                 'specification' => 'required|min:15|max:255',
                 'description' => 'required|min:15|max:255',
-                'photo[]' => 'mimes:jpeg,png,jpg',
+                'photo[]' => 'mimes:jpeg,png,jpg,webp',
                 'onsale' => 'required',
                 'condition' => 'required',
                 'stock' => 'required|numeric',
@@ -464,7 +515,7 @@ class PainelController extends Controller
                 'description.min' => 'Descrição deve ter no mínimo 15 caracteres',
                 'description.max' => 'Descrição deve ter no máximo 255 caracteres',
                 'description.required' => 'Preenche o campo descrição',
-                'photo[].mimes' => 'Informe um fotografias válidas (.jpeg, .jpg, .png)',
+                'photo[].mimes' => 'Informe um fotografias válidas (.jpeg, .jpg, .png, .webp)',
                 'onsale.required' => 'Preenche o campo promoção',
                 'condition.required' => 'Preenche o campo condição',
                 'stock.required' => 'Preenche o campo qty. fornecida',
@@ -529,7 +580,11 @@ class PainelController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -564,7 +619,11 @@ class PainelController extends Controller
             $product = Product::find($id);
             return view('painel.products.update', compact('product'));
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
     public function productRemove($id)
@@ -616,7 +675,11 @@ class PainelController extends Controller
 
             return redirect()->back();
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -649,7 +712,7 @@ class PainelController extends Controller
                 'size' => 'required',
                 'specification' => 'required|min:15|max:255',
                 'description' => 'required|min:15|max:255',
-                'photo[]' => 'mimes:jpeg,png,jpg',
+                'photo[]' => 'mimes:jpeg,png,jpg,webp',
                 'onsale' => 'required',
                 'condition' => 'required',
             ], [
@@ -666,7 +729,7 @@ class PainelController extends Controller
                 'description.min' => 'Descrição deve ter no mínimo 15 caracteres',
                 'description.max' => 'Descrição deve ter no máximo 255 caracteres',
                 'description.required' => 'Preenche o campo descrição',
-                'photo[].mimes' => 'Informe um fotografias válidas (.jpeg, .jpg, .png)',
+                'photo[].mimes' => 'Informe um fotografias válidas (.jpeg, .jpg, .png, .webp)',
                 'onsale.required' => 'Preenche o campo promoção',
                 'condition.required' => 'Preenche o campo condição',
             ]);
@@ -756,7 +819,11 @@ class PainelController extends Controller
                 return response()->json($request);
             }
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -785,7 +852,11 @@ class PainelController extends Controller
                 ->get();
             return view('painel.workers.list', compact('workers'));
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -888,7 +959,11 @@ class PainelController extends Controller
                 return response()->json($request);
             }
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -896,7 +971,7 @@ class PainelController extends Controller
     {
         $function = new User();
         if ($function->isClient()) {
-            return redirect()->back();
+            return redirect()->route('store.products');
         }
 
         $all_collaborators = \DB::table('products')
@@ -916,11 +991,92 @@ class PainelController extends Controller
         return view('painel.collaborators.list', compact('all_collaborators'));
     }
 
+    public function orders()
+    {
+        $function = new User();
+        if ($function->isClient()) {
+            return redirect()->route('store.products');
+        }
+
+        $orders = \DB::table('orders')
+            ->join('clients', function ($join) {
+                $join->on('clients.id', '=', 'orders.client_id')
+                    ->where([['orders.active', '=', 1]]);
+            })
+            ->join('users', function ($join) {
+                $join->on('users.id', '=', 'clients.user_id')
+                    ->where([['users.active', '=', 1]]);
+            })
+            ->join('people', 'people.id', '=', 'users.people_id')
+            ->select('orders.*', 'people.name as client')
+            ->get();
+
+        return view('painel.orders.list', compact('orders'));
+    }
+
+    public function order($id)
+    {
+        $function = new User();
+        if ($function->isClient()) {
+            return redirect()->route('store.products');
+        }
+
+        $id = decrypt($id);
+
+        $orders = \DB::table('orders')
+            ->join('clients', function ($join) use ($id) {
+                $join->on('clients.id', '=', 'orders.client_id')
+                    ->where([['orders.state', '=', 'WA'], ['orders.active', '=', 1], ['orders.id', '=', $id]]);
+            })
+            ->join('users', function ($join) {
+                $join->on('users.id', '=', 'clients.user_id')
+                    ->where([['users.active', '=', 1]]);
+            })
+            ->join('order_products', 'orders.id', '=', 'order_products.order_id')
+            ->join('products', 'products.id', '=', 'order_products.product_id')
+            ->join('people', 'people.id', '=', 'users.people_id')
+            ->select('order_products.*', 'products.name as product', 'products.descount', 'people.name as client')
+            ->get();
+
+        return view('painel.orders.order', compact('orders'));
+    }
+
+
+    public function orderDone($id)
+    {
+        $function = new User();
+        if ($function->isClient()) {
+            return redirect()->route('store.products');
+        }
+
+        $id = decrypt($id);
+
+        $order = Order::find($id);
+
+        $order->state = 'PA';
+        $order->active = 0;
+        $order->save();
+
+        $order_products = OrderProduct::where('order_id', $order->id)->get();
+
+        foreach ($order_products as $order_product) {
+            $order_product->state = 'PA';
+            $order_product->active = 0;
+            $order_product->save();
+        }
+
+        session()->flash('success', 'Pedido finalizado com sucesso');
+        if (session('error')) {
+            Alert::toast(session('success'), 'success');
+        }
+        return redirect()->route('painel.orders');
+    }
+
     public function categories()
     {
         $function = new User();
         if ($function->isClient()) {
-            return redirect()->back();
+            return redirect()->route('store.products');
         }
 
         $all_categories = \DB::table('products')
@@ -1003,7 +1159,11 @@ class PainelController extends Controller
 
             return redirect()->back();
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -1047,7 +1207,11 @@ class PainelController extends Controller
 
             return redirect()->route('painel.categories');
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -1085,7 +1249,11 @@ class PainelController extends Controller
 
             return response()->json($request);
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -1154,7 +1322,11 @@ class PainelController extends Controller
                 return response()->json($request);
             }
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -1205,7 +1377,11 @@ class PainelController extends Controller
                 return response()->json($request);
             }
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -1254,7 +1430,11 @@ class PainelController extends Controller
 
             return redirect()->back();
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -1296,7 +1476,11 @@ class PainelController extends Controller
 
             return redirect()->route('painel.collaborators');
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -1343,7 +1527,11 @@ class PainelController extends Controller
 
             return view('painel.users.list', compact('users'));
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -1430,7 +1618,11 @@ class PainelController extends Controller
 
             return redirect()->route('painel.users');
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -1477,7 +1669,11 @@ class PainelController extends Controller
 
             return redirect()->back();
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -1499,7 +1695,11 @@ class PainelController extends Controller
 
             return view('painel.stock.list', compact('photos', 'stocks'));
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -1576,7 +1776,11 @@ class PainelController extends Controller
 
             return redirect()->back();
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -1630,7 +1834,11 @@ class PainelController extends Controller
 
             return redirect()->back();
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -1638,7 +1846,7 @@ class PainelController extends Controller
     {
         $function = new User();
         if ($function->isClient()) {
-            return redirect()->back();
+            return redirect()->route('store.products');
         }
         $clients = \DB::table('clients')
             ->join('users', function ($join) {
@@ -1674,7 +1882,11 @@ class PainelController extends Controller
             }
             return redirect()->back();
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -1696,7 +1908,11 @@ class PainelController extends Controller
             }
             return redirect()->back();
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -1718,7 +1934,11 @@ class PainelController extends Controller
             }
             return redirect()->back();
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -1740,7 +1960,11 @@ class PainelController extends Controller
             }
             return redirect()->back();
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -1762,7 +1986,11 @@ class PainelController extends Controller
             }
             return redirect()->back();
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 
@@ -1784,7 +2012,11 @@ class PainelController extends Controller
             }
             return redirect()->back();
         } catch (\Exception $e) {
-            return $e->getMessage();
+            session()->flash('error', 'Ops! Verifique os dados e tenta novamente');
+            if (session('error')) {
+                Alert::toast(session('error'), 'error');
+            }
+            return redirect()->back();
         }
     }
 }

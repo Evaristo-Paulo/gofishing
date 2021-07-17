@@ -6,6 +6,8 @@ use App\User;
 use App\Models\Role;
 use App\Models\Sale;
 use App\Models\Brade;
+use App\Models\Month;
+use App\Models\Order;
 use App\Models\Photo;
 use App\Models\Stock;
 use App\Models\Style;
@@ -17,7 +19,6 @@ use App\Models\RoleUser;
 use App\Models\Condition;
 use App\Models\Ocupation;
 use App\Models\Collaborator;
-use App\Models\Month;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -81,7 +82,12 @@ class AuthServiceProvider extends ServiceProvider
             $roles_users = RoleUser::all();
             $photos = Photo::all();
             $months = Month::all();
-            View::share(compact('genders','months','photos', 'stockq', 'sales', 'conditions', 'styles', 'brades', 'collaborators', 'categories', 'ocupations', 'roles', 'people', 'roles_users', 'users'));
+
+            $g_orders = \DB::table('orders')->where([['orders.active', '=', 1], ['orders.state', '=', 'WA']])
+                ->select('orders.*')
+                ->count();
+
+            View::share(compact('genders','g_orders','months', 'photos', 'stockq', 'sales', 'conditions', 'styles', 'brades', 'collaborators', 'categories', 'ocupations', 'roles', 'people', 'roles_users', 'users'));
         }
     }
 }

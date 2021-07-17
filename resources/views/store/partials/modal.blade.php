@@ -6,25 +6,26 @@
                 <h5 class="modal-title">Entrar em contacto</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form class="modal-body">
+            <form class="modal-body" action="{{ route('store.contact.us') }}" method="POST">
+                {{ csrf_field() }}
                 <div class="form-group">
                     <label for="getting-touch-name">Nome</label>
-                    <input type="text" id="getting-touch-name" class="form-control" name="name">
+                    <input type="text" required id="getting-touch-name" class="form-control" name="name">
                 </div>
                 <div class="form-group">
                     <label for="getting-touch-email">Email</label>
-                    <input type="email" id="getting-touch-email" class="form-control" name="email">
+                    <input type="email" required id="getting-touch-email" class="form-control" name="email">
                 </div>
                 <div class="form-group">
                     <label for="getting-touch-subject">Assunto</label>
-                    <input type="text" id="getting-touch-subject" class="form-control" name="subject">
+                    <input type="text" required id="getting-touch-subject" class="form-control" name="subject">
                 </div>
                 <div class="form-group">
                     <label for="getting-touch-message">Mensagem</label>
-                    <textarea name="message" class="form-control" id="getting-touch-message" rows="3"></textarea>
+                    <textarea name="message" required class="form-control" id="getting-touch-message" rows="3"></textarea>
                 </div>
                 <div class="modal-footer-custom">
-                    <button type="button" class="btn btn-success">Enviar</button>
+                    <button type="submit" class="btn btn-success">Enviar</button>
                 </div>
             </form>
         </div>
@@ -87,8 +88,8 @@
                     <div class="single-banner"
                         style="background-image:url('{{ asset('store/assets/images/banner/banner-'.$item.'-bg.jpg') }}')">
                         <div class="content">
-                            <h2>GoShopping Tecnologia</h2>
-                            <p>Conecta-te ao mundo das tecnologias<br>com a GoShopping</p>
+                            <h2>Goshopping Tecnologia</h2>
+                            <p>Conecta-te ao mundo das tecnologias<br>com a Goshopping</p>
                             <div class="button">
                                 <a href="javascript:void(0)" class="btn modal-close">Brevemente</a>
                             </div>

@@ -4,7 +4,7 @@
 <head>
     <!-- Basic Page Info -->
     <meta charset="utf-8">
-    <title>GoShopping</title>
+    <title>Goshopping</title>
     <!-- Site favicon -->
     <link rel="shortcut icon" type="image/x-icon"
         href="{{ asset('store/assets/images/favicon.svg') }}" />
@@ -34,7 +34,6 @@
 
     </script>
 </head>
-
 <body>
     <div class="error-page d-flex align-items-center flex-wrap justify-content-center pd-20">
         <div class="pd-10">

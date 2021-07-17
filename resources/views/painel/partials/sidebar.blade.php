@@ -18,6 +18,15 @@
                 </li>
                 <li class="dropdown">
                     <a href="javascript:;" class="dropdown-toggle">
+                        <span class="micon dw dw-shopping-cart"></span><span class="mtext">Loja</span>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="{{ route('store.products') }}" target="_blank">Site</a></li>
+                        <li><a href="{{ route('painel.orders') }}">Pedidos</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="javascript:;" class="dropdown-toggle">
                         <span class="micon dw dw-flow"></span><span class="mtext">Categorias</span>
                     </a>
                     <ul class="submenu">

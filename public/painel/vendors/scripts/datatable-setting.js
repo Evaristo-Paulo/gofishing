@@ -7,10 +7,10 @@ $('document').ready(function(){
 			targets: "datatable-nosort",
 			orderable: false,
 		}],
-		"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+		"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
 		"language": {
-			"info": "_START_-_END_ of _TOTAL_ entries",
-			searchPlaceholder: "Search",
+			"info": "_START_ de _TOTAL_ entradas",
+			searchPlaceholder: "Pesquisar",
 			paginate: {
 				next: '<i class="ion-chevron-right"></i>',
 				previous: '<i class="ion-chevron-left"></i>'  
@@ -26,10 +26,10 @@ $('document').ready(function(){
 			targets: "datatable-nosort",
 			orderable: false,
 		}],
-		"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+		"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
 		"language": {
-			"info": "_START_-_END_ of _TOTAL_ entries",
-			searchPlaceholder: "Search",
+			"info": "_START_ de _TOTAL_ entradas",
+			searchPlaceholder: "Pesquisar",
 			paginate: {
 				next: '<i class="ion-chevron-right"></i>',
 				previous: '<i class="ion-chevron-left"></i>'  
@@ -60,9 +60,9 @@ $('document').ready(function(){
 		'scrollCollapse': true,
 		'autoWidth': false,
 		'responsive': true,
-		"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+		"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
 		"language": {
-			"info": "_START_-_END_ of _TOTAL_ entries",
+			"info": "_START_ de _TOTAL_ entradas",
 			searchPlaceholder: "Search",
 			paginate: {
 				next: '<i class="ion-chevron-right"></i>',

@@ -1,8 +1,7 @@
 - Relatório/Estatística
 - dividir casas de milhares (Carrinho) js
-- Organizar a home do painel
-- Tirar info da tabela no carrinho quando estamos no fone
-- Como desativar mensagem de erros em produção no laravel
-- quando apaga-se o fornecedor, influenciar na estatística apresentada
-- icon view no visualizar produto loja e icon stock (car ou truck)
-- notificação de productos vendidos/pedidos
+- Reduzir stock ao pagar o produto
+- Adicionar o produto no stripe e o email do cliente
+
+Product ipsum dolor sit amet consectetur, adipisicing elit. Dignissimos quaerat modi quisquam assumenda illum molestiae aliquam animi nostrum
+

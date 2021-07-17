@@ -13,27 +13,34 @@
                 <div class="col-12">
                     <div class="section-title">
                         <h2>Nossos Produtos</h2>
-                        <p>Uma imagem vale mais que 1.000 palavras, e com a GoShopping, as tuas podem valer muito mais
+                        <p>Uma imagem vale mais que 1.000 palavras, e com a Goshopping, as tuas podem valer muito mais
                             ainda.</p>
                     </div>
                 </div>
             </div>
             @if (count($products) == 0)
-                <h5 style="margin: 20px; text-align: center">Nenhum produto disponível</h5>
+                @if (isset($search))
+                    <h5 style="margin: 20px; text-align: center">Nenhum produto correspondente</h5>
+                @else
+                    <h5 style="margin: 20px; text-align: center">Nenhum produto disponível</h5>
+                @endif
             @else                
                 @if(count($products) < 3 )
                     <div class="shop-products" style="grid-template-columns: repeat(auto-fit, minmax(200px, 300px))">
                         @foreach( $products as $product )
-                            <div class="single-product">
+                            <div class="single-product @if($product->stock == 0 ) single-product-out-of-stock @endif">
                                 <div class="product-image">
                                     <img src="{{ url("storage/products/". $photos->where('product_id', $product->id)->first()->photo. "") }}"
                                         alt="#">
                                     @if( $product->sale_id == 1 && $product->descount > 0 )
                                         <span class="new-tag">Promoção</span>
                                     @endif
+                                    @if( $product->stock == 0)
+                                        <span class="new-tag">Esgotado</span>
+                                    @endif
                                     <div class="button">
                                         <a href="{{ route('store.product.details', encrypt($product->id)) }}"
-                                            class="btn"><i class="lni lni-cart"></i>
+                                            class="btn"><i class="lni lni-eye"></i>
                                             Visualizar</a>
                                     </div>
                                 </div>
@@ -68,16 +75,19 @@
                 @else
                     <div class="shop-products">
                         @foreach( $products as $product )
-                            <div class="single-product">
+                            <div class="single-product @if($product->stock == 0 ) single-product-out-of-stock @endif">
                                 <div class="product-image">
                                     <img src="{{ url("storage/products/". $photos->where('product_id', $product->id)->first()->photo. "") }}"
                                         alt="#">
                                     @if( $product->sale_id == 1 && $product->descount > 0 )
                                         <span class="new-tag">Promoção</span>
                                     @endif
+                                    @if( $product->stock == 0)
+                                        <span class="new-tag">Esgotado</span>
+                                    @endif
                                     <div class="button">
                                         <a href="{{ route('store.product.details', encrypt($product->id)) }}"
-                                            class="btn"><i class="lni lni-cart"></i>
+                                            class="btn"><i class="lni lni-eye"></i>
                                             Visualizar</a>
                                     </div>
                                 </div>
@@ -125,8 +135,7 @@
                 <div class="inner">
                     <div class="content">
                         <h2 class="wow fadeInUp" data-wow-delay=".4s">Fale Connosco</h2>
-                        <p class="wow fadeInUp" data-wow-delay=".6s">Please, purchase full version of the template
-                            to get all pages,<br> features and commercial license.</p>
+                        <p class="wow fadeInUp" data-wow-delay=".6s">Nossos profissionais estão prontos para puder lhe ajudar.</p>
                         <div class="button wow fadeInUp" data-wow-delay=".8s">
                             <a href="#" data-bs-toggle="modal" data-bs-target="#contactUsModal"
                                 class="btn">Contanta-Nos</a>
@@ -148,7 +157,7 @@
                     style="background-image:url('{{ asset('store/assets/images/banner/banner-1-bg.jpg') }}')">
                     <div class="content">
                         <h2>Smart Watch 2.0</h2>
-                        <p>Conecta-te ao mundo das tecnologias<br>com a GoShopping</p>
+                        <p>Conecta-te ao mundo das tecnologias<br>com a Goshopping</p>
                         <div class="button">
                             <a href="#"
                                 class="btn" data-bs-toggle="modal" data-bs-target="#soon1Item">Saber Mais</a>
@@ -161,7 +170,7 @@
                     style="background-image:url('{{ asset('store/assets/images/banner/banner-2-bg.jpg') }}')">
                     <div class="content">
                         <h2>Smart Headphone</h2>
-                        <p>Conecta-te ao mundo das tecnologias<br>com a GoShopping</p>
+                        <p>Conecta-te ao mundo das tecnologias<br>com a Goshopping</p>
                         <div class="button">
                             <a href="#"
                                 class="btn" data-bs-toggle="modal" data-bs-target="#soon2Item">Saber Mais</a>
