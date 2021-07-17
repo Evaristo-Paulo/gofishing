@@ -39,7 +39,7 @@
             <div class="dropdown">
                 <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown">
                     <span class="user-icon">
-                        <img src="{{ secure_url("storage/people/". $people->where('id', Auth::user()->people_id)->first()->photo. "") }}"
+                        <img src="{{ asset("storage/people/". $people->where('id', Auth::user()->people_id)->first()->photo. "") }}"
                             alt="">
                     </span>
                     <span
