@@ -18,7 +18,7 @@ class PeopleSeeder extends Seeder
             'phone' => '938709694',
             'bi' => '0123456789LA551',
             'adress' => 'Centralidade do Sequele, Cacuaco, Luanda',
-            'birthday' => '22-11-1996',
+            'birthday' => '1996-11-22',
             'ocupation_id' => 5,
             'gender_id' => 1,
         ]);
@@ -28,7 +28,7 @@ class PeopleSeeder extends Seeder
             'phone' => '940570688',
             'bi' => '0123456789LA552',
             'adress' => 'Kahio, Capetown, South Africa',
-            'birthday' => '12-02-1995',
+            'birthday' => '1995-02-12',
             'ocupation_id' => 3,
             'gender_id' => 2,
         ]);
@@ -38,7 +38,7 @@ class PeopleSeeder extends Seeder
             'phone' => '912345678',
             'bi' => '0123456789LA553',
             'adress' => '7 cunhas, Cacuaco, Luanda',
-            'birthday' => '10-02-1993',
+            'birthday' => '1993-02-10',
             'ocupation_id' => 5,
             'gender_id' => 1,
         ]);
