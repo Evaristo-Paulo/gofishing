@@ -201,6 +201,7 @@
                                         Visualizar</a>
                                 </div>
                             </div>
+                            
                             <div class="product-info">
                                 <i class="lni lni-tag"></i>
                                 <span style="display: inline"
