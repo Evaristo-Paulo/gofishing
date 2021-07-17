@@ -82,7 +82,7 @@
                                 <li class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex align-items-center pr-2">
                                         <div class="avatar mr-2 flex-shrink-0">
-                                            <img src="{{ url("storage/products/". $photos->where('product_id',  $item->product_id )->first()->photo. "") }}"
+                                            <img src="{{ asset("storage/products/". $photos->where('product_id',  $item->product_id )->first()->photo. "") }}"
                                                 class="border-radius-100 box-shadow" alt="">
                                         </div>
                                         <div class="txt">
@@ -133,7 +133,7 @@
                                 <td class="table-plus">
                                     <div class="name-avatar d-flex align-items-center">
                                         <div class="avatar mr-2 flex-shrink-0">
-                                            <img src="{{ url("storage/products/". $photos->where('product_id', $stock['product_id'] )->first()->photo. "") }}"
+                                            <img src="{{ asset("storage/products/". $photos->where('product_id', $stock['product_id'] )->first()->photo. "") }}"
                                                 class="border-radius-100 shadow" width="40" height="40" alt="">
                                         </div>
                                         <div class="txt">
