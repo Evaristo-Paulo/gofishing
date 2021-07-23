@@ -208,7 +208,8 @@ class StoreController extends Controller
                 $join->on('products.id', '=', 'stocks.product_id')
                     ->where([['products.active', '=', 1]]);
             })
-            ->select('products.*', 'stocks.qty as stock')
+            ->selectRaw('products.id,products.category_id,products.slug,products.brade_id,products.style_id,products.sale_id,products.condition_id,products.name,products.size,products.price,products.descount,products.id,sum(stocks.qty) as stock')
+            ->groupBy('products.id')
             ->paginate(9);
 
         if (Session::has('cart')) {
@@ -239,7 +240,8 @@ class StoreController extends Controller
                 $join->on('products.id', '=', 'stocks.product_id')
                     ->where([['products.active', '=', 1]]);
             })
-            ->select('products.*', 'stocks.qty as stock')
+            ->selectRaw('products.id,products.category_id,products.slug,products.brade_id,products.style_id,products.sale_id,products.condition_id,products.name,products.size,products.price,products.descount,products.id,sum(stocks.qty) as stock')
+            ->groupBy('products.id')            
             ->paginate(9);
 
         if (Session::has('cart')) {
@@ -274,8 +276,42 @@ class StoreController extends Controller
                 $join->on('products.id', '=', 'stocks.product_id')
                     ->where([['products.active', '=', 1]]);
             })
-            ->select('products.*', 'stocks.qty as stock')
+            ->selectRaw('products.id,products.category_id,products.slug,products.brade_id,products.style_id,products.sale_id,products.condition_id,products.name,products.size,products.price,products.descount,products.id,sum(stocks.qty) as stock')
+            ->groupBy('products.id')            
             ->paginate(9);
+
+            if (count($products) == 0){
+                $products = \DB::table('products')
+                ->join('categories', function ($join) use ($slug) {
+                    $join->on('categories.id', '=', 'products.category_id')
+                        ->where([['categories.active', '=', 1], ['categories.slug', '=', $slug], ['products.active', '=', 1], ['products.condition_id', '=', 1]]);
+                })
+                ->join('stocks', function ($join) {
+                    $join->on('products.id', '=', 'stocks.product_id')
+                        ->where([['products.active', '=', 1]]);
+                })
+                ->selectRaw('products.id,products.category_id,products.slug,products.brade_id,products.style_id,products.sale_id,products.condition_id,products.name,products.size,products.price,products.descount,products.id,sum(stocks.qty) as stock')
+                ->groupBy('products.id')            
+                ->paginate(9);
+            }
+            if (count($products) == 0){
+                $products = \DB::table('products')
+                ->join('categories', function ($join) {
+                    $join->on('categories.id', '=', 'products.category_id')
+                        ->where([['categories.active', '=', 1], ['products.active', '=', 1], ['products.condition_id', '=', 1]]);
+                })
+                ->join('brades', function ($join) use ($slug) {
+                    $join->on('brades.id', '=', 'products.brade_id')
+                        ->where([['brades.slug', '=', $slug]]);
+                })
+                ->join('stocks', function ($join) {
+                    $join->on('products.id', '=', 'stocks.product_id')
+                        ->where([['products.active', '=', 1]]);
+                })
+                ->selectRaw('products.id,products.category_id,products.slug,products.brade_id,products.style_id,products.sale_id,products.condition_id,products.name,products.size,products.price,products.descount,products.id,sum(stocks.qty) as stock')
+                ->groupBy('products.id')            
+                ->paginate(9);
+            }
 
         if (Session::has('cart')) {
             $oldCart = Session::get('cart');
@@ -315,7 +351,8 @@ class StoreController extends Controller
                 $join->on('products.id', '=', 'stocks.product_id')
                     ->where([['products.active', '=', 1]]);
             })
-            ->select('products.*', 'stocks.qty as stock')
+            ->selectRaw('products.id,products.category_id,products.slug,products.brade_id,products.style_id,products.sale_id,products.condition_id,products.name,products.size,products.price,products.descount,products.id,sum(stocks.qty) as stock')
+            ->groupBy('products.id')            
             ->paginate(9);
 
         if (Session::has('cart')) {

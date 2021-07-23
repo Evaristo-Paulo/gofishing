@@ -36,7 +36,7 @@
                                         <span class="new-tag">Promoção</span>
                                     @endif
                                     @if( $product->stock == 0)
-                                        <span class="new-tag">Esgotado</span>
+                                        <span class="new-tag out-stock-box">Esgotado</span>
                                     @endif
                                     <div class="button">
                                         <a href="{{ route('store.product.details', encrypt($product->id)) }}"
@@ -83,7 +83,7 @@
                                         <span class="new-tag">Promoção</span>
                                     @endif
                                     @if( $product->stock == 0)
-                                        <span class="new-tag">Esgotado</span>
+                                        <span class="new-tag out-stock-box">Esgotado</span>
                                     @endif
                                     <div class="button">
                                         <a href="{{ route('store.product.details', encrypt($product->id)) }}"

@@ -2556,7 +2556,7 @@ ol {
 }
 
 .trending-product .shop-content {
-    width: 72%
+    width: 72%;
 }
 
 .header .nav-social ul li:last-child,
@@ -3369,10 +3369,15 @@ ol {
     width: 100%;
     height: 100%;
     -webkit-box-shadow: 0px 0px 20px #00000012;
-    background-color: rgba(0, 0, 0, 0.472);
+    background-color: rgba(0, 0, 0, 0.568);
     z-index: 200;
     box-shadow: 0px 0px 20px #00000012;
 
+}
+
+.out-stock-box {
+    background: #f73232 !important;
+    z-index: 300 !important;
 }
 .single-product .product-image img {
     width: 100%;
@@ -3412,9 +3417,9 @@ p.text-warning {
     color: #fff;
     font-weight: bold;
     position: absolute;
-    top: 0;
+    top: 5%;
     padding: 5px 10px;
-    left: 0;
+    left: 5%;
     z-index: 22;
     box-sizing: border-box;
 
@@ -5060,7 +5065,7 @@ select::placeholder {
     }
 
     .trending-product .container {
-        display: block;
+        width: 100%
     }
 
     .trending-product .shop-content {
@@ -5154,7 +5159,7 @@ select::placeholder {
 
 .add-cart-btn,
 .bottom-content button {
-    margin-top: 0px;
+    margin-top: 20px;
     width: 100%;
     background-color: #0167F3;
     color: #fff;
@@ -5381,4 +5386,24 @@ select option {
 
 #checkout-errors{
     margin: 0 10px;
+}
+
+@media screen and (min-width: 441.5px) and (max-width: 767px) {
+    .single-product {
+        padding: 20px;
+    }
+    .trending-product{
+        padding: 0
+    }
+    .single-product .product-image {
+        padding: 30px;
+    }
+    .shop-products {
+        margin: 0;
+        width: 100%;
+    }
+    .trending-product .shop-content {
+        width: 100% !important;
+        margin-bottom: 10%
+    }
 }
